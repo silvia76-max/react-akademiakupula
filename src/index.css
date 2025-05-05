@@ -1,0 +1,32 @@
+
+/* Variables globales */
+:root {
+  --color-fondo: black;
+  --color-texto: rgb(245, 239, 130);
+  --color-dorado: gold;
+  --color-dorado-oscuro: goldenrod;
+  --color-borde: #ffd700;
+}
+
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: "Winky Sans", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-dorado);
+  font-weight: bold;
+}
+
+a {
+  color: var(--color-dorado);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+

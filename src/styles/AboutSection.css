@@ -1,0 +1,130 @@
+.about-section {
+  background-color: #000;
+  color: #d4af37;
+  padding: 3rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .about-section {
+    padding: 4rem 5rem;
+  }
+}
+
+.about-content {
+  max-width: 64rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about-title {
+  color: gold;
+  font-size: 2.25rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.about-text {
+  font-size: 1.125rem;
+  line-height: 1.75;
+  margin-top: 1.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-highlight {
+  color: gold;
+  font-weight: 600;
+}
+
+/* NUEVO */
+.about-subsection {
+  margin-top: 4rem;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem;
+}
+
+.about-subtitle {
+  font-size: 1.75rem;
+  color: gold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.about-block {
+  display: flex;
+  flex-direction: column; /* En pantallas pequeñas, el contenido se apila verticalmente */
+  align-items: center;
+  gap: 2rem;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.about-text-block {
+  text-align: center;
+}
+
+.about-image-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.about-img {
+  width: 350px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+  object-fit: cover;
+}
+
+/* Cursos */
+.about-courses {
+  text-align: center;
+  padding: 0 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.about-gallery {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.about-gallery img {
+  width: 320px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.1);
+}
+
+/* Cambios en las pantallas grandes */
+@media (min-width: 768px) {
+  .about-block {
+    flex-direction: row; /* En pantallas grandes, la imagen y el texto se alinean en fila */
+    justify-content: flex-start;
+    text-align: left; /* Alinea el texto a la izquierda */
+  }
+
+  .about-image-block {
+    align-items: flex-start; /* Alinea la imagen al inicio */
+  }
+
+  .about-text-block {
+    margin-left: 2rem; /* Da un espacio entre la imagen y el texto */
+  }
+
+  /* Para que .reverse funcione en pantallas grandes */
+  .about-block.reverse {
+    flex-direction: row-reverse; /* Invertir el orden de imagen y texto solo en pantallas grandes */
+  }
+}

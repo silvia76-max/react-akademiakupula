@@ -1,0 +1,136 @@
+.footer {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.footer-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.footer-logo-img {
+  width: 120px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+.social-icons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.social-icon {
+  text-decoration: none;
+  color:var(--color-texto);
+  font-size: 24px;
+  transition: color 0.3s ease;
+}
+
+.social-icon:hover {
+  color:var(--color-dorado-oscuro);
+}
+
+.footer-menu {
+  margin-top: 1rem;
+}
+
+.footer-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-menu-list li {
+  display: inline-block;
+  margin: 0 0.7rem;
+}
+
+.footer-menu-list li a {
+  color: var(--color-dorado);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footer-menu-list li a:hover {
+  color: var(--color-dorado-oscuro);
+}
+
+.footer-links {
+  margin-top: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.footer-links a {
+  color: var(--color-dorado-oscuro);
+  margin: 0 0.5rem;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover {
+  color: var(--color-dorado);
+}
+/* Estilos para el menú desplegable */
+.footer-legal-menu {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.footer-legal-toggle {
+  background: none;
+  border: none;
+  color: var(--color-texto);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.footer-legal-toggle:hover {
+  background-color:var(--color-dorado-oscuro);;
+}
+
+.footer-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  animation: fadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column; 
+  gap: 0.5rem;  
+  align-items: center; 
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.footer-menu-list li {
+  margin: 0.5rem 0;
+  text-align: center; 
+}
+
+.footer-menu-list a {
+  color: var(--color-texto);
+  text-decoration: none;
+  transition: color 0.3s;
+  text-align: center; 
+  display: inline-block;
+  padding: 0.3rem 0;
+}
+
+.footer-menu-list a:hover {
+  color:var(--color-dorado-oscuro);;
+  text-decoration: underline;
+}
