@@ -8,7 +8,6 @@ import ContactSection from "./components/ContactSection.jsx";
 import Footer from "./components/Footer.jsx";
 import ReviewCarousel from "./components/ReviewCarrousel.jsx";
 import Profile from './pages/Profile';
-import AuthForm from './components/AuthForm.jsx';
 import PoliticaPrivacidad from "./components/PoliticaPrivacidad";
 import AvisoLegal from "./components/AvisoLegal";
 import CookiesPolicy from "./components/CookiesPolicy";
@@ -30,7 +29,6 @@ export function App() {
               <>
                 <Header />
                 <HeroSection />
-                <AuthForm />
                 <AboutSection />
                 <Courses />
                 <ContactSection />

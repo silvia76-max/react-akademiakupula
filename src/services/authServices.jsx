@@ -1,11 +1,8 @@
 const BASE_URL = "http://127.0.0.1:5000"; // Solo la base
 
-// Función para obtener el token
-const getToken = () => localStorage.getItem('token');
-
 // Función para hacer las peticiones con fetch
 const request = async (endpoint, method, body = null) => {
-  const token = getToken();
+  const token = localStorage.getItem('token');
   const headers = {
     "Content-Type": "application/json",
   };
@@ -15,8 +12,9 @@ const request = async (endpoint, method, body = null) => {
   }
 
   const options = {
-    method: method,
-    headers: headers,
+    method,
+    headers,
+    credentials: 'include', 
   };
 
   if (body) {
@@ -24,13 +22,18 @@ const request = async (endpoint, method, body = null) => {
   }
 
   try {
-    const response = await fetch(BASE_URL + endpoint, options);
+    const response = await fetch(`${BASE_URL}${endpoint}`, options);
+    const data = await response.json();
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`Error en la solicitud: ${error.message || 'No se pudo completar la solicitud'}`);
+      // Si el token expiró o es inválido
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login'; // Redirige al login
+      }
+      throw new Error(data.message || 'Error en la solicitud');
     }
-    return await response.json();
+    return data;
   } catch (error) {
     console.error("Error en la solicitud:", error);
     throw error;
