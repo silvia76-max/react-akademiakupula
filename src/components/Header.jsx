@@ -3,19 +3,17 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import logo from "../assets/images/vinilo-logo.png";
 import taniaImage from "../assets/images/fundadora.jpg";
 import GoldenButton from "./GoldenButton";
-import AuthForm from './AuthForm'; // Corrige aquí el import de AuthForm
+import AuthForm from './AuthForm'; 
 import "../styles/Header.css";
 import "../styles/Modal.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false); // Estado para mostrar el modal
-
+  const [showLoginModal, setShowLoginModal] = useState(false); 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
     <header className="header">
-      {/* Sección superior del header */}
       <div className="header-top">
         <div className="header-left">
           <img 
@@ -35,7 +33,7 @@ const Header = () => {
         <div className="header-title">
           <h1>Akademia La Kúpula</h1>
           <GoldenButton 
-            onClick={() => setShowLoginModal(true)}  // Al hacer clic, mostramos el modal
+            onClick={() => setShowLoginModal(true)} 
             aria-label="Abrir modal de autenticación"
           >
             Iniciar sesión
@@ -51,7 +49,7 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Menú de navegación (responsive) */}
+     
       {isMenuOpen && (
         <nav className="nav-menu" aria-label="Menú principal">
           <a href="#inicio" onClick={toggleMenu}>Inicio</a>
@@ -60,26 +58,26 @@ const Header = () => {
         </nav>
       )}
 
-      {/* Modal de autenticación */}
+  
       {showLoginModal && (
         <div 
           className="modal-overlay" 
-          onClick={() => setShowLoginModal(false)} // Cerrar modal al hacer clic fuera
+          onClick={() => setShowLoginModal(false)} 
           role="dialog"
           aria-modal="true"
         >
           <div 
             className="modal-content" 
-            onClick={(e) => e.stopPropagation()}  // Prevenir el cierre cuando se hace clic dentro del modal
+            onClick={(e) => e.stopPropagation()}  
           >
             <button 
               className="close-button" 
-              onClick={() => setShowLoginModal(false)}  // Cerrar modal al hacer clic en la X
+              onClick={() => setShowLoginModal(false)}  
               aria-label="Cerrar modal"
             >
               ✖
             </button>
-            <AuthForm onClose={() => setShowLoginModal(false)} />  {/* Pasamos la función onClose */}
+            <AuthForm onClose={() => setShowLoginModal(false)} /> 
           </div>
         </div>
       )}

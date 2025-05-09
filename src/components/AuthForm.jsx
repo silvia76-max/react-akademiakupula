@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // para redirigir
+import { useNavigate } from 'react-router-dom'; 
 import '../styles/AuthForm.css';
 
 const AuthForm = () => {
@@ -12,8 +12,7 @@ const AuthForm = () => {
     password: ''
   });
 
-  const navigate = useNavigate(); // hook para redirigir
-
+  const navigate = useNavigate(); 
   const handleChange = (e) => {
     setFormData({
       ...formData,

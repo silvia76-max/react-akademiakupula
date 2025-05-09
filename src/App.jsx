@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"; // Importación correcta
+import { BrowserRouter, Routes, Route } from "react-router-dom"; 
 import Header from "./components/Header.jsx";
 import HeroSection from "./components/HeroSection.jsx";
 import AboutSection from "./components/AboutSection.jsx";
@@ -20,7 +20,7 @@ import "./index.css";
 
 export function App() {
   return (
-    <BrowserRouter> {/* Aquí utilizas correctamente BrowserRouter */}
+    <BrowserRouter> 
       <div className="app-container">
         <PingTest />
         <Routes>
