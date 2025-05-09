@@ -59,7 +59,9 @@ const AuthForm = () => {
         console.log('Respuesta del servidor:', data);
 
         if (isLogin) {
-          navigate('/profile'); // al perfil después de login
+          localStorage.setItem('token', data.access_token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          navigate('/profile');
         } else if (!isLogin) {
           alert('Registro exitoso. ¡Ahora inicia sesión!');
           setIsLogin(true); // cambia automáticamente al login después de registrarse
@@ -98,7 +100,7 @@ const AuthForm = () => {
       password: ''
     });
   };
-
+  
   return (
     <div className="auth-container">
       <h2>

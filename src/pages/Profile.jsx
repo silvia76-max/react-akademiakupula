@@ -1,4 +1,3 @@
-// Profile.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,15 +6,21 @@ function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token'); // 1. Obtenemos el token JWT
+    
     const fetchProfile = async () => {
       try {
         const res = await fetch('http://localhost:5000/api/auth/profile', {
           method: 'GET',
-          credentials: 'include', // ⚡ para enviar la cookie de sesión
+          headers: {
+            'Authorization': `Bearer ${token}` // 2. Enviamos el token en headers
+          }
         });
 
         if (res.status === 401) {
+          localStorage.removeItem('token'); // 3. Limpiamos el token si no es válido
           navigate('/login');
+          return;
         }
 
         const data = await res.json();
@@ -30,27 +35,16 @@ function Profile() {
       }
     };
 
-    fetchProfile();
+    if (!token) {
+      navigate('/login'); // 4. Redirigimos si no hay token
+    } else {
+      fetchProfile();
+    }
   }, [navigate]);
 
-  const handleLogout = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        alert('Sesión cerrada');
-        navigate('/login');
-      } else {
-        const data = await res.json();
-        alert(data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error al cerrar sesión');
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // 5. Eliminamos el token al cerrar sesión
+    navigate('/login');
   };
 
   if (!user) return <p>Cargando perfil...</p>;
