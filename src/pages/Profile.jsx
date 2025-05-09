@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Profile.css';
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -7,7 +8,7 @@ function Profile() {
 
   useEffect(() => {
     const token = localStorage.getItem('token'); // 1. Obtenemos el token JWT
-    
+
     const fetchProfile = async () => {
       try {
         const res = await fetch('http://localhost:5000/api/auth/profile', {
@@ -24,10 +25,22 @@ function Profile() {
         }
 
         const data = await res.json();
+        console.log('Respuesta del perfil:', data);
+
         if (res.ok) {
-          setUser(data);
+          // Verificar si los datos vienen en el formato esperado
+          if (data.data) {
+            // Si los datos vienen en un objeto 'data'
+            console.log('Usando data.data:', data.data);
+            setUser(data.data);
+          } else {
+            // Si los datos vienen directamente
+            console.log('Usando data directamente:', data);
+            setUser(data);
+          }
         } else {
-          alert(data.message);
+          console.error('Error en la respuesta:', data);
+          alert(data.message || 'Error al cargar el perfil');
         }
       } catch (err) {
         console.error(err);
@@ -50,12 +63,15 @@ function Profile() {
   if (!user) return <p>Cargando perfil...</p>;
 
   return (
-    <div>
-      <h1>Bienvenido, {user.full_name}</h1>
-      <p>Email: {user.email}</p>
-      <p>Código Postal: {user.postal_code}</p>
-
-      <button onClick={handleLogout}>Cerrar sesión</button>
+    <div className="profile-container">
+      <div className="profile-card">
+        <h1 className="profile-title">Bienvenido, {user.full_name}</h1>
+        <div className="profile-info">
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Código Postal:</strong> {user.postal_code}</p>
+        </div>
+        <button className="logout-button" onClick={handleLogout}>Cerrar sesión</button>
+      </div>
     </div>
   );
 }

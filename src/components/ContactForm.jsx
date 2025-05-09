@@ -117,16 +117,24 @@ const ContactForm = () => {
     });
 
     try {
-      // Simulamos el envío para demostración (reemplazar con el fetch real)
-      // Comentado para evitar errores ya que el backend puede no estar disponible
-      /*
+      // Realizar la petición real al backend
+      // Preparar los datos para enviar al backend
+      // Asegurarnos de que los nombres de los campos coincidan con el backend
+      const contactoData = {
+        nombre: formData.nombre,
+        email: formData.email,
+        telefono: formData.telefono || '',
+        curso: formData.curso || '',
+        mensaje: formData.mensaje
+      };
+
       const response = await fetch('http://localhost:5000/api/contacto', {
         method: 'POST',
         mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(contactoData)
       });
 
       if (!response.ok) {
@@ -135,10 +143,6 @@ const ContactForm = () => {
       }
 
       const data = await response.json();
-      */
-
-      // Simulación de respuesta exitosa (para demostración)
-      await new Promise(resolve => setTimeout(resolve, 1500));
 
       setFormStatus({
         status: 'success',

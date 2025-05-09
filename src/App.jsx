@@ -20,7 +20,8 @@ const AvisoLegal = lazy(() => import("./components/AvisoLegal"));
 const CookiesPolicy = lazy(() => import("./components/CookiesPolicy"));
 const CondicionesDeCompra = lazy(() => import("./components/CondicionesDeCompra"));
 // Import for development debugging only
-// import PingTest from "./components/pingTest.jsx";
+import PingTest from "./components/pingTest.jsx";
+import TestForm from "./components/TestForm.jsx";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./index.css";
@@ -117,8 +118,8 @@ export function App() {
   return (
     <BrowserRouter>
       <div className="app-container">
-        {/* Development test component - uncomment when needed */}
-        {/* <PingTest /> */}
+        {/* Development test component */}
+        <PingTest />
 
         {/* Sistema de notificaciones */}
         {notification && (
@@ -156,6 +157,7 @@ export function App() {
           <Route path="/cookies" element={<CookiesPolicy />} />
           <Route path="/condiciones-de-compra" element={<CondicionesDeCompra />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/test" element={<TestForm />} />
         </Routes>
         <Footer />
       </div>

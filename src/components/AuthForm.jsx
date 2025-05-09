@@ -138,81 +138,108 @@ const AuthForm = ({ onClose }) => {
         bodyData = formData;
       }
 
-      // Simulamos una respuesta exitosa para demostración
-      // En un entorno real, descomentar el código de fetch
-      /*
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
-        method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(bodyData)
-      });
+      try {
+        // Realizar la petición real al backend
+        const response = await fetch(`http://localhost:5000${endpoint}`, {
+          method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(bodyData)
+        });
 
-      const data = await response.json();
-      */
+        const data = await response.json();
+        console.log('Respuesta del servidor:', data);
 
-      // Simulación de respuesta exitosa
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const response = { ok: true };
-      const data = {
-        access_token: 'token_simulado',
-        user: { id: 1, email: formData.email, name: formData.full_name || 'Usuario' }
-      };
+        if (response.ok) {
+          if (isLogin) {
+            try {
+              // Verificar si los datos vienen en el formato esperado
+              const token = data.data?.access_token || data.access_token;
+              const userData = data.data?.user || data.user;
 
-      if (response.ok) {
-        if (isLogin) {
-          localStorage.setItem('token', data.access_token);
-          localStorage.setItem('user', JSON.stringify(data.user));
+              if (token) {
+                // Guardar token en localStorage
+                localStorage.setItem('token', token);
+                console.log('Token guardado:', token);
+              } else {
+                console.error('No se encontró token en la respuesta');
+              }
 
+              if (userData) {
+                localStorage.setItem('user', JSON.stringify(userData));
+                console.log('Usuario guardado:', userData);
+              } else {
+                console.error('No se encontraron datos de usuario en la respuesta');
+              }
+
+              setNotification({
+                show: true,
+                type: 'success',
+                message: '¡Inicio de sesión exitoso!'
+              });
+
+              // Usar un pequeño retraso para evitar problemas de React
+              setTimeout(() => {
+                if (onClose) onClose();
+                navigate('/profile');
+              }, 100);
+            } catch (err) {
+              console.error('Error procesando respuesta de login:', err);
+              setNotification({
+                show: true,
+                type: 'error',
+                message: 'Error procesando la respuesta del servidor'
+              });
+            }
+          } else if (!isLogin) {
+            setNotification({
+              show: true,
+              type: 'success',
+              message: 'Registro exitoso. ¡Ahora puedes iniciar sesión!'
+            });
+
+            // Usar un pequeño retraso para evitar problemas de React
+            setTimeout(() => {
+              setIsLogin(true);
+              setFormData({ full_name: '', postal_code: '', email: '', password: '' });
+              setFormSubmitted(false);
+            }, 100);
+          } else if (isForgotPassword) {
+            setNotification({
+              show: true,
+              type: 'success',
+              message: 'Correo de recuperación enviado. Revisa tu bandeja de entrada.'
+            });
+
+            // Usar un pequeño retraso para evitar problemas de React
+            setTimeout(() => {
+              setIsForgotPassword(false);
+              setFormData({ ...formData, email: '' });
+              setFormSubmitted(false);
+            }, 100);
+          }
+        } else {
           setNotification({
             show: true,
-            type: 'success',
-            message: '¡Inicio de sesión exitoso!'
+            type: 'error',
+            message: data.message || 'Ocurrió un error. Inténtalo de nuevo.'
           });
-
-          setTimeout(() => {
-            if (onClose) onClose();
-            // navigate('/profile'); // Comentado para la demo
-          }, 1500);
-        } else if (!isLogin) {
-          setNotification({
-            show: true,
-            type: 'success',
-            message: 'Registro exitoso. ¡Ahora puedes iniciar sesión!'
-          });
-
-          setTimeout(() => {
-            setIsLogin(true);
-            setFormData({ full_name: '', postal_code: '', email: '', password: '' });
-            setFormSubmitted(false);
-          }, 1500);
-        } else if (isForgotPassword) {
-          setNotification({
-            show: true,
-            type: 'success',
-            message: 'Correo de recuperación enviado. Revisa tu bandeja de entrada.'
-          });
-
-          setTimeout(() => {
-            setIsForgotPassword(false);
-            setFormData({ ...formData, email: '' });
-            setFormSubmitted(false);
-          }, 1500);
         }
-      } else {
+      } catch (fetchError) {
+        console.error('Error en fetch:', fetchError);
         setNotification({
           show: true,
           type: 'error',
-          message: data.message || 'Ocurrió un error. Inténtalo de nuevo.'
+          message: 'Error de conexión con el servidor'
         });
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error general:', error);
       setNotification({
         show: true,
         type: 'error',
-        message: 'Hubo un problema al conectar con el servidor.'
+        message: 'Hubo un problema al procesar la solicitud.'
       });
     } finally {
       setIsLoading(false);
