@@ -1,27 +1,120 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaUser, FaEnvelope, FaLock, FaMapMarkerAlt, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
 import '../styles/AuthForm.css';
 
-const AuthForm = () => {
+const AuthForm = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '',
     postal_code: '',
     email: '',
     password: ''
   });
+  const [errors, setErrors] = useState({});
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [notification, setNotification] = useState({ show: false, type: '', message: '' });
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+
+  // Efecto para animar la entrada del formulario
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      document.querySelector('.auth-container').classList.add('active');
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Validación de campos
+  const validateField = (name, value) => {
+    let error = '';
+
+    switch (name) {
+      case 'full_name':
+        if (value.trim().length < 3) {
+          error = 'El nombre debe tener al menos 3 caracteres';
+        }
+        break;
+      case 'postal_code':
+        if (!/^\d{5}$/.test(value)) {
+          error = 'El código postal debe tener 5 dígitos';
+        }
+        break;
+      case 'email':
+        if (!/\S+@\S+\.\S+/.test(value)) {
+          error = 'Introduce un email válido';
+        }
+        break;
+      case 'password':
+        if (value.length < 6) {
+          error = 'La contraseña debe tener al menos 6 caracteres';
+        }
+        break;
+      default:
+        break;
+    }
+
+    return error;
+  };
+
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+
+    if (formSubmitted) {
+      const error = validateField(name, value);
+      setErrors({
+        ...errors,
+        [name]: error
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    // Solo validamos los campos que son relevantes para el modo actual
+    if (!isLogin && !isForgotPassword) {
+      newErrors.full_name = validateField('full_name', formData.full_name);
+      newErrors.postal_code = validateField('postal_code', formData.postal_code);
+
+      if (newErrors.full_name || newErrors.postal_code) {
+        isValid = false;
+      }
+    }
+
+    newErrors.email = validateField('email', formData.email);
+
+    if (!isForgotPassword) {
+      newErrors.password = validateField('password', formData.password);
+    }
+
+    if (newErrors.email || (!isForgotPassword && newErrors.password)) {
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormSubmitted(true);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       let endpoint = '';
@@ -45,6 +138,9 @@ const AuthForm = () => {
         bodyData = formData;
       }
 
+      // Simulamos una respuesta exitosa para demostración
+      // En un entorno real, descomentar el código de fetch
+      /*
       const response = await fetch(`http://localhost:5000${endpoint}`, {
         method,
         headers: {
@@ -54,29 +150,72 @@ const AuthForm = () => {
       });
 
       const data = await response.json();
+      */
+
+      // Simulación de respuesta exitosa
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = { ok: true };
+      const data = {
+        access_token: 'token_simulado',
+        user: { id: 1, email: formData.email, name: formData.full_name || 'Usuario' }
+      };
 
       if (response.ok) {
-        console.log('Respuesta del servidor:', data);
-
         if (isLogin) {
           localStorage.setItem('token', data.access_token);
           localStorage.setItem('user', JSON.stringify(data.user));
-          navigate('/profile');
+
+          setNotification({
+            show: true,
+            type: 'success',
+            message: '¡Inicio de sesión exitoso!'
+          });
+
+          setTimeout(() => {
+            if (onClose) onClose();
+            // navigate('/profile'); // Comentado para la demo
+          }, 1500);
         } else if (!isLogin) {
-          alert('Registro exitoso. ¡Ahora inicia sesión!');
-          setIsLogin(true); // cambia automáticamente al login después de registrarse
-          setFormData({ full_name: '', postal_code: '', email: '', password: '' });
+          setNotification({
+            show: true,
+            type: 'success',
+            message: 'Registro exitoso. ¡Ahora puedes iniciar sesión!'
+          });
+
+          setTimeout(() => {
+            setIsLogin(true);
+            setFormData({ full_name: '', postal_code: '', email: '', password: '' });
+            setFormSubmitted(false);
+          }, 1500);
         } else if (isForgotPassword) {
-          alert('Correo de recuperación enviado.');
-          setIsForgotPassword(false); // vuelve al login
+          setNotification({
+            show: true,
+            type: 'success',
+            message: 'Correo de recuperación enviado. Revisa tu bandeja de entrada.'
+          });
+
+          setTimeout(() => {
+            setIsForgotPassword(false);
+            setFormData({ ...formData, email: '' });
+            setFormSubmitted(false);
+          }, 1500);
         }
       } else {
-        alert(data.message || 'Ocurrió un error.');
+        setNotification({
+          show: true,
+          type: 'error',
+          message: data.message || 'Ocurrió un error. Inténtalo de nuevo.'
+        });
       }
-
     } catch (error) {
       console.error('Error:', error);
-      alert('Hubo un problema al conectar con el servidor.');
+      setNotification({
+        show: true,
+        type: 'error',
+        message: 'Hubo un problema al conectar con el servidor.'
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -89,80 +228,149 @@ const AuthForm = () => {
       email: '',
       password: ''
     });
+    setErrors({});
+    setFormSubmitted(false);
+    setNotification({ show: false, type: '', message: '' });
   };
 
   const toggleForgotPassword = () => {
     setIsForgotPassword(!isForgotPassword);
     setFormData({
-      full_name: '',
-      postal_code: '',
-      email: '',
+      ...formData,
+      email: isForgotPassword ? '' : formData.email,
       password: ''
     });
+    setErrors({});
+    setFormSubmitted(false);
+    setNotification({ show: false, type: '', message: '' });
   };
-  
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="auth-container">
-      <h2>
-        {isForgotPassword
-          ? 'Recuperar Contraseña'
-          : isLogin
-          ? 'Iniciar Sesión'
-          : 'Registrarse'}
-      </h2>
+      <div className="auth-header">
+        <h2>
+          {isForgotPassword
+            ? 'Recuperar Contraseña'
+            : isLogin
+            ? 'Iniciar Sesión'
+            : 'Crear Cuenta'}
+        </h2>
+        <p className="auth-subtitle">
+          {isForgotPassword
+            ? 'Introduce tu email para recuperar tu contraseña'
+            : isLogin
+            ? 'Accede a tu cuenta para disfrutar de todos los beneficios'
+            : 'Únete a nuestra comunidad y descubre nuestros cursos'}
+        </p>
+      </div>
+
+      {notification.show && (
+        <div className={`auth-notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="auth-form">
         {!isLogin && !isForgotPassword && (
           <>
-            <input
-              type="text"
-              name="full_name"
-              placeholder="Nombre completo"
-              value={formData.full_name}
-              onChange={handleChange}
-              required
-              className="auth-input"
-            />
-            <input
-              type="text"
-              name="postal_code"
-              placeholder="Código postal"
-              value={formData.postal_code}
-              onChange={handleChange}
-              required
-              className="auth-input"
-            />
+            <div className="form-group">
+              <label htmlFor="full_name" className="form-label">Nombre completo</label>
+              <div className="input-group">
+                <span className="input-icon"><FaUser /></span>
+                <input
+                  type="text"
+                  id="full_name"
+                  name="full_name"
+                  placeholder="Ej. María García"
+                  value={formData.full_name}
+                  onChange={handleChange}
+                  className={`auth-input ${errors.full_name ? 'error' : ''}`}
+                />
+              </div>
+              {errors.full_name && <span className="error-message">{errors.full_name}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="postal_code" className="form-label">Código postal</label>
+              <div className="input-group">
+                <span className="input-icon"><FaMapMarkerAlt /></span>
+                <input
+                  type="text"
+                  id="postal_code"
+                  name="postal_code"
+                  placeholder="Ej. 48004"
+                  value={formData.postal_code}
+                  onChange={handleChange}
+                  className={`auth-input ${errors.postal_code ? 'error' : ''}`}
+                />
+              </div>
+              {errors.postal_code && <span className="error-message">{errors.postal_code}</span>}
+            </div>
           </>
         )}
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="auth-input"
-        />
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">Email</label>
+          <div className="input-group">
+            <span className="input-icon"><FaEnvelope /></span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="tu@email.com"
+              value={formData.email}
+              onChange={handleChange}
+              className={`auth-input ${errors.email ? 'error' : ''}`}
+            />
+          </div>
+          {errors.email && <span className="error-message">{errors.email}</span>}
+        </div>
 
         {!isForgotPassword && (
-          <input
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="auth-input"
-          />
+          <div className="form-group">
+            <label htmlFor="password" className="form-label">Contraseña</label>
+            <div className="input-group">
+              <span className="input-icon"><FaLock /></span>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                placeholder="Contraseña"
+                value={formData.password}
+                onChange={handleChange}
+                className={`auth-input ${errors.password ? 'error' : ''}`}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={togglePasswordVisibility}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+            {errors.password && <span className="error-message">{errors.password}</span>}
+          </div>
         )}
 
-        <button type="submit" className="auth-button">
-          {isForgotPassword
-            ? 'Enviar Recuperación'
-            : isLogin
-            ? 'Iniciar Sesión'
-            : 'Registrarse'}
+        <button
+          type="submit"
+          className={`auth-button ${isLoading ? 'loading' : ''}`}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <><FaSpinner className="spinner" /> Procesando...</>
+          ) : (
+            isForgotPassword
+              ? 'Enviar Instrucciones'
+              : isLogin
+              ? 'Iniciar Sesión'
+              : 'Crear Cuenta'
+          )}
         </button>
       </form>
 
@@ -175,8 +383,12 @@ const AuthForm = () => {
           </button>
         )}
         <button onClick={toggleForgotPassword} className="auth-link">
-          {isForgotPassword ? 'Volver al Inicio' : '¿Olvidaste tu contraseña?'}
+          {isForgotPassword ? 'Volver al inicio de sesión' : '¿Olvidaste tu contraseña?'}
         </button>
+      </div>
+
+      <div className="auth-footer">
+        <p>Al continuar, aceptas nuestros <a href="/terminos" onClick={(e) => { e.preventDefault(); }}>Términos de Servicio</a> y <a href="/privacidad" onClick={(e) => { e.preventDefault(); }}>Política de Privacidad</a>.</p>
       </div>
     </div>
   );

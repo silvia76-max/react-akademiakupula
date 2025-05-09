@@ -1,26 +1,62 @@
 .about-section {
   background-color: #000;
   color: #d4af37;
-  padding: 3rem 1.5rem;
+  padding: 4rem 1.5rem;
+  position: relative;
 }
 
 @media (min-width: 768px) {
   .about-section {
-    padding: 4rem 5rem;
+    padding: 5rem 5rem;
   }
 }
 
-.about-content {
-  max-width: 64rem;
-  margin: 0 auto;
+/* Fade-in animation for sections */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Section headers with decorative underlines */
+.section-header {
   text-align: center;
+  margin-bottom: 2.5rem;
+  position: relative;
 }
 
 .about-title {
   color: gold;
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: bold;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.title-underline {
+  height: 3px;
+  width: 80px;
+  background: linear-gradient(90deg, transparent, gold, transparent);
+  margin: 0.5rem auto 0;
+}
+
+.subtitle-underline {
+  height: 2px;
+  width: 60px;
+  background: linear-gradient(90deg, transparent, gold, transparent);
+  margin: 0.5rem auto 0;
+}
+
+.about-content {
+  max-width: 64rem;
+  margin: 0 auto 5rem;
+  text-align: center;
 }
 
 .about-text {
@@ -35,30 +71,83 @@
 .about-highlight {
   color: gold;
   font-weight: 600;
+  position: relative;
 }
 
-/* NUEVO */
+.about-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: gold;
+  opacity: 0.5;
+}
+
+/* Philosophy section with cards */
+.philosophy-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.philosophy-card {
+  background: rgba(20, 20, 20, 0.7);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.philosophy-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.philosophy-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.philosophy-card h4 {
+  color: gold;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.philosophy-card p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* About subsections */
 .about-subsection {
-  margin-top: 4rem;
-  max-width: 1000px;
+  margin-top: 6rem;
+  max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
   padding: 0 1rem;
 }
 
 .about-subtitle {
-  font-size: 1.75rem;
+  font-size: 2rem;
   color: gold;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   text-align: center;
   font-weight: 600;
 }
 
 .about-block {
   display: flex;
-  flex-direction: column; /* En pantallas pequeñas, el contenido se apila verticalmente */
+  flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 3rem;
   text-align: center;
   padding: 0 1rem;
 }
@@ -71,23 +160,73 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
+}
+
+.image-frame {
+  position: relative;
+  border-radius: 12px;
+  padding: 8px;
+  background: linear-gradient(145deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 215, 0, 0.1);
 }
 
 .about-img {
   width: 350px;
   max-width: 100%;
   height: auto;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+  border-radius: 8px;
   object-fit: cover;
+  transition: transform 0.5s ease;
 }
 
-/* Cursos */
+.image-frame:hover .about-img {
+  transform: scale(1.02);
+}
+
+.nametitle {
+  font-size: 1.5rem;
+  color: gold;
+  margin: 0.5rem 0;
+}
+
+/* Director quote */
+.director-quote {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-left: 3px solid gold;
+  background-color: rgba(255, 215, 0, 0.05);
+  border-radius: 0 8px 8px 0;
+}
+
+.director-quote blockquote {
+  font-style: italic;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Facility features list */
+.facility-features {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  text-align: left;
+}
+
+.facility-features li {
+  margin-bottom: 0.8rem;
+  color: #fff;
+  font-size: 1.05rem;
+}
+
+/* Courses gallery */
 .about-courses {
   text-align: center;
   padding: 0 1rem;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
@@ -95,36 +234,81 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-.about-gallery img {
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
   width: 320px;
   height: 250px;
-  object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Cambios en las pantallas grandes */
+.gallery-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.gallery-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: 1.5rem 1rem 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-overlay span {
+  color: gold;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Media queries for responsiveness */
 @media (min-width: 768px) {
   .about-block {
-    flex-direction: row; /* En pantallas grandes, la imagen y el texto se alinean en fila */
-    justify-content: flex-start;
-    text-align: left; /* Alinea el texto a la izquierda */
+    flex-direction: row;
+    justify-content: center;
+    text-align: left;
+    gap: 4rem;
   }
 
   .about-image-block {
-    align-items: flex-start; /* Alinea la imagen al inicio */
+    align-items: center;
+    flex-shrink: 0;
   }
 
   .about-text-block {
-    margin-left: 2rem; /* Da un espacio entre la imagen y el texto */
+    text-align: left;
+    max-width: 500px;
   }
 
-  /* Para que .reverse funcione en pantallas grandes */
+  /* For reverse blocks on larger screens */
   .about-block.reverse {
-    flex-direction: row-reverse; /* Invertir el orden de imagen y texto solo en pantallas grandes */
+    flex-direction: row-reverse;
+  }
+
+  .about-block.reverse .about-text-block {
+    text-align: right;
+  }
+
+  .about-block.reverse .facility-features {
+    text-align: right;
   }
 }

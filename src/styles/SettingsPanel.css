@@ -1,0 +1,374 @@
+.settings-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 1000;
+  display: flex;
+}
+
+.settings-toggle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: var(--color-dorado);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.settings-toggle:hover {
+  background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.settings-toggle.active {
+  background: var(--color-dorado);
+  color: #000;
+}
+
+.settings-panel {
+  position: fixed;
+  bottom: 5rem;
+  left: 2rem;
+  width: 320px;
+  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.1);
+  animation: slideUp 0.3s forwards;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-header {
+  background: linear-gradient(
+    160deg,
+    #a54e07,
+    #b47e11,
+    #fef1a2,
+    #bc881b,
+    #a54e07
+  );
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.close-panel {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-panel:hover {
+  transform: rotate(90deg);
+}
+
+/* Pestañas */
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.tab-button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #d4d4d4;
+  padding: 1rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.tab-button svg {
+  font-size: 1.2rem;
+}
+
+.tab-button:hover {
+  background-color: rgba(255, 215, 0, 0.1);
+  color: #fff;
+}
+
+.tab-button.active {
+  color: var(--color-dorado);
+  border-bottom: 2px solid var(--color-dorado);
+}
+
+.panel-content {
+  padding: 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.setting-group {
+  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  padding-bottom: 1.5rem;
+}
+
+.setting-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.setting-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.setting-icon {
+  color: var(--color-dorado);
+  font-size: 1.2rem;
+}
+
+.setting-header h4 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.setting-options {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.option-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.option-btn:hover {
+  background-color: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.option-btn.active {
+  background-color: var(--color-dorado);
+  border-color: var(--color-dorado);
+  color: #000;
+}
+
+/* Opciones de color */
+.color-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.color-option {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.color-option.active {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.color-option.gold {
+  background: linear-gradient(145deg, #ffd700, #b47e11);
+}
+
+.color-option.purple {
+  background: linear-gradient(145deg, #9b59b6, #8e44ad);
+}
+
+.color-option.teal {
+  background: linear-gradient(145deg, #1abc9c, #16a085);
+}
+
+.color-option.rose {
+  background: linear-gradient(145deg, #e84393, #d63031);
+}
+
+/* Toggle switch */
+.setting-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--color-dorado);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--color-dorado);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/* Lista de atajos */
+.shortcuts-list {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.shortcuts-list p {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #d4d4d4;
+}
+
+.shortcuts-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.shortcuts-list li {
+  margin-bottom: 0.5rem;
+  color: #d4d4d4;
+}
+
+.shortcuts-list strong {
+  color: var(--color-dorado);
+}
+
+/* Botón de reinicio */
+.reset-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  color: #fff;
+  padding: 0.8rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.reset-btn:hover {
+  background-color: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .settings-panel {
+    width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-container {
+    bottom: 1.5rem;
+    left: 1.5rem;
+  }
+  
+  .settings-toggle {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+  
+  .settings-panel {
+    width: 90vw;
+    max-width: 320px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 5rem;
+  }
+}

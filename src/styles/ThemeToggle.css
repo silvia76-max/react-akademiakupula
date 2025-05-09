@@ -1,0 +1,52 @@
+.theme-toggle {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: var(--color-dorado);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 99;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.theme-toggle:hover {
+  background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
+  border-color: var(--color-dorado);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+  transform: translateY(-5px);
+}
+
+.theme-icon {
+  transition: all 0.5s ease;
+}
+
+.theme-icon.sun {
+  color: #ffd700;
+}
+
+.theme-icon.moon {
+  color: #a9a9a9;
+}
+
+.theme-toggle:hover .theme-icon {
+  transform: rotate(360deg);
+}
+
+@media (max-width: 768px) {
+  .theme-toggle {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    bottom: 1.5rem;
+    left: 1.5rem;
+  }
+}

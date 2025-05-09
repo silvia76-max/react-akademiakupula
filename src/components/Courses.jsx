@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React from "react";
+import { useEffect, useRef } from "react";
 import CourseCard from "./CourseCard";
 import "../styles/Courses.css";
 
@@ -11,40 +11,134 @@ import socialImg from '../assets/images/unas-kupula26.jpg';
 import extensionImg from '../assets/images/unas-kupula27.jpg';
 
 const Courses = () => {
+  const sectionRef = useRef(null);
+  const coursesRef = useRef([]);
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const sectionObserverCallback = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    };
+
+    const cardObserverCallback = (entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          // Add a staggered delay based on the index
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, index * 150);
+        }
+      });
+    };
+
+    const sectionObserver = new IntersectionObserver(sectionObserverCallback, observerOptions);
+    const cardObserver = new IntersectionObserver(cardObserverCallback, observerOptions);
+
+    if (sectionRef.current) {
+      sectionObserver.observe(sectionRef.current);
+    }
+
+    coursesRef.current.forEach(ref => {
+      if (ref) cardObserver.observe(ref);
+    });
+
+    return () => {
+      if (sectionRef.current) {
+        sectionObserver.unobserve(sectionRef.current);
+      }
+      coursesRef.current.forEach(ref => {
+        if (ref) cardObserver.unobserve(ref);
+      });
+    };
+  }, []);
+
+  const addToCourseRefs = (el) => {
+    if (el && !coursesRef.current.includes(el)) {
+      coursesRef.current.push(el);
+    }
+  };
+
+  const courses = [
+    {
+      title: "Curso de Maquillaje Profesional",
+      description: "Aprende técnicas de maquillaje artístico y desarrolla tu creatividad con los mejores productos.",
+      image: maquillajeImg,
+      duration: "60 horas",
+      level: "Avanzado"
+    },
+    {
+      title: "Curso de Uñas Esculpidas",
+      description: "Domina el arte de las uñas acrílicas y gel. Técnicas profesionales para resultados perfectos.",
+      image: unasImg,
+      duration: "45 horas",
+      level: "Intermedio"
+    },
+    {
+      title: "Estética Integral",
+      description: "Formación completa en tratamientos faciales y corporales. Todo lo que necesitas para ser profesional.",
+      image: esteticaImg,
+      duration: "120 horas",
+      level: "Todos los niveles"
+    },
+    {
+      title: "Curso de Manicura y Pedicura",
+      description: "Domina el arte y el cuidado de manos y pies. Aprende técnicas de spa y tratamientos especiales.",
+      image: manicuraImg,
+      duration: "30 horas",
+      level: "Principiante"
+    },
+    {
+      title: "Curso de Maquillaje Social",
+      description: "Descubre técnicas de maquillaje social para eventos, bodas y ocasiones especiales.",
+      image: socialImg,
+      duration: "40 horas",
+      level: "Intermedio"
+    },
+    {
+      title: "Curso de Extensión de Pestañas",
+      description: "Extensiones de pestañas de cero a cien. Aprende todas las técnicas: pelo a pelo, volumen ruso y más.",
+      image: extensionImg,
+      duration: "25 horas",
+      level: "Avanzado"
+    }
+  ];
+
   return (
-    <section id= "cursos" className="course-section">
-      <h2 className="section-title">Nuestros Cursos</h2>
+    <section id="cursos" className="course-section fade-in-section" ref={sectionRef}>
+      <div className="courses-header">
+        <h2 className="section-title">Nuestros Cursos</h2>
+        <div className="title-underline"></div>
+        <p className="courses-subtitle">
+          Descubre nuestra amplia oferta formativa y da el siguiente paso en tu carrera profesional
+        </p>
+      </div>
+
       <div className="course-list">
-        <CourseCard
-          title="Curso de Maquillaje Profesional"
-          description="Aprende técnicas de maquillaje artistico."
-          image={maquillajeImg}
-        />
-        <CourseCard
-          title="Curso de Uñas Esculpidas"
-          description="Domina el arte de las uñas acrílicas y gel."
-          image={unasImg}
-        />
-        <CourseCard
-          title="Estética Integral"
-          description="Formación completa en tratamientos faciales y corporales."
-          image={esteticaImg}
-        />
-        <CourseCard
-          title="Curso de Manicura y Pedicura"
-          description="Domina el arte y el cuidado de manos y pies"
-          image={manicuraImg}
-        />
-        <CourseCard
-          title="Curso de Maquillaje social"
-          description="Descubre técnicas de maquillaje social."
-          image={socialImg}
-        />
-        <CourseCard
-          title="Curso de extensión de Pestañas"
-          description="Extensiones de pestañas de cero a cien"
-          image={extensionImg}
-        />
+        {courses.map((course, index) => (
+          <div key={index} className="course-card-container" ref={addToCourseRefs}>
+            <CourseCard
+              title={course.title}
+              description={course.description}
+              image={course.image}
+              duration={course.duration}
+              level={course.level}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="courses-cta">
+        <p>¿Quieres más información sobre nuestros cursos?</p>
+        <a href="#contacto" className="courses-cta-button">Contáctanos</a>
       </div>
     </section>
   );
