@@ -2,7 +2,7 @@ import React from 'react';
 import GoldenButton from './GoldenButton';
 import "../styles/CourseCard.css";
 
-const CourseCard = ({ title, description, image, duration, level }) => {
+const CourseCard = ({ id, title, description, image, duration, level }) => {
   return (
     <div className="course-card">
       <div className="card-header">
@@ -21,9 +21,9 @@ const CourseCard = ({ title, description, image, duration, level }) => {
       <div className="card-footer">
         <GoldenButton
           text="Ver detalles"
-          link={`/curso/${title.toLowerCase().replace(/\s+/g, '-')}`}
+          link={`/curso/${id}`}
           requiresAuth={true}
-          courseId={title.toLowerCase().replace(/\s+/g, '-')}
+          courseId={id}
         />
       </div>
     </div>

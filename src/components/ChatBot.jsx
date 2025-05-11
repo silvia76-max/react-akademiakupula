@@ -41,7 +41,7 @@ const botResponses = {
 // Función para encontrar la mejor respuesta basada en palabras clave
 const findBestResponse = (message) => {
   const lowerMessage = message.toLowerCase();
-  
+
   // Palabras clave para cada tipo de respuesta
   const keywords = {
     greeting: ['hola', 'buenos días', 'buenas tardes', 'buenas noches', 'saludos'],
@@ -52,7 +52,7 @@ const findBestResponse = (message) => {
     contact: ['contacto', 'teléfono', 'email', 'correo', 'llamar', 'escribir'],
     schedule: ['horario', 'hora', 'cuando', 'abierto', 'disponible', 'calendario']
   };
-  
+
   // Buscar coincidencias
   for (const [category, words] of Object.entries(keywords)) {
     if (words.some(word => lowerMessage.includes(word))) {
@@ -60,7 +60,7 @@ const findBestResponse = (message) => {
       return responses[Math.floor(Math.random() * responses.length)];
     }
   }
-  
+
   // Si no hay coincidencias, devolver respuesta por defecto
   const defaultResponses = botResponses.default;
   return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
@@ -72,7 +72,7 @@ const ChatBot = () => {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
-  
+
   // Efecto para saludar al abrir el chat
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -80,35 +80,46 @@ const ChatBot = () => {
       setMessages([{ text: greeting, sender: 'bot' }]);
     }
   }, [isOpen, messages.length]);
-  
+
   // Efecto para hacer scroll al último mensaje
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    try {
+      if (messagesEndRef.current) {
+        // Usar requestAnimationFrame para asegurarse de que el DOM está listo
+        requestAnimationFrame(() => {
+          try {
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          } catch (error) {
+            console.error('Error al hacer scroll en ChatBot:', error);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error en useEffect de ChatBot:', error);
     }
   }, [messages]);
-  
+
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
-  
+
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!inputValue.trim()) return;
-    
+
     // Añadir mensaje del usuario
     const userMessage = { text: inputValue, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
-    
+
     // Simular que el bot está escribiendo
     setIsTyping(true);
-    
+
     // Respuesta del bot con un pequeño retraso para simular procesamiento
     setTimeout(() => {
       const botResponse = { text: findBestResponse(userMessage.text), sender: 'bot' };
@@ -116,11 +127,11 @@ const ChatBot = () => {
       setIsTyping(false);
     }, 1000 + Math.random() * 1000); // Entre 1 y 2 segundos
   };
-  
+
   return (
     <div className="chatbot-container">
       {/* Botón para abrir/cerrar el chat */}
-      <button 
+      <button
         className="chat-toggle-btn"
         onClick={toggleChat}
         aria-label={isOpen ? "Cerrar chat" : "Abrir chat"}
@@ -128,13 +139,13 @@ const ChatBot = () => {
       >
         {isOpen ? <FaTimes /> : <FaComments />}
       </button>
-      
+
       {/* Ventana de chat */}
       {isOpen && (
         <div className="chat-window">
           <div className="chat-header">
             <h3>Asistente Virtual</h3>
-            <button 
+            <button
               className="close-chat-btn"
               onClick={toggleChat}
               aria-label="Cerrar chat"
@@ -142,14 +153,14 @@ const ChatBot = () => {
               <FaTimes />
             </button>
           </div>
-          
+
           <div className="chat-messages">
             {messages.map((msg, index) => (
               <div key={index} className={`message ${msg.sender}`}>
                 {msg.text}
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="message bot typing">
                 <span className="typing-indicator">
@@ -159,10 +170,10 @@ const ChatBot = () => {
                 </span>
               </div>
             )}
-            
+
             <div ref={messagesEndRef} />
           </div>
-          
+
           <form className="chat-input-form" onSubmit={handleSubmit}>
             <input
               type="text"
@@ -171,7 +182,7 @@ const ChatBot = () => {
               placeholder="Escribe tu pregunta..."
               aria-label="Mensaje"
             />
-            <button 
+            <button
               type="submit"
               aria-label="Enviar mensaje"
               disabled={!inputValue.trim()}

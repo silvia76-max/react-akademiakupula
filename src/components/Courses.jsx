@@ -69,6 +69,7 @@ const Courses = () => {
 
   const courses = [
     {
+      id: "curso-de-maquillaje-profesional",
       title: "Curso de Maquillaje Profesional",
       description: "Aprende técnicas de maquillaje artístico y desarrolla tu creatividad con los mejores productos.",
       image: maquillajeImg,
@@ -76,6 +77,7 @@ const Courses = () => {
       level: "Avanzado"
     },
     {
+      id: "curso-de-unas-esculpidas",
       title: "Curso de Uñas Esculpidas",
       description: "Domina el arte de las uñas acrílicas y gel. Técnicas profesionales para resultados perfectos.",
       image: unasImg,
@@ -83,6 +85,7 @@ const Courses = () => {
       level: "Intermedio"
     },
     {
+      id: "estetica-integral",
       title: "Estética Integral",
       description: "Formación completa en tratamientos faciales y corporales. Todo lo que necesitas para ser profesional.",
       image: esteticaImg,
@@ -90,6 +93,7 @@ const Courses = () => {
       level: "Todos los niveles"
     },
     {
+      id: "curso-de-manicura-y-pedicura",
       title: "Curso de Manicura y Pedicura",
       description: "Domina el arte y el cuidado de manos y pies. Aprende técnicas de spa y tratamientos especiales.",
       image: manicuraImg,
@@ -97,6 +101,7 @@ const Courses = () => {
       level: "Principiante"
     },
     {
+      id: "curso-de-maquillaje-social",
       title: "Curso de Maquillaje Social",
       description: "Descubre técnicas de maquillaje social para eventos, bodas y ocasiones especiales.",
       image: socialImg,
@@ -104,6 +109,7 @@ const Courses = () => {
       level: "Intermedio"
     },
     {
+      id: "curso-de-extension-de-pestanas",
       title: "Curso de Extensión de Pestañas",
       description: "Extensiones de pestañas de cero a cien. Aprende todas las técnicas: pelo a pelo, volumen ruso y más.",
       image: extensionImg,
@@ -126,6 +132,7 @@ const Courses = () => {
         {courses.map((course, index) => (
           <div key={index} className="course-card-container" ref={addToCourseRefs}>
             <CourseCard
+              id={course.id}
               title={course.title}
               description={course.description}
               image={course.image}

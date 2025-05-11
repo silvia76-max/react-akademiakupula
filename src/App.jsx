@@ -8,13 +8,14 @@ import ChatBot from "./components/ChatBot.jsx";
 import ParticlesBackground from "./components/ParticlesBackground.jsx";
 import SettingsPanel from "./components/SettingsPanel.jsx";
 import Footer from "./components/Footer.jsx";
+import Profile from './pages/ProfileFixed';
 import "./styles/Interactions.css";
 // Importaciones con lazy loading para mejorar el rendimiento
 const AboutSection = lazy(() => import("./components/AboutSection.jsx"));
 const Courses = lazy(() => import("./components/Courses.jsx"));
 const ContactSection = lazy(() => import("./components/ContactSection.jsx"));
 const ReviewCarousel = lazy(() => import("./components/ReviewCarrousel.jsx"));
-const Profile = lazy(() => import('./pages/Profile'));
+// Profile ya está importado al principio del archivo
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const PoliticaPrivacidad = lazy(() => import("./components/PoliticaPrivacidad"));
 const AvisoLegal = lazy(() => import("./components/AvisoLegal"));
@@ -117,57 +118,70 @@ export function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <div className="app-container">
-        {/* Development test component */}
-        <PingTest />
+    <ErrorBoundary showDetails={process.env.NODE_ENV === 'development'} componentName="App">
+      <BrowserRouter>
+        <div className="app-container">
+          {/* Development test component */}
+          <PingTest />
 
-        {/* Sistema de notificaciones */}
-        {notification && (
-          <Notification
-            message={notification.message}
-            type={notification.type}
-            onClose={closeNotification}
-          />
-        )}
+          {/* Sistema de notificaciones */}
+          {notification && (
+            <Notification
+              message={notification.message}
+              type={notification.type}
+              onClose={closeNotification}
+            />
+          )}
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <main className="home-page">
-                <Header />
-                <HeroSection />
-                <Suspense fallback={<LoadingFallback />}>
-                  <AboutSection />
-                  <Courses />
-                  <ContactSection />
-                  <ErrorBoundary>
-                    <ReviewCarousel />
-                  </ErrorBoundary>
-                </Suspense>
-                <BackToTopButton />
-                <ChatBot />
-                <SettingsPanel />
-                <ParticlesBackground />
-              </main>
-            }
-          />
-          <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
-          <Route path="/aviso-legal" element={<AvisoLegal />} />
-          <Route path="/cookies" element={<CookiesPolicy />} />
-          <Route path="/condiciones-de-compra" element={<CondicionesDeCompra />} />
-          <Route path="/profile" element={<Profile />} />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ErrorBoundary componentName="HomePage">
+                  <main className="home-page">
+                    <Header />
+                    <HeroSection />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <ErrorBoundary componentName="AboutSection">
+                        <AboutSection />
+                      </ErrorBoundary>
+                      <ErrorBoundary componentName="Courses">
+                        <Courses />
+                      </ErrorBoundary>
+                      <ErrorBoundary componentName="ContactSection">
+                        <ContactSection />
+                      </ErrorBoundary>
+                      <ErrorBoundary componentName="ReviewCarousel">
+                        <ReviewCarousel />
+                      </ErrorBoundary>
+                    </Suspense>
+                    <BackToTopButton />
+                    <ChatBot />
+                    <SettingsPanel />
+                    {/* Desactivamos temporalmente ParticlesBackground para mejorar el rendimiento */}
+                    {/* <ParticlesBackground /> */}
+                  </main>
+                </ErrorBoundary>
+              }
+            />
+          <Route path="/politica-privacidad" element={<ErrorBoundary componentName="PoliticaPrivacidad"><PoliticaPrivacidad /></ErrorBoundary>} />
+          <Route path="/aviso-legal" element={<ErrorBoundary componentName="AvisoLegal"><AvisoLegal /></ErrorBoundary>} />
+          <Route path="/cookies" element={<ErrorBoundary componentName="CookiesPolicy"><CookiesPolicy /></ErrorBoundary>} />
+          <Route path="/condiciones-de-compra" element={<ErrorBoundary componentName="CondicionesDeCompra"><CondicionesDeCompra /></ErrorBoundary>} />
+          <Route path="/profile" element={<ErrorBoundary componentName="Profile"><Profile /></ErrorBoundary>} />
           <Route path="/curso/:courseId" element={
-            <Suspense fallback={<LoadingFallback />}>
-              <CourseDetail />
-            </Suspense>
+            <ErrorBoundary componentName="CourseDetail">
+              <Suspense fallback={<LoadingFallback />}>
+                <CourseDetail />
+              </Suspense>
+            </ErrorBoundary>
           } />
-          <Route path="/test" element={<TestForm />} />
+          <Route path="/test" element={<ErrorBoundary componentName="TestForm"><TestForm /></ErrorBoundary>} />
         </Routes>
         <Footer />
       </div>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 

@@ -1,14 +1,46 @@
-import { useRef, useEffect } from "react";
-import Slider from "react-slick";
-import ReviewCard from "./ReviewCard";
+import React from "react";
 import "../styles/ReviewCard.css";
 import "../styles/ReviewCarrousel.css";
 
-// Placeholder images for avatars (replace with actual images when available)
+// Placeholder images for avatars
 import defaultAvatar1 from "../assets/images/unas-kupula3.jpg";
 import defaultAvatar2 from "../assets/images/unas-kupula5.jpg";
 import defaultAvatar3 from "../assets/images/unas-kupula2.jpg";
 
+// Componente simplificado de ReviewCard
+const SimpleReviewCard = ({ name, avatar, rating, comment, date, course }) => {
+  return (
+    <div className="review-card">
+      <div className="review-content">
+        <p className="review-comment">"{comment}"</p>
+        <div className="review-stars">
+          {[...Array(5)].map((_, i) => (
+            <span key={i} className="star">
+              {i < rating ? "★" : "☆"}
+            </span>
+          ))}
+        </div>
+        {course && <p className="review-course">{course}</p>}
+      </div>
+
+      <div className="review-footer">
+        <div className="review-header">
+          <img
+            src={avatar}
+            alt={`${name} avatar`}
+            className="review-avatar"
+          />
+          <div className="review-info">
+            <h4>{name}</h4>
+            <p className="review-date">{new Date(date).toLocaleDateString()}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Datos de reseñas
 const reviews = [
   {
     name: "Laura Gómez",
@@ -33,84 +65,13 @@ const reviews = [
     comment: "Aprendí muchísimo y me sentí muy apoyada. Gracias por todo el conocimiento compartido y la paciencia. Ahora tengo mi propio negocio.",
     date: "2025-01-08",
     course: "Estética Integral"
-  },
-  {
-    name: "María Fernández",
-    avatar: defaultAvatar1,
-    rating: 5,
-    comment: "La mejor inversión que he hecho en mi formación. El curso online está muy bien estructurado y el soporte es excelente.",
-    date: "2025-02-15",
-    course: "Curso de Manicura y Pedicura"
   }
 ];
 
+// Componente simplificado de ReviewCarousel
 const ReviewCarousel = () => {
-  const sliderRef = useRef(null);
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          sectionRef.current.classList.add('visible');
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 800,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 6000,
-    pauseOnHover: true,
-    adaptiveHeight: true,
-    fade: true,
-    cssEase: 'cubic-bezier(0.7, 0, 0.3, 1)',
-    customPaging: (i) => (
-      <div className="custom-dot"></div>
-    ),
-    beforeChange: (current, next) => {
-      // Add animation classes to the next slide
-      const nextSlide = document.querySelector(`.slick-slide[data-index="${next}"]`);
-      if (nextSlide) {
-        nextSlide.classList.add('animating');
-      }
-    },
-    afterChange: (current) => {
-      // Remove animation classes after transition
-      document.querySelectorAll('.slick-slide').forEach(slide => {
-        if (slide.getAttribute('data-index') != current) {
-          slide.classList.remove('animating');
-        }
-      });
-    }
-  };
-
-  const nextSlide = () => {
-    sliderRef.current.slickNext();
-  };
-
-  const prevSlide = () => {
-    sliderRef.current.slickPrev();
-  };
-
   return (
-    <div className="review-section fade-in-section" ref={sectionRef}>
+    <div className="review-section">
       <div className="review-carousel-container">
         <div className="review-carousel-header">
           <div className="section-header">
@@ -119,22 +80,12 @@ const ReviewCarousel = () => {
           </div>
         </div>
 
-        <div className="review-carousel">
-          <button className="carousel-arrow prev-arrow" onClick={prevSlide} aria-label="Anterior reseña">
-            &#10094;
-          </button>
-
-          <Slider ref={sliderRef} {...settings}>
-            {reviews.map((review, index) => (
-              <div key={index} className="review-slide">
-                <ReviewCard {...review} />
-              </div>
-            ))}
-          </Slider>
-
-          <button className="carousel-arrow next-arrow" onClick={nextSlide} aria-label="Siguiente reseña">
-            &#10095;
-          </button>
+        <div className="simple-review-grid">
+          {reviews.map((review, index) => (
+            <div key={index} className="review-item">
+              <SimpleReviewCard {...review} />
+            </div>
+          ))}
         </div>
 
         <div className="review-carousel-footer">

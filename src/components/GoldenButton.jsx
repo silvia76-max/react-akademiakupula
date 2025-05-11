@@ -13,30 +13,15 @@ const GoldenButtonInner = ({ text, href, onClick, children, link, requiresAuth =
   // Si no hay href, usamos `link` (para rutas internas con React Router)
   const ButtonContent = children || text || link;
 
-  // Función para manejar clics en botones que requieren autenticación
+  // Función para manejar clics en botones
   const handleAuthClick = (e) => {
-    if (requiresAuth) {
-      const isAuthenticated = localStorage.getItem('token') !== null;
-
-      if (!isAuthenticated) {
-        e.preventDefault(); // Prevenir la navegación predeterminada
-
-        // Redirigir al login con información del curso
-        navigate('/login', {
-          state: {
-            redirectTo: courseId ? `/curso/${courseId}` : link,
-            message: 'Debes iniciar sesión para acceder a este contenido'
-          }
-        });
-
-        return;
-      }
-    }
-
     // Si hay un onClick personalizado, ejecutarlo
     if (onClick) {
       onClick(e);
     }
+
+    // No bloqueamos la navegación aquí - permitimos que el usuario vaya a la página de detalle
+    // La verificación de autenticación se realizará en la página de detalle del curso
   };
 
   if (href) {

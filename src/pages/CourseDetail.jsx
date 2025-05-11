@@ -213,21 +213,30 @@ const CourseDetail = () => {
   const [isInWishlist, setIsInWishlist] = useState(false);
 
   useEffect(() => {
-    // Simulamos la carga de datos del curso
-    const selectedCourse = coursesData.find(c => c.id === courseId);
+    try {
+      // Simulamos la carga de datos del curso
+      const selectedCourse = coursesData.find(c => c.id === courseId);
 
-    // Verificamos si el usuario está autenticado
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
+      // Verificamos si el usuario está autenticado
+      const token = localStorage.getItem('token');
+      setIsAuthenticated(!!token);
 
-    // Simulamos una carga de datos
-    setTimeout(() => {
-      setCourse(selectedCourse);
+      // Simulamos una carga de datos con manejo de errores
+      setTimeout(() => {
+        if (selectedCourse) {
+          setCourse(selectedCourse);
+        } else {
+          console.error(`Curso con ID ${courseId} no encontrado`);
+        }
+        setLoading(false);
+      }, 500);
+
+      // Scroll al inicio de la página
+      window.scrollTo(0, 0);
+    } catch (error) {
+      console.error('Error al cargar el curso:', error);
       setLoading(false);
-    }, 500);
-
-    // Scroll al inicio de la página
-    window.scrollTo(0, 0);
+    }
   }, [courseId]);
 
   // Función para manejar el clic en el botón de lista de deseos
@@ -302,16 +311,24 @@ const CourseDetail = () => {
             </div>
             <div className="course-detail-actions">
               <div className="action-buttons">
-                <GoldenButton
-                  text="Inscribirme ahora"
-                  requiresAuth={true}
-                  courseId={courseId}
-                  onClick={() => {
-                    if (localStorage.getItem('token')) {
+                {isAuthenticated ? (
+                  <GoldenButton
+                    text="Inscribirme ahora"
+                    onClick={() => {
                       alert(`¡Gracias por inscribirte en el curso "${course.title}"!`);
-                    }
-                  }}
-                />
+                    }}
+                  />
+                ) : (
+                  <GoldenButton
+                    text="Iniciar sesión para inscribirme"
+                    link="/"
+                    onClick={() => {
+                      alert('Debes iniciar sesión para inscribirte en este curso');
+                      // Aquí podríamos guardar el curso en localStorage para redirigir después del login
+                      localStorage.setItem('redirectAfterLogin', `/curso/${courseId}`);
+                    }}
+                  />
+                )}
 
                 <div className="icon-buttons">
                   <button
