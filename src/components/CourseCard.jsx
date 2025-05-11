@@ -19,7 +19,12 @@ const CourseCard = ({ title, description, image, duration, level }) => {
         <p className="course-description">{description}</p>
       </div>
       <div className="card-footer">
-        <GoldenButton text="Ver detalles" link={`/${title.toLowerCase().replace(/\s+/g, '-')}`} />
+        <GoldenButton
+          text="Ver detalles"
+          link={`/curso/${title.toLowerCase().replace(/\s+/g, '-')}`}
+          requiresAuth={true}
+          courseId={title.toLowerCase().replace(/\s+/g, '-')}
+        />
       </div>
     </div>
   );

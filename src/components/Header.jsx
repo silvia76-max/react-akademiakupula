@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoMdClose } from "react-icons/io";
 import { FaUserCircle } from "react-icons/fa";
-import logo from "../assets/images/vinilo-logo.png";
-import taniaImage from "../assets/images/fundadora.jpg";
+import logo from "../assets/images/logo.jpeg";
+import taniaImage from "../assets/images/fundadora.png";
 import GoldenButton from "./GoldenButton";
 import AuthForm from './AuthForm';
 import "../styles/Header.css";
@@ -14,6 +14,19 @@ const Header = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Función para abrir el modal de login
+  const openLoginModal = () => {
+    console.log("Abriendo modal de login");
+    setShowLoginModal(true);
+  };
+
+  // Función para cerrar el modal de login
+  const closeLoginModal = () => {
+    console.log("Cerrando modal de login");
+    setShowLoginModal(false);
+  };
 
   // Manejar el scroll para cambiar el estilo del header
   useEffect(() => {
@@ -36,8 +49,18 @@ const Header = () => {
       }
     };
 
+    // Detectar cambios en el tamaño de la ventana para responsive
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -62,6 +85,8 @@ const Header = () => {
                 src={logo}
                 alt="Logo de Akademia La Kúpula"
                 className="header-logo"
+                width="120"
+                height="auto"
               />
             </a>
           </div>
@@ -88,7 +113,7 @@ const Header = () => {
             {/* Botón de login debajo de la navbar */}
             <div className="login-container">
               <GoldenButton
-                onClick={() => setShowLoginModal(true)}
+                onClick={openLoginModal}
                 aria-label="Iniciar sesión"
                 className="login-button"
               >
@@ -108,11 +133,17 @@ const Header = () => {
               {isMenuOpen ? <IoMdClose /> : <RxHamburgerMenu />}
             </button>
 
-            <img
-              src={taniaImage}
-              alt="Tania Calvo, fundadora"
-              className="header-tania"
-            />
+            {!isMobile && (
+              <div className="header-tania-container">
+                <img
+                  src={taniaImage}
+                  alt="Tania Calvo, fundadora"
+                  className="header-tania"
+                  loading="lazy"
+                  width="180"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -136,7 +167,7 @@ const Header = () => {
               <GoldenButton
                 onClick={() => {
                   closeMenu();
-                  setShowLoginModal(true);
+                  openLoginModal();
                 }}
                 className="mobile-login-button"
               >
@@ -151,7 +182,7 @@ const Header = () => {
       {showLoginModal && (
         <div
           className="modal-overlay"
-          onClick={() => setShowLoginModal(false)}
+          onClick={closeLoginModal}
           role="dialog"
           aria-modal="true"
         >
@@ -161,12 +192,12 @@ const Header = () => {
           >
             <button
               className="close-button"
-              onClick={() => setShowLoginModal(false)}
+              onClick={closeLoginModal}
               aria-label="Cerrar modal"
             >
               <IoMdClose />
             </button>
-            <AuthForm onClose={() => setShowLoginModal(false)} />
+            <AuthForm onClose={closeLoginModal} />
           </div>
         </div>
       )}

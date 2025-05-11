@@ -43,27 +43,50 @@
 }
 
 .header-logo {
-  width: 80px;
+  width: 120px;
   height: auto;
-  border-radius: 12px;
+  border-radius: 5px;
   object-fit: contain;
   transition: all 0.3s ease;
+  background-color: transparent;
+}
+
+.header-tania-container {
+  position: relative;
+  width: 180px;
+  height: auto;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header-tania {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 2px solid rgba(255, 215, 0, 0.3);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+  /* Aplicamos una máscara suave para los bordes */
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 95%, rgba(0,0,0,0));
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 95%, rgba(0,0,0,0));
 }
 
 .header-tania:hover {
-  border-color: rgba(255, 215, 0, 0.8);
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
   transform: scale(1.05);
+  filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
 }
 
 .header-title {
@@ -164,13 +187,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 50px;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
 }
 
 .user-icon {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }
 
 .login-text {
@@ -188,7 +211,7 @@
   background: none;
   border: none;
   color: #FFD700;
-  font-size: 1.8rem;
+  font-size: 2.2rem;
   cursor: pointer;
   padding: 0.5rem;
   display: flex;
@@ -196,8 +219,8 @@
   justify-content: center;
   transition: all 0.3s ease;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
 }
 
 .menu-toggle:hover {
@@ -327,25 +350,26 @@
   }
 
   .header-logo {
-    width: 60px;
+    width: 120px;
   }
 
-  .header-tania {
-    width: 50px;
-    height: 50px;
+  .header-tania-container {
+    width: 140px;
+    height: auto;
+    margin-left: 10px;
   }
 
   .header-title h1 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
   }
 }
 
 @media (max-width: 480px) {
   .header-title h1 {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
 
-  .header-tania {
+  .header-tania-container {
     display: none;
   }
 }

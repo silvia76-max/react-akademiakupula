@@ -15,6 +15,7 @@ const Courses = lazy(() => import("./components/Courses.jsx"));
 const ContactSection = lazy(() => import("./components/ContactSection.jsx"));
 const ReviewCarousel = lazy(() => import("./components/ReviewCarrousel.jsx"));
 const Profile = lazy(() => import('./pages/Profile'));
+const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const PoliticaPrivacidad = lazy(() => import("./components/PoliticaPrivacidad"));
 const AvisoLegal = lazy(() => import("./components/AvisoLegal"));
 const CookiesPolicy = lazy(() => import("./components/CookiesPolicy"));
@@ -157,6 +158,11 @@ export function App() {
           <Route path="/cookies" element={<CookiesPolicy />} />
           <Route path="/condiciones-de-compra" element={<CondicionesDeCompra />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/curso/:courseId" element={
+            <Suspense fallback={<LoadingFallback />}>
+              <CourseDetail />
+            </Suspense>
+          } />
           <Route path="/test" element={<TestForm />} />
         </Routes>
         <Footer />

@@ -241,7 +241,7 @@ select.input-field {
     #a54e07
   );
   background-size: 200% auto;
-  color: white;
+  color: black;
   font-weight: bold;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -258,6 +258,7 @@ select.input-field {
   background-position: right center;
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  color: white;
 }
 
 .sendMessage-btn:active:not(:disabled) {
