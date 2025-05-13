@@ -8,7 +8,8 @@ import ChatBot from "./components/ChatBot.jsx";
 import ParticlesBackground from "./components/ParticlesBackground.jsx";
 import SettingsPanel from "./components/SettingsPanel.jsx";
 import Footer from "./components/Footer.jsx";
-import Profile from './pages/ProfileFixed';
+import Profile from './pages/Profile';
+import AdminProtectedRoute from './components/AdminProtectedRoute';
 import "./styles/Interactions.css";
 // Importaciones con lazy loading para mejorar el rendimiento
 const AboutSection = lazy(() => import("./components/AboutSection.jsx"));
@@ -21,6 +22,16 @@ const PoliticaPrivacidad = lazy(() => import("./components/PoliticaPrivacidad"))
 const AvisoLegal = lazy(() => import("./components/AvisoLegal"));
 const CookiesPolicy = lazy(() => import("./components/CookiesPolicy"));
 const CondicionesDeCompra = lazy(() => import("./components/CondicionesDeCompra"));
+// Admin components
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const UsersManagement = lazy(() => import('./pages/admin/UsersManagement'));
+const UserForm = lazy(() => import('./pages/admin/UserForm'));
+const ContentManagement = lazy(() => import('./pages/admin/ContentManagement'));
+const ContentForm = lazy(() => import('./pages/admin/ContentForm'));
+
+// Payment components
+const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
+const PaymentCancel = lazy(() => import('./pages/PaymentCancel'));
 // Import for development debugging only
 import PingTest from "./components/pingTest.jsx";
 import TestForm from "./components/TestForm.jsx";
@@ -176,7 +187,68 @@ export function App() {
               </Suspense>
             </ErrorBoundary>
           } />
+          <Route path="/payment/success" element={
+            <ErrorBoundary componentName="PaymentSuccess">
+              <Suspense fallback={<LoadingFallback />}>
+                <PaymentSuccess />
+              </Suspense>
+            </ErrorBoundary>
+          } />
+          <Route path="/payment/cancel" element={
+            <ErrorBoundary componentName="PaymentCancel">
+              <Suspense fallback={<LoadingFallback />}>
+                <PaymentCancel />
+              </Suspense>
+            </ErrorBoundary>
+          } />
           <Route path="/test" element={<ErrorBoundary componentName="TestForm"><TestForm /></ErrorBoundary>} />
+
+          {/* Rutas del panel de administración - Protegidas */}
+          <Route path="/admin" element={
+            <AdminProtectedRoute>
+              <ErrorBoundary componentName="AdminDashboard">
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminDashboard />
+                </Suspense>
+              </ErrorBoundary>
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/users" element={
+            <AdminProtectedRoute>
+              <ErrorBoundary componentName="UsersManagement">
+                <Suspense fallback={<LoadingFallback />}>
+                  <UsersManagement />
+                </Suspense>
+              </ErrorBoundary>
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/users/:userId" element={
+            <AdminProtectedRoute>
+              <ErrorBoundary componentName="UserForm">
+                <Suspense fallback={<LoadingFallback />}>
+                  <UserForm />
+                </Suspense>
+              </ErrorBoundary>
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/content" element={
+            <AdminProtectedRoute>
+              <ErrorBoundary componentName="ContentManagement">
+                <Suspense fallback={<LoadingFallback />}>
+                  <ContentManagement />
+                </Suspense>
+              </ErrorBoundary>
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/content/:contentId" element={
+            <AdminProtectedRoute>
+              <ErrorBoundary componentName="ContentForm">
+                <Suspense fallback={<LoadingFallback />}>
+                  <ContentForm />
+                </Suspense>
+              </ErrorBoundary>
+            </AdminProtectedRoute>
+          } />
         </Routes>
         <Footer />
       </div>

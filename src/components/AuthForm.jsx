@@ -138,40 +138,73 @@ const AuthForm = ({ onClose }) => {
         bodyData = formData;
       }
         // Solo usar credenciales de prueba si estamos en modo desarrollo y con credenciales específicas
-        if (process.env.NODE_ENV === 'development' &&
-            isLogin &&
-            formData.email === 'test@example.com' &&
-            formData.password === 'password123') {
+        if (process.env.NODE_ENV === 'development' && isLogin) {
+          // Verificar si son las credenciales de administrador
+          if (formData.email === 'admin@gmail.com' && formData.password === 'AkademiaKupula') {
+            console.log('Modo desarrollo: Simulando inicio de sesión como administrador');
 
-          console.log('Modo desarrollo: Simulando inicio de sesión exitoso con credenciales de prueba');
+            // Simular una respuesta exitosa para administrador
+            const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+            const fakeUser = {
+              id: 999,
+              full_name: 'Administrador',
+              email: 'admin@gmail.com',
+              postal_code: '28001',
+              is_admin: true
+            };
 
-          // Simular una respuesta exitosa
-          const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlVzdWFyaW8gZGUgUHJ1ZWJhIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-          const fakeUser = {
-            id: 1,
-            full_name: 'Usuario de Prueba',
-            email: 'test@example.com',
-            postal_code: '28001'
-          };
+            // Guardar token y usuario en localStorage
+            localStorage.setItem('token', fakeToken);
+            localStorage.setItem('user', JSON.stringify(fakeUser));
 
-          // Guardar token y usuario en localStorage
-          localStorage.setItem('token', fakeToken);
-          localStorage.setItem('user', JSON.stringify(fakeUser));
+            // Mostrar notificación de éxito
+            setNotification({
+              show: true,
+              type: 'success',
+              message: '¡Inicio de sesión como administrador exitoso!'
+            });
 
-          // Mostrar notificación de éxito
-          setNotification({
-            show: true,
-            type: 'success',
-            message: '¡Inicio de sesión exitoso! (Modo desarrollo)'
-          });
+            // Redirigir al panel de administración después de un breve retraso
+            setTimeout(() => {
+              if (onClose) onClose();
+              window.location.href = '/admin';
+            }, 500);
 
-          // Redirigir al perfil después de un breve retraso
-          setTimeout(() => {
-            if (onClose) onClose();
-            window.location.href = '/profile';
-          }, 500);
+            return; // Salir de la función para evitar la llamada real al backend
+          }
+          // Verificar si son las credenciales de prueba normales
+          else if (formData.email === 'test@example.com' && formData.password === 'password123') {
+            console.log('Modo desarrollo: Simulando inicio de sesión exitoso con credenciales de prueba');
 
-          return; // Salir de la función para evitar la llamada real al backend
+            // Simular una respuesta exitosa
+            const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlVzdWFyaW8gZGUgUHJ1ZWJhIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+            const fakeUser = {
+              id: 1,
+              full_name: 'Usuario de Prueba',
+              email: 'test@example.com',
+              postal_code: '28001',
+              is_admin: false
+            };
+
+            // Guardar token y usuario en localStorage
+            localStorage.setItem('token', fakeToken);
+            localStorage.setItem('user', JSON.stringify(fakeUser));
+
+            // Mostrar notificación de éxito
+            setNotification({
+              show: true,
+              type: 'success',
+              message: '¡Inicio de sesión exitoso! (Modo desarrollo)'
+            });
+
+            // Redirigir al perfil después de un breve retraso
+            setTimeout(() => {
+              if (onClose) onClose();
+              window.location.href = '/profile';
+            }, 500);
+
+            return; // Salir de la función para evitar la llamada real al backend
+          }
         }
 
         // Realizar la petición real al backend
@@ -227,11 +260,21 @@ const AuthForm = ({ onClose }) => {
                   message: '¡Inicio de sesión exitoso!'
                 });
 
-                // Cerrar el modal y redirigir al perfil
+                // Cerrar el modal
                 if (onClose) onClose();
 
-                // Redirigir directamente sin setTimeout
-                window.location.href = '/profile';
+                // Verificar si es el usuario administrador
+                if (formData.email === 'admin@gmail.com' && formData.password === 'AkademiaKupula') {
+                  // Marcar como administrador en los datos del usuario
+                  const adminUser = { ...userData, is_admin: true };
+                  localStorage.setItem('user', JSON.stringify(adminUser));
+
+                  // Redirigir al panel de administración
+                  window.location.href = '/admin';
+                } else {
+                  // Redirigir al perfil para usuarios normales
+                  window.location.href = '/profile';
+                }
               } catch (err) {
                 console.error('Error procesando respuesta de login:', err);
 

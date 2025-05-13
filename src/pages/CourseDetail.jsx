@@ -4,6 +4,7 @@ import { FaClock, FaGraduationCap, FaChalkboardTeacher, FaCheck, FaHeart, FaShop
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import GoldenButton from '../components/GoldenButton';
+import PaymentButton from '../components/PaymentButton';
 import '../styles/CourseDetail.css';
 
 // Importamos las imágenes de los cursos
@@ -312,11 +313,10 @@ const CourseDetail = () => {
             <div className="course-detail-actions">
               <div className="action-buttons">
                 {isAuthenticated ? (
-                  <GoldenButton
-                    text="Inscribirme ahora"
-                    onClick={() => {
-                      alert(`¡Gracias por inscribirte en el curso "${course.title}"!`);
-                    }}
+                  <PaymentButton
+                    courseId={courseId}
+                    price={course.price}
+                    buttonText="Inscribirme ahora"
                   />
                 ) : (
                   <GoldenButton
@@ -324,8 +324,10 @@ const CourseDetail = () => {
                     link="/"
                     onClick={() => {
                       alert('Debes iniciar sesión para inscribirte en este curso');
-                      // Aquí podríamos guardar el curso en localStorage para redirigir después del login
+                      // Guardar el curso en localStorage para redirigir después del login
                       localStorage.setItem('redirectAfterLogin', `/curso/${courseId}`);
+                      // También guardar información para la compra pendiente
+                      localStorage.setItem('pendingPurchase', JSON.stringify({ courseId }));
                     }}
                   />
                 )}
