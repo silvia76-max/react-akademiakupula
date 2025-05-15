@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="En">
+<html lang="En" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/ico" href="/src/assets/images/favicon.ico"  />
@@ -10,6 +10,19 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
     crossorigin="anonymous"/>
     <title>Akademia La Kupula</title>
+    <!-- Script para inicializar el tema antes de que se cargue React -->
+    <script src="/theme-init.js"></script>
+    <style>
+      /* Estilos iniciales para evitar parpadeos */
+      html, body {
+        background-color: #000000;
+        color: #ffffff;
+      }
+      [data-theme="light"] {
+        background-color: #ffffff;
+        color: #333333;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

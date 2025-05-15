@@ -1,0 +1,177 @@
+/* Estilos para la gestión de cursos */
+.course-thumbnail {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.status-badge.active {
+  background-color: rgba(39, 174, 96, 0.2);
+  color: #27AE60;
+}
+
+.status-badge.draft {
+  background-color: rgba(242, 153, 74, 0.2);
+  color: #F2994A;
+}
+
+/* Modal para detalles del curso */
+.course-modal {
+  max-width: 800px;
+}
+
+.course-image-container {
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.course-detail-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.course-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.course-description {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.course-description h3 {
+  color: #D4AF37;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+}
+
+.course-description p {
+  color: #fff;
+  line-height: 1.6;
+}
+
+.course-content h3 {
+  color: #D4AF37;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.content-section {
+  margin-bottom: 1.5rem;
+}
+
+.content-section h4 {
+  color: #fff;
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.content-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.content-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.content-item:hover {
+  background-color: rgba(212, 175, 55, 0.1);
+}
+
+.content-item-title {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #fff;
+}
+
+.content-icon {
+  color: #D4AF37;
+  font-size: 1rem;
+}
+
+.content-item-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.content-duration, .content-type {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.content-link {
+  color: #D4AF37;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.content-link:hover {
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.content-download {
+  background-color: rgba(212, 175, 55, 0.2);
+  color: #D4AF37;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.content-download:hover {
+  background-color: #D4AF37;
+  color: #000;
+}

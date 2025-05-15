@@ -1,6 +1,6 @@
 .footer {
-  background-color: var(--color-fondo);
-  color: var(--color-texto);
+  background-color: #000000 !important;
+  color: #FFFFFF;
   padding: 2rem 1rem;
   text-align: center;
 }
@@ -26,13 +26,13 @@
 
 .social-icon {
   text-decoration: none;
-  color:var(--color-texto);
+  color: #FFFFFF;
   font-size: 24px;
   transition: color 0.3s ease;
 }
 
 .social-icon:hover {
-  color:var(--color-dorado-oscuro);
+  color: #FFD700;
 }
 
 .footer-menu {
@@ -51,13 +51,13 @@
 }
 
 .footer-menu-list li a {
-  color: var(--color-dorado);
+  color: #FFD700;
   text-decoration: none;
   font-weight: bold;
 }
 
 .footer-menu-list li a:hover {
-  color: var(--color-dorado-oscuro);
+  color: #FFFFFF;
 }
 
 .footer-links {
@@ -70,7 +70,7 @@
 }
 
 .footer-links a {
-  color: var(--color-dorado-oscuro);
+  color: #FFD700;
   transition: color 0.3s, transform 0.3s;
   display: flex;
   align-items: center;
@@ -78,7 +78,7 @@
 }
 
 .footer-links a:hover {
-  color: var(--color-dorado);
+  color: #FFFFFF;
   transform: translateY(-3px);
 }
 /* Estilos para el menú desplegable */

@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import { getProfile, logout, isAuthenticated } from '../services/authService';
 import ProfileHeader from '../components/ProfileHeader';
+import MyCourses from '../components/profile/MyCourses';
 import '../styles/Profile.css';
 
 // Importamos las imágenes de los cursos (simulación)
@@ -459,12 +460,7 @@ function Profile() {
               Mis cursos
             </h2>
 
-            <div className="empty-state">
-              <p>No tienes cursos comprados.</p>
-              <Link to="/" className="browse-courses-link">
-                Explorar cursos
-              </Link>
-            </div>
+            <MyCourses />
           </div>
         )}
 

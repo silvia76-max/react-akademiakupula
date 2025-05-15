@@ -7,9 +7,12 @@
 /* Estilos para la versión simplificada */
 .simple-review-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
   margin: 2rem 0;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .review-carousel-container {
@@ -141,6 +144,22 @@
 }
 
 /* Media queries for responsiveness */
+@media (max-width: 1200px) {
+  .simple-review-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .simple-review-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    padding: 0 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .review-carousel {
     padding: 0 2rem;
@@ -157,6 +176,19 @@
 
   .next-arrow {
     right: -10px;
+  }
+
+  .simple-review-grid {
+    gap: 30px;
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .simple-review-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 0 20px;
   }
 }
 

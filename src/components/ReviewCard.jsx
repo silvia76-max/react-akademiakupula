@@ -8,10 +8,10 @@ const ReviewCard = ({ name, avatar, rating, comment, date, course }) => {
       <div className="review-quote-icon">
         <FaQuoteLeft />
       </div>
-      
+
       <div className="review-content">
         <p className="review-comment">"{comment}"</p>
-        
+
         <div className="review-stars">
           {[...Array(5)].map((_, i) => (
             <span key={i} className="star">
@@ -19,10 +19,10 @@ const ReviewCard = ({ name, avatar, rating, comment, date, course }) => {
             </span>
           ))}
         </div>
-        
+
         {course && <p className="review-course">{course}</p>}
       </div>
-      
+
       <div className="review-footer">
         <div className="review-header">
           <img

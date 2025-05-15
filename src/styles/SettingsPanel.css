@@ -7,44 +7,48 @@
 }
 
 .settings-toggle {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  color: var(--color-dorado);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+  background-color: #1a1a1a !important;
+  border: 1px solid rgba(255, 215, 0, 0.3) !important;
+  color: #ffd700 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.5rem !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+  z-index: 1001 !important;
 }
 
 .settings-toggle:hover {
-  background: linear-gradient(145deg, #0f0f0f, #1a1a1a);
-  color: #fff;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2) !important;
+  border-color: rgba(255, 215, 0, 0.5) !important;
 }
 
 .settings-toggle.active {
-  background: var(--color-dorado);
-  color: #000;
+  background-color: #ffd700 !important;
+  color: #000000 !important;
+  border-color: #ffd700 !important;
 }
 
 .settings-panel {
-  position: fixed;
-  bottom: 5rem;
-  left: 2rem;
-  width: 320px;
-  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.1);
-  animation: slideUp 0.3s forwards;
-  overflow: hidden;
+  position: fixed !important;
+  bottom: 5rem !important;
+  left: 2rem !important;
+  width: 320px !important;
+  background-color: #0f0f0f !important;
+  border: 1px solid rgba(255, 215, 0, 0.3) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.1) !important;
+  animation: slideUp 0.3s forwards !important;
+  overflow: hidden !important;
+  z-index: 1000 !important;
 }
 
 @keyframes slideUp {
@@ -357,13 +361,13 @@ input:checked + .slider:before {
     bottom: 1.5rem;
     left: 1.5rem;
   }
-  
+
   .settings-toggle {
     width: 45px;
     height: 45px;
     font-size: 1.3rem;
   }
-  
+
   .settings-panel {
     width: 90vw;
     max-width: 320px;

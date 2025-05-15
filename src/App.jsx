@@ -6,7 +6,7 @@ import HeroSection from "./components/HeroSection.jsx";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ChatBot from "./components/ChatBot.jsx";
 import ParticlesBackground from "./components/ParticlesBackground.jsx";
-import SettingsPanel from "./components/SettingsPanel.jsx";
+// Eliminado el componente SettingsPanel
 import Footer from "./components/Footer.jsx";
 import Profile from './pages/Profile';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
@@ -28,6 +28,9 @@ const UsersManagement = lazy(() => import('./pages/admin/UsersManagement'));
 const UserForm = lazy(() => import('./pages/admin/UserForm'));
 const ContentManagement = lazy(() => import('./pages/admin/ContentManagement'));
 const ContentForm = lazy(() => import('./pages/admin/ContentForm'));
+const ContactsManagement = lazy(() => import('./pages/admin/ContactsManagement'));
+const CoursesManagement = lazy(() => import('./pages/admin/CoursesManagement'));
+const OrdersManagement = lazy(() => import('./pages/admin/OrdersManagement'));
 
 // Payment components
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
@@ -37,7 +40,7 @@ import PingTest from "./components/pingTest.jsx";
 import TestForm from "./components/TestForm.jsx";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "./index.css";
+// Estilos globales ya importados en main.jsx
 
 // Componente para el botón de volver arriba
 const BackToTopButton = () => {
@@ -168,7 +171,7 @@ export function App() {
                     </Suspense>
                     <BackToTopButton />
                     <ChatBot />
-                    <SettingsPanel />
+                    {/* Eliminado el componente SettingsPanel */}
                     {/* Desactivamos temporalmente ParticlesBackground para mejorar el rendimiento */}
                     {/* <ParticlesBackground /> */}
                   </main>
@@ -245,6 +248,33 @@ export function App() {
               <ErrorBoundary componentName="ContentForm">
                 <Suspense fallback={<LoadingFallback />}>
                   <ContentForm />
+                </Suspense>
+              </ErrorBoundary>
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/contacts" element={
+            <AdminProtectedRoute>
+              <ErrorBoundary componentName="ContactsManagement">
+                <Suspense fallback={<LoadingFallback />}>
+                  <ContactsManagement />
+                </Suspense>
+              </ErrorBoundary>
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/courses" element={
+            <AdminProtectedRoute>
+              <ErrorBoundary componentName="CoursesManagement">
+                <Suspense fallback={<LoadingFallback />}>
+                  <CoursesManagement />
+                </Suspense>
+              </ErrorBoundary>
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/orders" element={
+            <AdminProtectedRoute>
+              <ErrorBoundary componentName="OrdersManagement">
+                <Suspense fallback={<LoadingFallback />}>
+                  <OrdersManagement />
                 </Suspense>
               </ErrorBoundary>
             </AdminProtectedRoute>

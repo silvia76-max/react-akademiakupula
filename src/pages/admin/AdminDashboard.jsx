@@ -15,12 +15,32 @@ const AdminDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
+        // Verificar si el token existe
+        const token = localStorage.getItem('token');
+        console.log('Token de autenticación:', token ? 'Existe' : 'No existe');
+
+        // Verificar si el usuario es admin
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        console.log('Usuario:', user);
+        console.log('¿Es admin?:', user.is_admin);
+
         const data = await getDashboardData();
+        console.log('Datos recibidos del dashboard:', data);
         setDashboardData(data);
         setError(null);
       } catch (err) {
         console.error('Error al cargar datos del dashboard:', err);
-        setError('Error al cargar los datos del dashboard. Por favor, inténtalo de nuevo.');
+        // Mostrar más detalles del error
+        if (err.response) {
+          console.error('Respuesta del servidor:', err.response.data);
+          console.error('Código de estado:', err.response.status);
+          setError(`Error ${err.response.status}: ${err.response.data.message || 'Error al cargar los datos'}`);
+        } else if (err.request) {
+          console.error('No se recibió respuesta del servidor');
+          setError('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
+        } else {
+          setError(`Error: ${err.message}`);
+        }
       } finally {
         setLoading(false);
       }
@@ -64,7 +84,7 @@ const AdminDashboard = () => {
       <AdminSidebar />
       <div className="admin-content">
         <h1>Dashboard de Administración</h1>
-        
+
         <div className="stats-container">
           <div className="stat-card">
             <div className="stat-icon users">
@@ -75,7 +95,7 @@ const AdminDashboard = () => {
               <p className="stat-value">{dashboardData?.stats?.total_users || 0}</p>
             </div>
           </div>
-          
+
           <div className="stat-card">
             <div className="stat-icon messages">
               <FaEnvelope />
@@ -85,7 +105,7 @@ const AdminDashboard = () => {
               <p className="stat-value">{dashboardData?.stats?.total_contacts || 0}</p>
             </div>
           </div>
-          
+
           <div className="stat-card">
             <div className="stat-icon courses">
               <FaBook />
@@ -95,7 +115,7 @@ const AdminDashboard = () => {
               <p className="stat-value">{dashboardData?.stats?.total_courses || 0}</p>
             </div>
           </div>
-          
+
           <div className="stat-card">
             <div className="stat-icon sales">
               <FaShoppingCart />
@@ -106,7 +126,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="dashboard-sections">
           <div className="dashboard-section">
             <h2>Usuarios Recientes</h2>
@@ -133,7 +153,7 @@ const AdminDashboard = () => {
               </table>
             </div>
           </div>
-          
+
           <div className="dashboard-section">
             <h2>Mensajes Recientes</h2>
             <div className="table-container">

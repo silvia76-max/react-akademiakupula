@@ -131,61 +131,121 @@ const ContactSection = () => {
         <div className="social-section fade-in-section" ref={addToRefs}>
           <h3 className="social-title">Síguenos en redes sociales</h3>
 
-          <nav className="social-icons" aria-label="Redes sociales">
+          <div className="social-icons" style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
             <a
               href="https://www.tiktok.com/@taniadelacupula"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Síguenos en TikTok"
-              className="social-icon"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                backgroundColor: '#1a1a1a',
+                color: '#ffd700',
+                fontSize: '24px',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                border: '1px solid rgba(255, 215, 0, 0.2)'
+              }}
               title="TikTok"
             >
-              <SiTiktok aria-hidden="true" />
-              <span className="visually-hidden">TikTok</span>
+              <SiTiktok size={24} />
             </a>
             <a
               href="https://www.facebook.com/tania.laCupula"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Síguenos en Facebook"
-              className="social-icon"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                backgroundColor: '#1a1a1a',
+                color: '#ffd700',
+                fontSize: '24px',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                border: '1px solid rgba(255, 215, 0, 0.2)'
+              }}
               title="Facebook"
             >
-              <FaFacebook aria-hidden="true" />
-              <span className="visually-hidden">Facebook</span>
+              <FaFacebook size={24} />
             </a>
             <a
               href="https://www.instagram.com/taniadelacupula"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Síguenos en Instagram"
-              className="social-icon"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                backgroundColor: '#1a1a1a',
+                color: '#ffd700',
+                fontSize: '24px',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                border: '1px solid rgba(255, 215, 0, 0.2)'
+              }}
               title="Instagram"
             >
-              <FaInstagram aria-hidden="true" />
-              <span className="visually-hidden">Instagram</span>
+              <FaInstagram size={24} />
             </a>
             <a
               href="https://wa.me/+34620576646"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Contáctanos por WhatsApp"
-              className="social-icon"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                backgroundColor: '#1a1a1a',
+                color: '#ffd700',
+                fontSize: '24px',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                border: '1px solid rgba(255, 215, 0, 0.2)'
+              }}
               title="WhatsApp"
             >
-              <FaWhatsapp aria-hidden="true" />
-              <span className="visually-hidden">WhatsApp</span>
+              <FaWhatsapp size={24} />
             </a>
             <a
               href="mailto:institutodebellezataniacalvo@gmail.com"
               aria-label="Envíanos un email"
-              className="social-icon"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                backgroundColor: '#1a1a1a',
+                color: '#ffd700',
+                fontSize: '24px',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                border: '1px solid rgba(255, 215, 0, 0.2)'
+              }}
               title="Email"
             >
-              <FaEnvelope aria-hidden="true" />
-              <span className="visually-hidden">Email</span>
+              <FaEnvelope size={24} />
             </a>
-          </nav>
+          </div>
         </div>
       </div>
     </section>

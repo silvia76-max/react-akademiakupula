@@ -16,14 +16,14 @@ export default defineConfig({
     extensions: ['.js', '.jsx', '.json'],
         },
      server: {
-        port: 5173, 
-        strictPort: true, 
+        port: 5173,
+        strictPort: true,
         headers: {
-          'Cache-Control': 'no-store' 
+          'Cache-Control': 'no-store'
         }
         },
     proxy: {
-      '/api': { 
+      '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,

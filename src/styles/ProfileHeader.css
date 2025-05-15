@@ -1,6 +1,7 @@
 .profile-header {
-  background-color: var(--color-fondo);
-  border-bottom: 2px solid var(--color-dorado);
+  background-color: #000000;
+  border-bottom: 2px solid #FFD700;
+  color: #FFD700;
 }
 
 .profile-nav .nav-list {
@@ -16,7 +17,7 @@
   gap: 0.5rem;
   background: none;
   border: none;
-  color: var(--color-texto);
+  color: #FFFFFF;
   font-size: 1rem;
   padding: 0.5rem 0.8rem;
   border-radius: 5px;
@@ -25,14 +26,14 @@
 }
 
 .profile-nav .nav-item button:hover {
-  color: var(--color-dorado);
+  color: #FFD700;
   background-color: rgba(255, 215, 0, 0.1);
 }
 
 .profile-nav .nav-item button.active {
-  color: var(--color-dorado);
+  color: #FFD700;
   font-weight: bold;
-  border-bottom: 2px solid var(--color-dorado);
+  border-bottom: 2px solid #FFD700;
 }
 
 .logout-button-header {
@@ -60,7 +61,7 @@
   text-align: left;
   background: none;
   border: none;
-  color: var(--color-texto);
+  color: #FFFFFF;
   font-size: 1.1rem;
   padding: 1rem;
   cursor: pointer;
@@ -69,7 +70,7 @@
 
 .mobile-nav .mobile-nav-item button:hover,
 .mobile-nav .mobile-nav-item button.active {
-  color: var(--color-dorado);
+  color: #FFD700;
   background-color: rgba(255, 215, 0, 0.1);
 }
 
@@ -95,7 +96,7 @@
   .profile-nav {
     display: none;
   }
-  
+
   .logout-button-header {
     display: none;
   }
@@ -105,7 +106,7 @@
   .profile-nav .nav-list {
     gap: 1rem;
   }
-  
+
   .profile-nav .nav-item button {
     font-size: 0.9rem;
     padding: 0.4rem 0.6rem;
