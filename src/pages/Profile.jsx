@@ -4,11 +4,15 @@ import {
   FaHeart, FaShoppingCart, FaTrash, FaArrowRight, FaUser,
   FaCamera, FaPencilAlt, FaSave, FaTimes, FaSignOutAlt,
   FaHome, FaEnvelope, FaMapMarkerAlt, FaPhone, FaIdCard,
-  FaGraduationCap, FaCertificate, FaUserCircle
+  FaGraduationCap, FaCertificate, FaUserCircle, FaLock,
+  FaShieldAlt
 } from 'react-icons/fa';
-import { getProfile, logout, isAuthenticated } from '../services/authService';
+import { useAuth } from '../context/AuthContext';
+import { getCart, saveCart, getWishlist, saveWishlist, removeFromCart, removeFromWishlist, moveFromWishlistToCart } from '../services/cartService';
 import ProfileHeader from '../components/ProfileHeader';
+import PaymentButton from '../components/PaymentButton';
 import MyCourses from '../components/profile/MyCourses';
+import SessionsManager from '../components/profile/SessionsManager';
 import '../styles/Profile.css';
 
 // Importamos las imágenes de los cursos (simulación)
@@ -42,7 +46,8 @@ const cartData = [
 ];
 
 function Profile() {
-  const [user, setUser] = useState({
+  const { currentUser, updateProfile, logout, isAuthenticated } = useAuth();
+  const [user, setUser] = useState(currentUser || {
     id: 1,
     full_name: 'Usuario de Prueba',
     email: 'usuario@ejemplo.com',
@@ -52,10 +57,16 @@ function Profile() {
     city: 'Madrid',
     dni: '12345678A'
   });
-  const [activeTab, setActiveTab] = useState('profile');
-  const [wishlist, setWishlist] = useState(wishlistData);
-  const [cart, setCart] = useState(cartData);
-  const [loading, setLoading] = useState(false);
+
+  // Obtener la pestaña activa de localStorage o usar 'profile' por defecto
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem('activeProfileTab');
+    return savedTab || 'profile';
+  });
+
+  const [wishlist, setWishlist] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // Usamos un avatar por defecto en lugar del logo
   const [avatar, setAvatar] = useState(null);
@@ -64,10 +75,86 @@ function Profile() {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
+  // Guardar la pestaña activa en localStorage cuando cambie
+  useEffect(() => {
+    localStorage.setItem('activeProfileTab', activeTab);
+  }, [activeTab]);
+
+  // Actualizar el usuario cuando cambie currentUser
+  useEffect(() => {
+    if (currentUser) {
+      setUser(currentUser);
+      setEditedUser(currentUser);
+    }
+  }, [currentUser]);
+
+  // Cargar datos del carrito y la lista de deseos
+  useEffect(() => {
+    try {
+      setLoading(true);
+
+      // Verificar si el usuario está autenticado
+      if (!isAuthenticated()) {
+        navigate('/');
+        return;
+      }
+
+      // Cargar datos del carrito y la lista de deseos
+      const wishlistItems = getWishlist();
+      const cartItems = getCart();
+
+      console.log('Wishlist items:', wishlistItems);
+      console.log('Cart items:', cartItems);
+
+      // Para usuarios nuevos, mostrar listas vacías
+      // Para usuarios existentes, mostrar los datos guardados o datos de ejemplo solo si no hay datos guardados
+      const isNewUser = currentUser && currentUser.isNewUser;
+
+      if (isNewUser) {
+        setWishlist([]);
+        setCart([]);
+      } else {
+        setWishlist(wishlistItems.length > 0 ? wishlistItems : []);
+        setCart(cartItems.length > 0 ? cartItems : []);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Error al cargar los datos:', error);
+      setError('Error al cargar los datos. Por favor, inténtalo de nuevo.');
+      setLoading(false);
+    }
+  }, [navigate, isAuthenticated]);
+
   // Función para cerrar sesión
   const handleLogout = () => {
-    logout();
-    navigate('/');
+    console.log('Cerrando sesión...');
+    try {
+      const result = logout();
+      console.log('Resultado de logout:', result);
+
+      // Forzar la limpieza de datos
+      localStorage.removeItem('akademia_auth_token');
+      localStorage.removeItem('akademia_user_data');
+      localStorage.removeItem('akademia_token_expiry');
+      localStorage.removeItem('akademia_session_id');
+
+      sessionStorage.removeItem('akademia_auth_token');
+      sessionStorage.removeItem('akademia_user_data');
+      sessionStorage.removeItem('akademia_token_expiry');
+      sessionStorage.removeItem('akademia_session_id');
+
+      console.log('Datos de sesión eliminados');
+
+      // Redirigir a la página principal
+      navigate('/');
+
+      // Recargar la página para asegurar que se limpien todos los estados
+      window.location.reload();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      alert('Error al cerrar sesión. Por favor, inténtalo de nuevo.');
+    }
   };
 
   // Función para manejar el cambio de avatar
@@ -99,9 +186,17 @@ function Profile() {
   };
 
   // Función para guardar los cambios
-  const saveChanges = () => {
-    setUser({...editedUser});
-    setIsEditing(false);
+  const saveChanges = async () => {
+    try {
+      // Actualizar el perfil usando el contexto de autenticación
+      await updateProfile(editedUser);
+      setUser({...editedUser});
+      setIsEditing(false);
+      alert('Perfil actualizado correctamente');
+    } catch (error) {
+      console.error('Error al actualizar el perfil:', error);
+      alert('Error al actualizar el perfil. Inténtalo de nuevo.');
+    }
   };
 
   // Función para manejar cambios en los campos de edición
@@ -114,21 +209,38 @@ function Profile() {
   };
 
   // Función para eliminar un curso de la lista de deseos
-  const removeFromWishlist = (courseId) => {
-    setWishlist(wishlist.filter(course => course.id !== courseId));
+  const handleRemoveFromWishlist = (courseId) => {
+    const result = removeFromWishlist(courseId);
+    if (result.success) {
+      setWishlist(wishlist.filter(course => course.id !== courseId));
+    } else {
+      alert(result.message);
+    }
   };
 
   // Función para añadir un curso al carrito desde la lista de deseos
-  const moveToCart = (course) => {
-    if (!cart.some(item => item.id === course.id)) {
-      setCart([...cart, course]);
+  const handleMoveToCart = (course) => {
+    const result = moveFromWishlistToCart(course.id);
+    if (result.success) {
+      // Actualizar el estado local
+      if (!cart.some(item => item.id === course.id)) {
+        setCart([...cart, course]);
+      }
+      setWishlist(wishlist.filter(item => item.id !== course.id));
+      alert(result.message);
+    } else {
+      alert(result.message);
     }
-    removeFromWishlist(course.id);
   };
 
   // Función para eliminar un curso del carrito
-  const removeFromCart = (courseId) => {
-    setCart(cart.filter(course => course.id !== courseId));
+  const handleRemoveFromCart = (courseId) => {
+    const result = removeFromCart(courseId);
+    if (result.success) {
+      setCart(cart.filter(course => course.id !== courseId));
+    } else {
+      alert(result.message);
+    }
   };
 
   // Calcular el total del carrito
@@ -188,6 +300,13 @@ function Profile() {
                 <h1 className="profile-title">
                   {isEditing ? 'Editar perfil' : `Bienvenido, ${user.full_name}`}
                 </h1>
+
+                {currentUser && currentUser.isNewUser && (
+                  <div className="welcome-message">
+                    <p>¡Gracias por registrarte! Comienza a explorar cursos y añádelos a tu lista de deseos o carrito.</p>
+                  </div>
+                )}
+
                 {!isEditing ? (
                   <button className="edit-button" onClick={startEditing}>
                     <FaPencilAlt /> Editar perfil
@@ -382,14 +501,14 @@ function Profile() {
                     <div className="course-actions">
                       <button
                         className="action-button remove-button"
-                        onClick={() => removeFromWishlist(course.id)}
+                        onClick={() => handleRemoveFromWishlist(course.id)}
                         title="Eliminar de la lista de deseos"
                       >
                         <FaTrash />
                       </button>
                       <button
                         className="action-button add-to-cart-button"
-                        onClick={() => moveToCart(course)}
+                        onClick={() => handleMoveToCart(course)}
                         title="Añadir al carrito"
                       >
                         <FaShoppingCart />
@@ -429,7 +548,7 @@ function Profile() {
                       <div className="course-actions">
                         <button
                           className="action-button remove-button"
-                          onClick={() => removeFromCart(course.id)}
+                          onClick={() => handleRemoveFromCart(course.id)}
                           title="Eliminar del carrito"
                         >
                           <FaTrash />
@@ -444,9 +563,12 @@ function Profile() {
                     <span>Total:</span>
                     <span className="total-amount">{cartTotal.toFixed(2)} €</span>
                   </div>
-                  <button className="checkout-button">
-                    Proceder al pago <FaArrowRight className="checkout-icon" />
-                  </button>
+                  <PaymentButton
+                    courseId={cart.map(course => course.id).join(',')}
+                    price={cartTotal}
+                    buttonText="Proceder al pago"
+                    className="checkout-button"
+                  />
                 </div>
               </>
             )}
@@ -460,7 +582,19 @@ function Profile() {
               Mis cursos
             </h2>
 
-            <MyCourses />
+            {currentUser && currentUser.isNewUser ? (
+              <div className="empty-state">
+                <p>Aún no tienes cursos.</p>
+                <p className="empty-state-subtitle">
+                  Explora nuestro catálogo y adquiere cursos para comenzar tu aprendizaje.
+                </p>
+                <Link to="/" className="browse-courses-link">
+                  Ver cursos disponibles
+                </Link>
+              </div>
+            ) : (
+              <MyCourses />
+            )}
           </div>
         )}
 
@@ -477,6 +611,17 @@ function Profile() {
                 Completa tus cursos para obtener tus diplomas.
               </p>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'sessions' && (
+          <div className="sessions-section">
+            <h2 className="section-title">
+              <FaShieldAlt className="section-icon" />
+              Mis sesiones
+            </h2>
+
+            <SessionsManager />
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlay, FaCheck, FaDownload, FaLock } from 'react-icons/fa';
+import { FaPlay, FaCheck, FaDownload, FaLock, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import VimeoPlayer from '../VimeoPlayer';
 import '../../styles/MyCourses.css';
 
@@ -10,6 +10,10 @@ const MyCourses = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [completedVideos, setCompletedVideos] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingVideo, setEditingVideo] = useState(null);
+  const [editingMaterial, setEditingMaterial] = useState(null);
 
   // Datos simulados para cursos inscritos
   const mockEnrolledCourses = [
@@ -21,9 +25,9 @@ const MyCourses = () => {
       instructor: 'Tania Calvo',
       enrollmentDate: '2023-09-15T10:00:00',
       videos: [
-        { id: 1, title: 'Introducción al maquillaje profesional', duration: '15:30', completed: true, url: '123456789' },
-        { id: 2, title: 'Técnicas básicas de aplicación', duration: '22:45', completed: false, url: '123456790' },
-        { id: 3, title: 'Maquillaje para sesiones fotográficas', duration: '30:15', completed: false, url: '123456791' }
+        { id: 1, title: 'Introducción al maquillaje profesional', duration: '15:30', completed: true, url: '824804225' },
+        { id: 2, title: 'Técnicas básicas de aplicación', duration: '22:45', completed: false, url: '824804225' },
+        { id: 3, title: 'Maquillaje para sesiones fotográficas', duration: '30:15', completed: false, url: '824804225' }
       ],
       materials: [
         { id: 1, title: 'Guía de productos recomendados', type: 'pdf', url: '#' },
@@ -38,9 +42,9 @@ const MyCourses = () => {
       instructor: 'Tania Calvo',
       enrollmentDate: '2023-08-20T14:30:00',
       videos: [
-        { id: 4, title: 'Preparación de uñas', duration: '18:20', completed: true, url: '123456792' },
-        { id: 5, title: 'Aplicación de acrílico', duration: '25:10', completed: true, url: '123456793' },
-        { id: 6, title: 'Diseños básicos', duration: '20:05', completed: false, url: '123456794' }
+        { id: 4, title: 'Preparación de uñas', duration: '18:20', completed: true, url: '824804225' },
+        { id: 5, title: 'Aplicación de acrílico', duration: '25:10', completed: true, url: '824804225' },
+        { id: 6, title: 'Diseños básicos', duration: '20:05', completed: false, url: '824804225' }
       ],
       materials: [
         { id: 3, title: 'Lista de materiales necesarios', type: 'pdf', url: '#' }
@@ -56,18 +60,25 @@ const MyCourses = () => {
         // En una implementación real, aquí harías una llamada a la API
         // const response = await fetch('/api/user/enrolled-courses');
         // const data = await response.json();
-        
+
+        // Verificar si el usuario es administrador
+        const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+        const adminStatus = userData && userData.isAdmin;
+        setIsAdmin(adminStatus);
+
+        console.log('Estado de administrador:', adminStatus);
+
         // Simulamos un retraso para la carga
         setTimeout(() => {
           setEnrolledCourses(mockEnrolledCourses);
           setSelectedCourse(mockEnrolledCourses[0]);
-          
+
           // Cargar videos completados desde localStorage
           const savedCompletedVideos = localStorage.getItem('completedVideos');
           if (savedCompletedVideos) {
             setCompletedVideos(JSON.parse(savedCompletedVideos));
           }
-          
+
           setLoading(false);
         }, 800);
       } catch (err) {
@@ -85,10 +96,10 @@ const MyCourses = () => {
     if (!completedVideos.includes(videoId)) {
       const updatedCompletedVideos = [...completedVideos, videoId];
       setCompletedVideos(updatedCompletedVideos);
-      
+
       // Guardar en localStorage
       localStorage.setItem('completedVideos', JSON.stringify(updatedCompletedVideos));
-      
+
       // Actualizar el progreso del curso
       updateCourseProgress(selectedCourse.id, videoId);
     }
@@ -105,12 +116,12 @@ const MyCourses = () => {
           }
           return video;
         });
-        
+
         // Calcular el nuevo progreso
         const totalVideos = updatedVideos.length;
         const completedCount = updatedVideos.filter(video => video.completed).length;
         const newProgress = Math.round((completedCount / totalVideos) * 100);
-        
+
         return {
           ...course,
           videos: updatedVideos,
@@ -119,9 +130,9 @@ const MyCourses = () => {
       }
       return course;
     });
-    
+
     setEnrolledCourses(updatedCourses);
-    
+
     // Actualizar el curso seleccionado si es necesario
     if (selectedCourse && selectedCourse.id === courseId) {
       const updatedSelectedCourse = updatedCourses.find(course => course.id === courseId);
@@ -148,8 +159,137 @@ const MyCourses = () => {
 
   // Verificar si un video está completado
   const isVideoCompleted = (videoId) => {
-    return completedVideos.includes(videoId) || 
+    return completedVideos.includes(videoId) ||
            (selectedCourse && selectedCourse.videos.find(v => v.id === videoId)?.completed);
+  };
+
+  // Funciones de administración
+
+  // Añadir un nuevo video
+  const handleAddVideo = () => {
+    if (!selectedCourse) return;
+
+    const newVideo = {
+      id: Date.now(), // ID único basado en timestamp
+      title: 'Nuevo video',
+      duration: '00:00',
+      completed: false,
+      url: '824804225' // URL de Vimeo por defecto
+    };
+
+    const updatedCourse = {
+      ...selectedCourse,
+      videos: [...selectedCourse.videos, newVideo]
+    };
+
+    // Actualizar el curso seleccionado
+    setSelectedCourse(updatedCourse);
+
+    // Actualizar la lista de cursos
+    const updatedCourses = enrolledCourses.map(course =>
+      course.id === selectedCourse.id ? updatedCourse : course
+    );
+
+    setEnrolledCourses(updatedCourses);
+    setEditingVideo(newVideo);
+    setIsEditing(true);
+
+    alert('Video añadido. Ahora puedes editar sus detalles.');
+  };
+
+  // Editar un video
+  const handleEditVideo = (video) => {
+    setEditingVideo(video);
+    setIsEditing(true);
+  };
+
+  // Eliminar un video
+  const handleDeleteVideo = (videoId) => {
+    if (!selectedCourse) return;
+
+    if (confirm('¿Estás seguro de que quieres eliminar este video?')) {
+      const updatedVideos = selectedCourse.videos.filter(v => v.id !== videoId);
+
+      const updatedCourse = {
+        ...selectedCourse,
+        videos: updatedVideos
+      };
+
+      // Actualizar el curso seleccionado
+      setSelectedCourse(updatedCourse);
+
+      // Actualizar la lista de cursos
+      const updatedCourses = enrolledCourses.map(course =>
+        course.id === selectedCourse.id ? updatedCourse : course
+      );
+
+      setEnrolledCourses(updatedCourses);
+
+      alert('Video eliminado correctamente.');
+    }
+  };
+
+  // Añadir un nuevo material
+  const handleAddMaterial = () => {
+    if (!selectedCourse) return;
+
+    const newMaterial = {
+      id: Date.now(), // ID único basado en timestamp
+      title: 'Nuevo material',
+      type: 'pdf',
+      url: '#'
+    };
+
+    const updatedCourse = {
+      ...selectedCourse,
+      materials: [...selectedCourse.materials, newMaterial]
+    };
+
+    // Actualizar el curso seleccionado
+    setSelectedCourse(updatedCourse);
+
+    // Actualizar la lista de cursos
+    const updatedCourses = enrolledCourses.map(course =>
+      course.id === selectedCourse.id ? updatedCourse : course
+    );
+
+    setEnrolledCourses(updatedCourses);
+    setEditingMaterial(newMaterial);
+    setIsEditing(true);
+
+    alert('Material añadido. Ahora puedes editar sus detalles.');
+  };
+
+  // Editar un material
+  const handleEditMaterial = (material) => {
+    setEditingMaterial(material);
+    setIsEditing(true);
+  };
+
+  // Eliminar un material
+  const handleDeleteMaterial = (materialId) => {
+    if (!selectedCourse) return;
+
+    if (confirm('¿Estás seguro de que quieres eliminar este material?')) {
+      const updatedMaterials = selectedCourse.materials.filter(m => m.id !== materialId);
+
+      const updatedCourse = {
+        ...selectedCourse,
+        materials: updatedMaterials
+      };
+
+      // Actualizar el curso seleccionado
+      setSelectedCourse(updatedCourse);
+
+      // Actualizar la lista de cursos
+      const updatedCourses = enrolledCourses.map(course =>
+        course.id === selectedCourse.id ? updatedCourse : course
+      );
+
+      setEnrolledCourses(updatedCourses);
+
+      alert('Material eliminado correctamente.');
+    }
   };
 
   if (loading) {
@@ -165,7 +305,7 @@ const MyCourses = () => {
     return (
       <div className="error-container">
         <p className="error-message">{error}</p>
-        <button 
+        <button
           className="retry-button"
           onClick={() => window.location.reload()}
         >
@@ -191,8 +331,8 @@ const MyCourses = () => {
         <h3 className="sidebar-title">Mis Cursos</h3>
         <ul className="course-list-sidebar">
           {enrolledCourses.map(course => (
-            <li 
-              key={course.id} 
+            <li
+              key={course.id}
               className={`course-item-sidebar ${selectedCourse && selectedCourse.id === course.id ? 'active' : ''}`}
               onClick={() => handleSelectCourse(course)}
             >
@@ -200,8 +340,8 @@ const MyCourses = () => {
                 <h4 className="course-item-title">{course.title}</h4>
                 <div className="course-progress-container">
                   <div className="course-progress-bar">
-                    <div 
-                      className="course-progress-fill" 
+                    <div
+                      className="course-progress-fill"
                       style={{ width: `${course.progress}%` }}
                     ></div>
                   </div>
@@ -212,7 +352,7 @@ const MyCourses = () => {
           ))}
         </ul>
       </div>
-      
+
       <div className="course-content">
         {selectedCourse && (
           <>
@@ -226,23 +366,25 @@ const MyCourses = () => {
               </div>
               <div className="course-progress-container large">
                 <div className="course-progress-bar">
-                  <div 
-                    className="course-progress-fill" 
+                  <div
+                    className="course-progress-fill"
                     style={{ width: `${selectedCourse.progress}%` }}
                   ></div>
                 </div>
                 <span className="course-progress-text">{selectedCourse.progress}% completado</span>
               </div>
             </div>
-            
+
             {selectedVideo ? (
               <div className="video-player-section">
-                <VimeoPlayer 
-                  videoId={selectedVideo.url}
-                  title={selectedVideo.title}
-                  onComplete={() => handleVideoComplete(selectedVideo.id)}
-                />
-                <button 
+                <div className="vimeo-player-container">
+                  <VimeoPlayer
+                    videoId={selectedVideo.url}
+                    title={selectedVideo.title}
+                    onComplete={() => handleVideoComplete(selectedVideo.id)}
+                  />
+                </div>
+                <button
                   className="back-to-list-button"
                   onClick={() => setSelectedVideo(null)}
                 >
@@ -252,7 +394,18 @@ const MyCourses = () => {
             ) : (
               <div className="course-sections">
                 <div className="course-section">
-                  <h3 className="section-title">Videos del curso</h3>
+                  <div className="section-header">
+                    <h3 className="section-title">Videos del curso</h3>
+                    {isAdmin && (
+                      <button
+                        className="admin-add-button"
+                        onClick={handleAddVideo}
+                        title="Añadir nuevo video"
+                      >
+                        <FaPlus /> Añadir video
+                      </button>
+                    )}
+                  </div>
                   <ul className="video-list">
                     {selectedCourse.videos.map(video => (
                       <li key={video.id} className="video-item">
@@ -269,19 +422,51 @@ const MyCourses = () => {
                             <span className="video-item-duration">{video.duration}</span>
                           </div>
                         </div>
-                        <button 
-                          className="video-play-button"
-                          onClick={() => handleSelectVideo(video)}
-                        >
-                          Ver video
-                        </button>
+                        <div className="video-item-actions">
+                          <button
+                            className="video-play-button"
+                            onClick={() => handleSelectVideo(video)}
+                          >
+                            Ver video
+                          </button>
+
+                          {isAdmin && (
+                            <div className="admin-actions">
+                              <button
+                                className="admin-edit-button"
+                                onClick={() => handleEditVideo(video)}
+                                title="Editar video"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                className="admin-delete-button"
+                                onClick={() => handleDeleteVideo(video.id)}
+                                title="Eliminar video"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </li>
                     ))}
                   </ul>
                 </div>
-                
+
                 <div className="course-section">
-                  <h3 className="section-title">Materiales del curso</h3>
+                  <div className="section-header">
+                    <h3 className="section-title">Materiales del curso</h3>
+                    {isAdmin && (
+                      <button
+                        className="admin-add-button"
+                        onClick={handleAddMaterial}
+                        title="Añadir nuevo material"
+                      >
+                        <FaPlus /> Añadir material
+                      </button>
+                    )}
+                  </div>
                   <ul className="material-list">
                     {selectedCourse.materials.map(material => (
                       <li key={material.id} className="material-item">
@@ -294,12 +479,33 @@ const MyCourses = () => {
                             <span className="material-item-type">{material.type.toUpperCase()}</span>
                           </div>
                         </div>
-                        <button 
-                          className="material-download-button"
-                          onClick={() => handleDownloadMaterial(material)}
-                        >
-                          Descargar
-                        </button>
+                        <div className="material-item-actions">
+                          <button
+                            className="material-download-button"
+                            onClick={() => handleDownloadMaterial(material)}
+                          >
+                            Descargar
+                          </button>
+
+                          {isAdmin && (
+                            <div className="admin-actions">
+                              <button
+                                className="admin-edit-button"
+                                onClick={() => handleEditMaterial(material)}
+                                title="Editar material"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button
+                                className="admin-delete-button"
+                                onClick={() => handleDeleteMaterial(material.id)}
+                                title="Eliminar material"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </li>
                     ))}
                   </ul>

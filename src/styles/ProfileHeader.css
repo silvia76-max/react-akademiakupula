@@ -36,6 +36,25 @@
   border-bottom: 2px solid #FFD700;
 }
 
+.explore-courses-button {
+  background: linear-gradient(160deg, #006400, #008000);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.explore-courses-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(160deg, #008000, #00a000);
+}
+
 .logout-button-header {
   background: linear-gradient(160deg, #8b0000, #a00);
   color: white;
@@ -74,9 +93,27 @@
   background-color: rgba(255, 215, 0, 0.1);
 }
 
-.mobile-logout-button {
+.mobile-explore-button {
   width: 100%;
   margin-top: 1rem;
+  padding: 0.8rem;
+  background: linear-gradient(160deg, #006400, #008000);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.mobile-explore-button:hover {
+  background: linear-gradient(160deg, #008000, #00a000);
+}
+
+.mobile-logout-button {
+  width: 100%;
+  margin-top: 0.5rem;
   padding: 0.8rem;
   background: linear-gradient(160deg, #8b0000, #a00);
   color: white;

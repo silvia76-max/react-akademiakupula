@@ -10,6 +10,7 @@ import ParticlesBackground from "./components/ParticlesBackground.jsx";
 import Footer from "./components/Footer.jsx";
 import Profile from './pages/Profile';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
 import "./styles/Interactions.css";
 // Importaciones con lazy loading para mejorar el rendimiento
 const AboutSection = lazy(() => import("./components/AboutSection.jsx"));
@@ -133,19 +134,20 @@ export function App() {
 
   return (
     <ErrorBoundary showDetails={process.env.NODE_ENV === 'development'} componentName="App">
-      <BrowserRouter>
-        <div className="app-container">
-          {/* Development test component */}
-          <PingTest />
+      <AuthProvider>
+        <BrowserRouter>
+          <div className="app-container">
+            {/* Development test component */}
+            <PingTest />
 
-          {/* Sistema de notificaciones */}
-          {notification && (
-            <Notification
-              message={notification.message}
-              type={notification.type}
-              onClose={closeNotification}
-            />
-          )}
+            {/* Sistema de notificaciones */}
+            {notification && (
+              <Notification
+                message={notification.message}
+                type={notification.type}
+                onClose={closeNotification}
+              />
+            )}
 
           <Routes>
             <Route
@@ -283,6 +285,7 @@ export function App() {
         <Footer />
       </div>
     </BrowserRouter>
+    </AuthProvider>
     </ErrorBoundary>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoMdClose } from "react-icons/io";
-import { FaUser, FaHeart, FaShoppingCart, FaGraduationCap, FaCertificate } from "react-icons/fa";
+import { FaUser, FaHeart, FaShoppingCart, FaGraduationCap, FaCertificate, FaShieldAlt } from "react-icons/fa";
 import logo from "../assets/images/logo.jpeg";
 import "../styles/Header.css";
 import "../styles/ProfileHeader.css";
@@ -51,6 +51,21 @@ const ProfileHeader = ({ activeTab, setActiveTab }) => {
     { id: "certificates", label: "Mis Diplomas", icon: <FaCertificate /> }
   ];
 
+  // Verificar si el usuario es administrador
+  const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+  const isAdmin = userData && userData.isAdmin;
+
+  // Si es administrador, añadir la pestaña de sesiones
+  if (isAdmin) {
+    profileNavLinks.push({ id: "sessions", label: "Sesiones", icon: <FaShieldAlt /> });
+  }
+
+  // Función para navegar a la página de cursos sin cerrar sesión
+  const navigateToCourses = (e) => {
+    e.preventDefault();
+    navigate('/', { state: { keepSession: true } });
+  };
+
   return (
     <header className={`header profile-header ${isScrolled ? 'header-scrolled' : ''}`}>
       <div className="header-container">
@@ -97,8 +112,14 @@ const ProfileHeader = ({ activeTab, setActiveTab }) => {
               {isMenuOpen ? <IoMdClose /> : <RxHamburgerMenu />}
             </button>
 
-            <button 
-              className="logout-button-header" 
+            <button
+              className="explore-courses-button"
+              onClick={navigateToCourses}
+            >
+              Explorar Cursos
+            </button>
+            <button
+              className="logout-button-header"
               onClick={handleLogout}
             >
               Cerrar sesión
@@ -125,6 +146,14 @@ const ProfileHeader = ({ activeTab, setActiveTab }) => {
               </li>
             ))}
             <li className="mobile-nav-item" style={{animationDelay: `${profileNavLinks.length * 0.1}s`}}>
+              <button
+                onClick={navigateToCourses}
+                className="mobile-explore-button"
+              >
+                Explorar Cursos
+              </button>
+            </li>
+            <li className="mobile-nav-item" style={{animationDelay: `${(profileNavLinks.length + 1) * 0.1}s`}}>
               <button
                 onClick={handleLogout}
                 className="mobile-logout-button"

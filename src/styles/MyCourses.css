@@ -136,11 +136,39 @@
   margin-bottom: 1.5rem;
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
 .section-title {
   color: #ffd700;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0;
   font-size: 1.3rem;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Estilos para controles de administrador */
+.admin-add-button {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(160deg, #006400, #008000);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.admin-add-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Lista de videos */
@@ -211,6 +239,12 @@
   font-size: 0.8rem;
 }
 
+.video-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .video-play-button {
   padding: 0.5rem 1rem;
   background: linear-gradient(160deg, #a54e07, #b47e11, #fef1a2, #bc881b, #a54e07);
@@ -229,6 +263,46 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   color: #fff;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.admin-edit-button, .admin-delete-button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.admin-edit-button {
+  background-color: #2F80ED;
+  color: white;
+}
+
+.admin-edit-button:hover {
+  background-color: #2D9CDB;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.admin-delete-button {
+  background-color: #8b0000;
+  color: white;
+}
+
+.admin-delete-button:hover {
+  background-color: #a00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Lista de materiales */
@@ -291,6 +365,12 @@
   font-size: 0.8rem;
 }
 
+.material-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .material-download-button {
   padding: 0.5rem 1rem;
   background-color: #2F80ED;
@@ -342,7 +422,7 @@
   .my-courses-container {
     flex-direction: column;
   }
-  
+
   .courses-sidebar {
     width: 100%;
   }
@@ -353,13 +433,13 @@
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .video-item, .material-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .video-play-button, .material-download-button {
     width: 100%;
   }

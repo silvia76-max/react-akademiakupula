@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaEnvelope, FaLock, FaMapMarkerAlt, FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 import '../styles/AuthForm.css';
+import '../styles/RememberMe.css';
 
 const AuthForm = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,13 +14,23 @@ const AuthForm = ({ onClose }) => {
     full_name: '',
     postal_code: '',
     email: '',
-    password: ''
+    password: '',
+    rememberMe: true
   });
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [notification, setNotification] = useState({ show: false, type: '', message: '' });
 
   const navigate = useNavigate();
+  const { login, register, currentUser } = useAuth();
+
+  // Redirigir si el usuario ya está autenticado
+  useEffect(() => {
+    if (currentUser) {
+      if (onClose) onClose();
+      navigate('/profile');
+    }
+  }, [currentUser, navigate, onClose]);
 
   // Efecto para animar la entrada del formulario
   useEffect(() => {
@@ -115,277 +127,76 @@ const AuthForm = ({ onClose }) => {
     }
 
     setIsLoading(true);
+    setNotification({ show: false, type: '', message: '' });
 
     try {
-      let endpoint = '';
-      let method = '';
-      let bodyData = {};
-
       if (isForgotPassword) {
-        endpoint = '/api/auth/recover-password';
-        method = 'POST';
-        bodyData = { email: formData.email };
+        // Implementar recuperación de contraseña
+        setNotification({
+          show: true,
+          type: 'success',
+          message: 'Si tu email está registrado, recibirás instrucciones para recuperar tu contraseña.'
+        });
+
+        setTimeout(() => {
+          setIsForgotPassword(false);
+          setFormData({ ...formData, email: '' });
+        }, 2000);
       } else if (isLogin) {
-        endpoint = '/api/auth/login';
-        method = 'POST';
-        bodyData = {
-          email: formData.email,
-          password: formData.password
-        };
-      } else {
-        endpoint = '/api/auth/register';
-        method = 'POST';
-        bodyData = formData;
-      }
-        // Solo usar credenciales de prueba si estamos en modo desarrollo y con credenciales específicas
-        if (process.env.NODE_ENV === 'development' && isLogin) {
-          // Verificar si son las credenciales de administrador
-          if (formData.email === 'admin@gmail.com' && formData.password === 'AkademiaKupula') {
-            console.log('Modo desarrollo: Simulando inicio de sesión como administrador');
-
-            // Simular una respuesta exitosa para administrador
-            const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-            const fakeUser = {
-              id: 999,
-              full_name: 'Administrador',
-              email: 'admin@gmail.com',
-              postal_code: '28001',
-              is_admin: true
-            };
-
-            // Guardar token y usuario en localStorage
-            localStorage.setItem('token', fakeToken);
-            localStorage.setItem('user', JSON.stringify(fakeUser));
-
-            // Mostrar notificación de éxito
-            setNotification({
-              show: true,
-              type: 'success',
-              message: '¡Inicio de sesión como administrador exitoso!'
-            });
-
-            // Redirigir al panel de administración después de un breve retraso
-            setTimeout(() => {
-              if (onClose) onClose();
-              window.location.href = '/admin';
-            }, 500);
-
-            return; // Salir de la función para evitar la llamada real al backend
-          }
-          // Verificar si son las credenciales de prueba normales
-          else if (formData.email === 'test@example.com' && formData.password === 'password123') {
-            console.log('Modo desarrollo: Simulando inicio de sesión exitoso con credenciales de prueba');
-
-            // Simular una respuesta exitosa
-            const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlVzdWFyaW8gZGUgUHJ1ZWJhIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-            const fakeUser = {
-              id: 1,
-              full_name: 'Usuario de Prueba',
-              email: 'test@example.com',
-              postal_code: '28001',
-              is_admin: false
-            };
-
-            // Guardar token y usuario en localStorage
-            localStorage.setItem('token', fakeToken);
-            localStorage.setItem('user', JSON.stringify(fakeUser));
-
-            // Mostrar notificación de éxito
-            setNotification({
-              show: true,
-              type: 'success',
-              message: '¡Inicio de sesión exitoso! (Modo desarrollo)'
-            });
-
-            // Redirigir al perfil después de un breve retraso
-            setTimeout(() => {
-              if (onClose) onClose();
-              window.location.href = '/profile';
-            }, 500);
-
-            return; // Salir de la función para evitar la llamada real al backend
-          }
-        }
-
-        // Realizar la petición real al backend
-        console.log(`Enviando petición a: http://localhost:5000${endpoint}`);
-        console.log('Datos enviados:', bodyData);
-
         try {
-          const response = await fetch(`http://localhost:5000${endpoint}`, {
-            method,
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bodyData)
-          });
-
-          // Verificar si la respuesta es JSON
-          const contentType = response.headers.get('content-type');
-          let data;
-
-          if (contentType && contentType.includes('application/json')) {
-            data = await response.json();
-          } else {
-            const text = await response.text();
-            console.warn('Respuesta no JSON:', text);
-            data = { message: 'Formato de respuesta no válido' };
-          }
-
-          console.log('Respuesta del servidor:', data);
-
-          if (response.ok) {
-            if (isLogin) {
-              try {
-                // Verificar si los datos vienen en el formato esperado
-                const token = data.data?.access_token || data.access_token || 'fake-token-' + Date.now();
-                const userData = data.data?.user || data.user || {
-                  id: Date.now(),
-                  full_name: formData.full_name || 'Usuario',
-                  email: formData.email,
-                  postal_code: formData.postal_code || '00000'
-                };
-
-                // Guardar token en localStorage
-                localStorage.setItem('token', token);
-                console.log('Token guardado:', token);
-
-                // Guardar datos del usuario
-                localStorage.setItem('user', JSON.stringify(userData));
-                console.log('Usuario guardado:', userData);
-
-                setNotification({
-                  show: true,
-                  type: 'success',
-                  message: '¡Inicio de sesión exitoso!'
-                });
-
-                // Cerrar el modal
-                if (onClose) onClose();
-
-                // Verificar si es el usuario administrador
-                if (formData.email === 'admin@gmail.com' && formData.password === 'AkademiaKupula') {
-                  // Marcar como administrador en los datos del usuario
-                  const adminUser = { ...userData, is_admin: true };
-                  localStorage.setItem('user', JSON.stringify(adminUser));
-
-                  // Redirigir al panel de administración
-                  window.location.href = '/admin';
-                } else {
-                  // Redirigir al perfil para usuarios normales
-                  window.location.href = '/profile';
-                }
-              } catch (err) {
-                console.error('Error procesando respuesta de login:', err);
-
-                // Incluso si hay un error, intentamos guardar datos mínimos para permitir el acceso
-                const fallbackToken = 'fallback-token-' + Date.now();
-                const fallbackUser = {
-                  id: Date.now(),
-                  full_name: formData.full_name || 'Usuario',
-                  email: formData.email,
-                  postal_code: formData.postal_code || '00000'
-                };
-
-                localStorage.setItem('token', fallbackToken);
-                localStorage.setItem('user', JSON.stringify(fallbackUser));
-
-                setNotification({
-                  show: true,
-                  type: 'warning',
-                  message: 'Inicio de sesión con datos limitados. Haz clic en Reintentar para continuar.'
-                });
-
-                // Añadir un botón de reintentar que redirija al perfil
-                setTimeout(() => {
-                  const notification = document.querySelector('.auth-notification');
-                  if (notification) {
-                    const retryButton = document.createElement('button');
-                    retryButton.textContent = 'Reintentar';
-                    retryButton.className = 'retry-button';
-                    retryButton.onclick = () => {
-                      if (onClose) onClose();
-                      window.location.href = '/profile';
-                    };
-                    notification.appendChild(retryButton);
-                  }
-                }, 100);
-              }
-            } else if (!isLogin) {
-              setNotification({
-                show: true,
-                type: 'success',
-                message: 'Registro exitoso. ¡Ahora puedes iniciar sesión!'
-              });
-
-              // Usar un pequeño retraso para evitar problemas de React
-              setTimeout(() => {
-                setIsLogin(true);
-                setFormData({ full_name: '', postal_code: '', email: '', password: '' });
-                setFormSubmitted(false);
-              }, 100);
-            } else if (isForgotPassword) {
-              setNotification({
-                show: true,
-                type: 'success',
-                message: 'Correo de recuperación enviado. Revisa tu bandeja de entrada.'
-              });
-
-              // Usar un pequeño retraso para evitar problemas de React
-              setTimeout(() => {
-                setIsForgotPassword(false);
-                setFormData({ ...formData, email: '' });
-                setFormSubmitted(false);
-              }, 100);
-            }
-          } else {
-            setNotification({
-              show: true,
-              type: 'error',
-              message: data.message || 'Ocurrió un error. Inténtalo de nuevo.'
-            });
-          }
-      } catch (fetchError) {
-        console.error('Error en fetch:', fetchError);
-
-        // Crear un token y usuario de respaldo para permitir el acceso en caso de error
-        if (isLogin) {
-          const fallbackToken = 'fallback-token-' + Date.now();
-          const fallbackUser = {
-            id: Date.now(),
-            full_name: formData.full_name || 'Usuario',
+          // Usar el contexto de autenticación para iniciar sesión con la opción de recordar sesión
+          const user = await login({
             email: formData.email,
-            postal_code: formData.postal_code || '00000'
-          };
-
-          localStorage.setItem('token', fallbackToken);
-          localStorage.setItem('user', JSON.stringify(fallbackUser));
+            password: formData.password
+          }, formData.rememberMe);
 
           setNotification({
             show: true,
-            type: 'warning',
-            message: 'Error de conexión con el servidor. Haz clic en Reintentar para continuar con datos limitados.'
+            type: 'success',
+            message: '¡Inicio de sesión exitoso!'
           });
 
-          // Añadir un botón de reintentar que redirija al perfil
+          // Cerrar el modal después de un breve retraso
           setTimeout(() => {
-            const notification = document.querySelector('.auth-notification');
-            if (notification) {
-              const retryButton = document.createElement('button');
-              retryButton.textContent = 'Reintentar';
-              retryButton.className = 'retry-button';
-              retryButton.onclick = () => {
-                if (onClose) onClose();
-                window.location.href = '/profile';
-              };
-              notification.appendChild(retryButton);
+            if (onClose) onClose();
+
+            // Redirigir según el tipo de usuario
+            if (user && user.isAdmin) {
+              navigate('/admin');
+            } else {
+              navigate('/profile');
             }
-          }, 100);
-        } else {
+          }, 1000);
+        } catch (error) {
+          console.error('Error al iniciar sesión:', error);
           setNotification({
             show: true,
             type: 'error',
-            message: 'Error de conexión con el servidor. Por favor, inténtalo más tarde.'
+            message: 'Error al iniciar sesión. Verifica tus credenciales.'
+          });
+        }
+      } else {
+        try {
+          // Usar el contexto de autenticación para registrar
+          await register(formData);
+
+          setNotification({
+            show: true,
+            type: 'success',
+            message: 'Registro exitoso. ¡Ahora puedes iniciar sesión!'
+          });
+
+          // Cambiar a modo login después de un breve retraso
+          setTimeout(() => {
+            setIsLogin(true);
+            setFormData({ ...formData, full_name: '', postal_code: '' });
+          }, 1000);
+        } catch (error) {
+          console.error('Error al registrar:', error);
+          setNotification({
+            show: true,
+            type: 'error',
+            message: 'Error al registrar. Inténtalo de nuevo.'
           });
         }
       }
@@ -543,6 +354,27 @@ const AuthForm = ({ onClose }) => {
               </span>
             </div>
             {errors.password && <span className="error-message">{errors.password}</span>}
+          </div>
+        )}
+
+        {/* Opción de recordar sesión (solo para login) */}
+        {isLogin && !isForgotPassword && (
+          <div className="remember-me-container">
+            <label className="remember-me-label">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                checked={formData.rememberMe}
+                onChange={(e) => handleInputChange({
+                  target: {
+                    name: 'rememberMe',
+                    value: e.target.checked
+                  }
+                })}
+                className="remember-me-checkbox"
+              />
+              <span>Recordar mi sesión</span>
+            </label>
           </div>
         )}
 

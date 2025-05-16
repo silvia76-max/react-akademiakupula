@@ -1,0 +1,31 @@
+/* Estilos para la opción "Recordarme" */
+.remember-me-container {
+  display: flex;
+  align-items: center;
+  margin: 0.8rem 0;
+}
+
+.remember-me-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.remember-me-checkbox {
+  margin-right: 0.5rem;
+  cursor: pointer;
+  accent-color: #ffd700;
+  width: 1rem;
+  height: 1rem;
+}
+
+.remember-me-label span {
+  transition: color 0.3s ease;
+}
+
+.remember-me-label:hover span {
+  color: #ffd700;
+}

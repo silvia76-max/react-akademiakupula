@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoMdClose } from "react-icons/io";
 import { FaUserCircle } from "react-icons/fa";
@@ -6,20 +7,31 @@ import logo from "../assets/images/logo.jpeg";
 import taniaImage from "../assets/images/fundadora.png";
 import GoldenButton from "./GoldenButton";
 import AuthForm from './AuthForm';
+import { useAuth } from '../context/AuthContext';
 import "../styles/Header.css";
 import "../styles/Modal.css";
 
 const Header = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // Función para abrir el modal de login
+  // Verificar si el usuario está autenticado
+  const isLoggedIn = !!currentUser;
+
+  // Función para abrir el modal de login o ir al perfil
   const openLoginModal = () => {
-    console.log("Abriendo modal de login");
-    setShowLoginModal(true);
+    if (isLoggedIn) {
+      navigate('/profile');
+    } else {
+      console.log("Abriendo modal de login");
+      setShowLoginModal(true);
+    }
   };
 
   // Función para cerrar el modal de login
@@ -114,11 +126,11 @@ const Header = () => {
             <div className="login-container">
               <GoldenButton
                 onClick={openLoginModal}
-                aria-label="Iniciar sesión"
+                aria-label={isLoggedIn ? "Mi Perfil" : "Iniciar sesión"}
                 className="login-button"
               >
                 <FaUserCircle className="user-icon" />
-                <span className="login-text">Acceder</span>
+                <span className="login-text">{isLoggedIn ? "Mi Perfil" : "Acceder"}</span>
               </GoldenButton>
             </div>
           </div>
@@ -171,7 +183,7 @@ const Header = () => {
                 }}
                 className="mobile-login-button"
               >
-                Iniciar sesión
+                {isLoggedIn ? "Mi Perfil" : "Iniciar sesión"}
               </GoldenButton>
             </li>
           </ul>

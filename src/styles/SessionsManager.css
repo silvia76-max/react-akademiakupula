@@ -1,0 +1,309 @@
+/* Estilos para el componente SessionsManager */
+.sessions-manager {
+  background-color: #111111;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 5px rgba(212, 175, 55, 0.1);
+  margin-bottom: 2rem;
+  border: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.sessions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sessions-header h2 {
+  color: #ffd700;
+  margin: 0;
+  font-size: 1.5rem;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.sessions-info {
+  display: flex;
+  align-items: center;
+  background-color: rgba(212, 175, 55, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.sessions-info .info-icon {
+  color: #ffd700;
+  font-size: 1.2rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.sessions-info p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #e0e0e0;
+}
+
+.end-all-sessions-button {
+  background: linear-gradient(160deg, #8b0000, #a00);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.end-all-sessions-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.end-all-sessions-button:disabled {
+  background: #444;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.sessions-error {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.no-sessions {
+  text-align: center;
+  padding: 2rem;
+  color: #aaa;
+}
+
+.sessions-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.session-card {
+  display: flex;
+  align-items: center;
+  background-color: #1a1a1a;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(212, 175, 55, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.session-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+.current-session {
+  background: linear-gradient(160deg, #1a1a1a, #222);
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+.session-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+  border-radius: 50%;
+  margin-right: 1rem;
+  color: #ffd700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.session-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-device {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #ffd700;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.current-badge {
+  background-color: #006400;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.session-details {
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.session-ip, .session-time, .session-activity {
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time-ago {
+  color: #888;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.end-session-button {
+  background-color: transparent;
+  color: #8b0000;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+.end-session-button:hover {
+  background-color: rgba(139, 0, 0, 0.1);
+  color: #ff0000;
+  transform: scale(1.1);
+}
+
+.sessions-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #ccc;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 215, 0, 0.2);
+  border-radius: 50%;
+  border-top-color: #ffd700;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal de confirmación */
+.confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirmation-content {
+  background-color: #1a1a1a;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.confirmation-content h3 {
+  color: #ffd700;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.confirmation-content p {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #e0e0e0;
+}
+
+.confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.confirm-button {
+  background: linear-gradient(160deg, #8b0000, #a00);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.confirm-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cancel-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button:hover {
+  transform: translateY(-2px);
+  background-color: #444;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .sessions-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .sessions-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .end-all-sessions-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
