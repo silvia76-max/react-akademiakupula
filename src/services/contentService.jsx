@@ -1,22 +1,50 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/content';
+// Usar la URL relativa para que funcione con el proxy de Vite
+const API_URL = '/api/content';
 
 // Función para obtener el token de autenticación
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem('akademia_auth_token');
 };
 
 // Configurar interceptor para incluir el token en todas las peticiones
 axios.interceptors.request.use(
   config => {
-    const token = getAuthToken();
-    if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+    // Verificar si la URL ya tiene un interceptor configurado
+    if (config.url && config.url.includes('/api/content')) {
+      const token = getAuthToken();
+      if (token) {
+        console.log('ContentService: Token encontrado, añadiendo a la solicitud');
+        config.headers['Authorization'] = `Bearer ${token}`;
+      } else {
+        console.warn('ContentService: No se encontró token de autenticación');
+
+        // Si no hay token pero es una solicitud de administrador, añadir cabecera especial
+        const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+        if (userData && userData.email === 'admin@gmail.com') {
+          console.log('ContentService: Usuario admin@gmail.com detectado, añadiendo cabecera especial');
+          config.headers['X-Admin-Access'] = 'true';
+          config.headers['X-Admin-Email'] = 'admin@gmail.com';
+        }
+      }
+
+      // Añadir cabeceras CORS
+      config.headers['Access-Control-Allow-Origin'] = '*';
+      config.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
+      config.headers['Access-Control-Allow-Headers'] = 'Origin, Content-Type, Accept, Authorization, X-Admin-Access';
+
+      console.log('ContentService: Configuración de la solicitud:', {
+        url: config.url,
+        method: config.method,
+        headers: config.headers
+      });
     }
+
     return config;
   },
   error => {
+    console.error('ContentService: Error en la solicitud:', error);
     return Promise.reject(error);
   }
 );

@@ -1,14 +1,26 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaHome, FaUsers, FaEnvelope, FaBook, FaShoppingCart, FaSignOutAlt, FaImages } from 'react-icons/fa';
+import { FaHome, FaUsers, FaEnvelope, FaBook, FaShoppingCart, FaSignOutAlt, FaImages, FaKey } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/admin/AdminSidebar.css';
 
 const AdminSidebar = () => {
   const location = useLocation();
+  const { logout } = useAuth();
 
   // Determinar qué enlace está activo
   const isActive = (path) => {
     return location.pathname.startsWith(path) ? 'active' : '';
+  };
+
+  // Función para manejar el cierre de sesión
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      window.location.href = '/';
+    }
   };
 
   return (
@@ -55,14 +67,20 @@ const AdminSidebar = () => {
               <span>Ventas</span>
             </Link>
           </li>
+          <li className={isActive('/admin/sessions')}>
+            <Link to="/admin/sessions">
+              <FaKey className="sidebar-icon" />
+              <span>Sesiones</span>
+            </Link>
+          </li>
         </ul>
       </nav>
 
       <div className="sidebar-footer">
-        <Link to="/" className="logout-button">
+        <button onClick={handleLogout} className="logout-button">
           <FaSignOutAlt className="sidebar-icon" />
-          <span>Volver al sitio</span>
-        </Link>
+          <span>Cerrar sesión</span>
+        </button>
       </div>
     </div>
   );

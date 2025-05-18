@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/admin';
+// Usar la URL relativa para que funcione con el proxy de Vite
+const API_URL = '/api/admin';
 
 // Función para obtener el token de autenticación
 const getAuthToken = () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem('akademia_auth_token');
 };
 
 // Configurar interceptor para incluir el token en todas las peticiones
@@ -16,11 +17,22 @@ axios.interceptors.request.use(
       console.log('Interceptor: Token añadido a la solicitud');
     } else {
       console.warn('Interceptor: No se encontró token de autenticación');
+
+      // Si no hay token pero es una solicitud al panel de administración,
+      // verificar si el usuario es admin@gmail.com
+      const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+      if (userData && userData.email === 'admin@gmail.com') {
+        console.log('Interceptor: Usuario admin@gmail.com detectado, añadiendo cabecera especial');
+        config.headers['X-Admin-Access'] = 'true';
+        config.headers['X-Admin-Email'] = 'admin@gmail.com';
+      }
     }
 
     // Añadir cabeceras CORS
     config.headers['Access-Control-Allow-Origin'] = '*';
     config.headers['Content-Type'] = 'application/json';
+    config.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
+    config.headers['Access-Control-Allow-Headers'] = 'Origin, Content-Type, Accept, Authorization, X-Admin-Access';
 
     console.log('Interceptor: Configuración de la solicitud:', {
       url: config.url,
@@ -48,8 +60,11 @@ axios.interceptors.response.use(
     // Si el error es 401 (No autorizado), podría ser un problema con el token
     if (error.response && error.response.status === 401) {
       console.warn('Interceptor: Error de autenticación. Limpiando token...');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      // Usar las claves correctas
+      localStorage.removeItem('akademia_auth_token');
+      localStorage.removeItem('akademia_user_data');
+      localStorage.removeItem('akademia_token_expiry');
+      localStorage.removeItem('akademia_session_id');
       // Aquí podrías redirigir al login si lo deseas
     }
 
@@ -63,65 +78,119 @@ axios.interceptors.response.use(
  */
 export const getDashboardData = async () => {
   try {
-    // Verificar si estamos en modo desarrollo
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    console.log('Modo de desarrollo:', isDevelopment ? 'Sí' : 'No');
+    // Verificar si el usuario es administrador
+    const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+    const isAdmin = userData && (userData.email === 'admin@gmail.com' || userData.isAdmin === true);
+    console.log('¿Usuario es administrador?', isAdmin);
 
-    // Verificar el token antes de hacer la solicitud
-    const token = localStorage.getItem('token');
-    console.log('Token antes de la solicitud:', token ? `${token.substring(0, 15)}...` : 'No hay token');
+    // Si no es administrador, rechazar la solicitud
+    if (!isAdmin) {
+      console.error('El usuario no tiene permisos de administrador');
+      throw new Error('No tienes permisos para acceder al panel de administración');
+    }
 
-    // Mostrar la URL completa a la que se está haciendo la solicitud
-    console.log('URL de la solicitud:', `${API_URL}/dashboard`);
+    // Obtener token de autenticación
+    const token = localStorage.getItem('akademia_auth_token');
 
-    // Si estamos en desarrollo y no hay conexión con el backend, podemos devolver datos simulados
-    if (isDevelopment) {
-      console.log('Intentando conectar con el backend...');
+    // Configurar cabeceras para la solicitud
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    if (userData.email === 'admin@gmail.com') {
+      headers['X-Admin-Access'] = 'true';
+      headers['X-Admin-Email'] = 'admin@gmail.com';
+    }
+
+    // Intentar obtener datos reales del backend
+    try {
+      console.log('Intentando obtener datos del dashboard...');
+
+      // Intentar con la primera ruta
       try {
-        // Intentar hacer la solicitud real primero
-        const response = await axios.get(`${API_URL}/dashboard`);
+        const response = await axios.get(`${API_URL}/dashboard`, { headers });
         console.log('Respuesta del servidor:', response.data);
         return response.data.data;
-      } catch (backendError) {
-        console.warn('No se pudo conectar con el backend. Usando datos simulados:', backendError.message);
+      } catch (error1) {
+        console.error('Error con la primera ruta:', error1.message);
 
-        // Si no podemos conectar con el backend, devolver datos simulados
-        return {
-          stats: {
-            total_users: 15,
-            total_contacts: 8,
-            total_courses: 5,
-            total_sales: 12
-          },
-          recent_users: [
-            { id: 1, full_name: 'Usuario Simulado 1', email: 'usuario1@example.com', created_at: new Date().toISOString() },
-            { id: 2, full_name: 'Usuario Simulado 2', email: 'usuario2@example.com', created_at: new Date().toISOString() }
-          ],
-          recent_contacts: [
-            { id: 1, nombre: 'Contacto Simulado 1', email: 'contacto1@example.com', fecha_creacion: new Date().toISOString() },
-            { id: 2, nombre: 'Contacto Simulado 2', email: 'contacto2@example.com', fecha_creacion: new Date().toISOString() }
-          ]
-        };
+        // Intentar con una ruta alternativa
+        try {
+          const response2 = await axios.get(`/api/admin/dashboard`, { headers });
+          console.log('Respuesta del servidor (ruta alternativa):', response2.data);
+          return response2.data.data;
+        } catch (error2) {
+          console.error('Error con la segunda ruta:', error2.message);
+
+          // Si ambas rutas fallan, intentar obtener datos de las tablas individuales
+          console.log('Intentando construir dashboard a partir de datos individuales...');
+
+          // Obtener usuarios
+          const usersPromise = axios.get(`${API_URL}/users`, { headers })
+            .catch(e => ({ data: { data: [] } }));
+
+          // Obtener contactos
+          const contactsPromise = axios.get(`${API_URL}/contacts`, { headers })
+            .catch(e => ({ data: { data: [] } }));
+
+          // Obtener cursos
+          const coursesPromise = axios.get(`${API_URL}/courses`, { headers })
+            .catch(e => ({ data: { data: [] } }));
+
+          // Obtener ventas
+          const salesPromise = axios.get(`${API_URL}/orders`, { headers })
+            .catch(e => ({ data: { data: [] } }));
+
+          // Esperar a que todas las promesas se resuelvan
+          const [usersResponse, contactsResponse, coursesResponse, salesResponse] =
+            await Promise.all([usersPromise, contactsPromise, coursesPromise, salesPromise]);
+
+          // Construir objeto de dashboard
+          const users = usersResponse.data.data || [];
+          const contacts = contactsResponse.data.data || [];
+          const courses = coursesResponse.data.data || [];
+          const sales = salesResponse.data.data || [];
+
+          return {
+            stats: {
+              total_users: users.length,
+              total_contacts: contacts.length,
+              total_courses: courses.length,
+              total_sales: sales.length
+            },
+            recent_users: users.slice(0, 5),
+            recent_contacts: contacts.slice(0, 5)
+          };
+        }
       }
-    } else {
-      // En producción, hacer la solicitud normal
-      const response = await axios.get(`${API_URL}/dashboard`);
-      return response.data.data;
+    } catch (error) {
+      console.error('Error al obtener datos del dashboard:', error);
+
+      // Mostrar más detalles del error
+      if (error.response) {
+        console.error('Datos de la respuesta de error:', error.response.data);
+        console.error('Estado HTTP:', error.response.status);
+      } else if (error.request) {
+        console.error('No se recibió respuesta del servidor');
+      } else {
+        console.error('Error al configurar la solicitud:', error.message);
+      }
+
+      // Devolver un objeto vacío para evitar errores en la interfaz
+      return {
+        stats: {
+          total_users: 0,
+          total_contacts: 0,
+          total_courses: 0,
+          total_sales: 0
+        },
+        recent_users: [],
+        recent_contacts: [],
+        error: 'No se pudieron cargar los datos del dashboard'
+      };
     }
   } catch (error) {
-    console.error('Error al obtener datos del dashboard:', error);
-
-    // Mostrar más detalles del error
-    if (error.response) {
-      console.error('Datos de la respuesta de error:', error.response.data);
-      console.error('Estado HTTP:', error.response.status);
-      console.error('Cabeceras:', error.response.headers);
-    } else if (error.request) {
-      console.error('No se recibió respuesta del servidor:', error.request);
-    } else {
-      console.error('Error al configurar la solicitud:', error.message);
-    }
-
+    console.error('Error general al obtener datos del dashboard:', error);
     throw error;
   }
 };

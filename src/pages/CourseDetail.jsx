@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import GoldenButton from '../components/GoldenButton';
 import PaymentButton from '../components/PaymentButton';
 import { addToCart, addToWishlist, removeFromWishlist, isInWishlist, isInCart } from '../services/cartService';
+import { useAuth } from '../context/AuthContext';
 import '../styles/CourseDetail.css';
 
 // Importamos las imágenes de los cursos
@@ -209,41 +210,37 @@ const coursesData = [
 
 const CourseDetail = () => {
   const { courseId } = useParams();
+  const { isAuthenticated, currentUser } = useAuth();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
   const [inCart, setInCart] = useState(false);
 
   useEffect(() => {
     try {
-      // Simulamos la carga de datos del curso
+      // Cargar datos del curso
       const selectedCourse = coursesData.find(c => c.id === courseId);
 
-      // Verificamos si el usuario está autenticado
-      const token = localStorage.getItem('token');
-      setIsAuthenticated(!!token);
+      if (selectedCourse) {
+        setCourse(selectedCourse);
 
-      // Simulamos una carga de datos con manejo de errores
-      setTimeout(() => {
-        if (selectedCourse) {
-          setCourse(selectedCourse);
+        // Verificar si el curso está en la lista de deseos o en el carrito
+        if (isAuthenticated()) {
+          // Verificar lista de deseos usando localStorage directamente
+          const wishlistStatus = localStorage.getItem(`wishlist_${courseId}`) === 'true';
+          setInWishlist(wishlistStatus);
 
-          // Verificar si el curso está en la lista de deseos o en el carrito
-          if (token) {
-            const wishlistStatus = isInWishlist(courseId);
-            const cartStatus = isInCart(courseId);
+          // Verificar carrito usando localStorage directamente
+          const cartStatus = localStorage.getItem(`cart_${courseId}`) === 'true';
+          setInCart(cartStatus);
 
-            setInWishlist(wishlistStatus);
-            setInCart(cartStatus);
-
-            console.log(`Curso ${courseId} - En wishlist: ${wishlistStatus}, En carrito: ${cartStatus}`);
-          }
-        } else {
-          console.error(`Curso con ID ${courseId} no encontrado`);
+          console.log(`Curso ${courseId} - En wishlist: ${wishlistStatus}, En carrito: ${cartStatus}`);
         }
-        setLoading(false);
-      }, 500);
+      } else {
+        console.error(`Curso con ID ${courseId} no encontrado`);
+      }
+
+      setLoading(false);
 
       // Scroll al inicio de la página
       window.scrollTo(0, 0);
@@ -251,90 +248,82 @@ const CourseDetail = () => {
       console.error('Error al cargar el curso:', error);
       setLoading(false);
     }
-  }, [courseId]);
+  }, [courseId, isAuthenticated]);
 
   // Función para manejar el clic en el botón de lista de deseos
   const handleWishlistClick = () => {
-    if (isAuthenticated) {
+    if (!isAuthenticated()) {
+      alert('Debes iniciar sesión para añadir cursos a tu lista de deseos');
+      return;
+    }
+
+    try {
       if (inWishlist) {
         // Eliminar de la lista de deseos
-        const result = removeFromWishlist(courseId);
-        if (result.success) {
-          setInWishlist(false);
-          alert(`Curso "${course.title}" eliminado de tu lista de deseos`);
-        } else {
-          alert(result.message);
-        }
+        localStorage.setItem(`wishlist_${courseId}`, 'false');
+        setInWishlist(false);
+        alert(`Curso "${course.title}" eliminado de tu lista de deseos`);
       } else {
-        // Asegurarse de que el curso tenga todos los datos necesarios
-        // Convertir la imagen a una URL de string si es un objeto
-        const imageUrl = typeof course.image === 'string'
-          ? course.image
-          : (course.image && course.image.default)
-            ? course.image.default
-            : '/src/assets/images/unas-kupula3.jpg'; // Imagen por defecto
-
-        console.log('Tipo de imagen:', typeof course.image);
-        console.log('Imagen a guardar:', imageUrl);
-
+        // Preparar el curso para añadir con todos los datos necesarios
         const courseToAdd = {
           id: courseId,
           title: course.title,
           price: course.price,
-          image: imageUrl,
-          // Añadir otros campos si son necesarios
+          image: course.image,
+          description: course.description,
+          duration: course.duration,
+          level: course.level,
+          instructor: course.instructor
         };
 
-        // Añadir a la lista de deseos
-        const result = addToWishlist(courseToAdd);
-        if (result.success) {
-          setInWishlist(true);
-          alert(`Curso "${course.title}" añadido a tu lista de deseos`);
-        } else {
-          alert(result.message);
-        }
+        // Guardar en localStorage
+        localStorage.setItem(`wishlist_${courseId}`, 'true');
+        localStorage.setItem(`wishlist_data_${courseId}`, JSON.stringify(courseToAdd));
+
+        // Actualizar estado
+        setInWishlist(true);
+        alert(`Curso "${course.title}" añadido a tu lista de deseos`);
       }
-    } else {
-      alert('Debes iniciar sesión para añadir cursos a tu lista de deseos');
+    } catch (error) {
+      console.error('Error al manejar la lista de deseos:', error);
+      alert('Ocurrió un error al procesar tu solicitud. Por favor, inténtalo de nuevo.');
     }
   };
 
   // Función para manejar el clic en el botón de carrito
   const handleCartClick = () => {
-    if (isAuthenticated) {
+    if (!isAuthenticated()) {
+      alert('Debes iniciar sesión para añadir cursos al carrito');
+      return;
+    }
+
+    try {
       if (inCart) {
         alert(`El curso "${course.title}" ya está en tu carrito`);
       } else {
-        // Asegurarse de que el curso tenga todos los datos necesarios
-        // Convertir la imagen a una URL de string si es un objeto
-        const imageUrl = typeof course.image === 'string'
-          ? course.image
-          : (course.image && course.image.default)
-            ? course.image.default
-            : '/src/assets/images/unas-kupula3.jpg'; // Imagen por defecto
-
-        console.log('Tipo de imagen para carrito:', typeof course.image);
-        console.log('Imagen a guardar en carrito:', imageUrl);
-
+        // Preparar el curso para añadir con todos los datos necesarios
         const courseToAdd = {
           id: courseId,
           title: course.title,
           price: course.price,
-          image: imageUrl,
-          // Añadir otros campos si son necesarios
+          image: course.image,
+          description: course.description,
+          duration: course.duration,
+          level: course.level,
+          instructor: course.instructor
         };
 
-        // Añadir al carrito
-        const result = addToCart(courseToAdd);
-        if (result.success) {
-          setInCart(true);
-          alert(`Curso "${course.title}" añadido al carrito`);
-        } else {
-          alert(result.message);
-        }
+        // Guardar en localStorage
+        localStorage.setItem(`cart_${courseId}`, 'true');
+        localStorage.setItem(`cart_data_${courseId}`, JSON.stringify(courseToAdd));
+
+        // Actualizar estado
+        setInCart(true);
+        alert(`Curso "${course.title}" añadido al carrito`);
       }
-    } else {
-      alert('Debes iniciar sesión para añadir cursos al carrito');
+    } catch (error) {
+      console.error('Error al manejar el carrito:', error);
+      alert('Ocurrió un error al procesar tu solicitud. Por favor, inténtalo de nuevo.');
     }
   };
 
@@ -387,9 +376,9 @@ const CourseDetail = () => {
             </div>
             <div className="course-detail-actions">
               <div className="action-buttons">
-                {isAuthenticated ? (
+                {isAuthenticated() ? (
                   <GoldenButton
-                    text={inCart ? "Ver carrito" : "Añadir al carrito"}
+                    text={inCart ? "Ir al carrito" : "Añadir al carrito"}
                     onClick={() => {
                       if (inCart) {
                         // Redirigir al carrito
@@ -422,19 +411,19 @@ const CourseDetail = () => {
 
                 <div className="icon-buttons">
                   <button
-                    className={`icon-button wishlist-button ${!isAuthenticated ? 'disabled' : ''} ${inWishlist ? 'active' : ''}`}
+                    className={`icon-button wishlist-button ${!isAuthenticated() ? 'disabled' : ''} ${inWishlist ? 'active' : ''}`}
                     onClick={handleWishlistClick}
-                    disabled={!isAuthenticated}
-                    title={isAuthenticated ? (inWishlist ? "Quitar de lista de deseos" : "Añadir a lista de deseos") : "Inicia sesión para añadir a lista de deseos"}
+                    disabled={!isAuthenticated()}
+                    title={isAuthenticated() ? (inWishlist ? "Quitar de lista de deseos" : "Añadir a lista de deseos") : "Inicia sesión para añadir a lista de deseos"}
                   >
                     <FaHeart />
                   </button>
 
                   <button
-                    className={`icon-button cart-button ${!isAuthenticated ? 'disabled' : ''} ${inCart ? 'active' : ''}`}
+                    className={`icon-button cart-button ${!isAuthenticated() ? 'disabled' : ''} ${inCart ? 'active' : ''}`}
                     onClick={handleCartClick}
-                    disabled={!isAuthenticated}
-                    title={isAuthenticated ? (inCart ? "Ya está en el carrito" : "Añadir al carrito") : "Inicia sesión para añadir al carrito"}
+                    disabled={!isAuthenticated()}
+                    title={isAuthenticated() ? (inCart ? "Ya está en el carrito" : "Añadir al carrito") : "Inicia sesión para añadir al carrito"}
                   >
                     <FaShoppingCart />
                   </button>

@@ -14,20 +14,17 @@ export default defineConfig({
       '@pages': '/src/pages'
     },
     extensions: ['.js', '.jsx', '.json'],
-        },
-     server: {
-        port: 5173,
-        strictPort: true,
-        headers: {
-          'Cache-Control': 'no-store'
-        }
-        },
+  },
+  server: {
+    headers: {
+      'Cache-Control': 'no-store'
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
-        secure: false,
+        secure: false
       }
-    },
+    }
   },
-);
+});

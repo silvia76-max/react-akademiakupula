@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaTrash, FaSearch, FaUserPlus } from 'react-icons/fa';
+import { FaSearch, FaUserPlus, FaCheck, FaTimes } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
-import { getUsers, deleteUser } from '../../services/adminService';
+import DataTable from '../../components/admin/DataTable';
+import { getUsers, deleteUser } from '../../services/dbService';
 import './UsersManagement.css';
 
 const UsersManagement = () => {
   const [users, setUsers] = useState([]);
-  const [pagination, setPagination] = useState({
-    total: 0,
-    pages: 0,
-    page: 1,
-    per_page: 10
-  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,16 +15,38 @@ const UsersManagement = () => {
   const [userToDelete, setUserToDelete] = useState(null);
   const navigate = useNavigate();
 
-  const fetchUsers = async (page = 1) => {
+  // Columnas para la tabla de usuarios
+  const columns = [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'full_name', label: 'Nombre', sortable: true },
+    { key: 'email', label: 'Email', sortable: true },
+    { key: 'postal_code', label: 'Código Postal', sortable: true },
+    {
+      key: 'isAdmin',
+      label: 'Administrador',
+      sortable: true,
+      render: (value) => value ? <FaCheck className="admin-icon" /> : <FaTimes className="user-icon" />
+    },
+    {
+      key: 'created_at',
+      label: 'Fecha de registro',
+      sortable: true,
+      render: (value) => new Date(value).toLocaleDateString()
+    }
+  ];
+
+  const fetchUsers = async () => {
     try {
       setLoading(true);
-      const data = await getUsers(page, pagination.per_page);
-      setUsers(data.users);
-      setPagination(data.pagination);
+      const data = await getUsers();
+
+      // Usar los datos reales de la API
+      setUsers(data || []);
       setError(null);
     } catch (err) {
       console.error('Error al cargar usuarios:', err);
       setError('Error al cargar los usuarios. Por favor, inténtalo de nuevo.');
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -37,31 +54,37 @@ const UsersManagement = () => {
 
   useEffect(() => {
     fetchUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Verificar si el usuario es administrador
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user.is_admin) {
-      navigate('/login');
+    const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+    if (!userData || !userData.isAdmin) {
+      navigate('/');
     }
   }, [navigate]);
 
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= pagination.pages) {
-      fetchUsers(newPage);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Filtrar usuarios por término de búsqueda
+    if (searchTerm.trim() === '') {
+      fetchUsers();
+    } else {
+      const filteredUsers = users.filter(user =>
+        user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setUsers(filteredUsers);
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // Implementar búsqueda (podría requerir un endpoint adicional en el backend)
-    console.log('Buscando:', searchTerm);
+  const handleViewUser = (user) => {
+    // Mostrar detalles del usuario
+    alert(`Detalles del usuario: ${user.full_name}`);
   };
 
-  const handleEditUser = (userId) => {
-    navigate(`/admin/users/edit/${userId}`);
+  const handleEditUser = (user) => {
+    navigate(`/admin/users/${user.id}`);
   };
 
   const handleDeleteClick = (user) => {
@@ -71,7 +94,7 @@ const UsersManagement = () => {
 
   const confirmDelete = async () => {
     if (!userToDelete) return;
-    
+
     try {
       await deleteUser(userToDelete.id);
       setUsers(users.filter(user => user.id !== userToDelete.id));
@@ -94,7 +117,7 @@ const UsersManagement = () => {
       <div className="admin-content">
         <div className="page-header">
           <h1>Gestión de Usuarios</h1>
-          <button 
+          <button
             className="add-button"
             onClick={() => navigate('/admin/users/new')}
           >
@@ -116,89 +139,17 @@ const UsersManagement = () => {
           </form>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
-
-        {loading ? (
-          <div className="loading-spinner">Cargando...</div>
-        ) : (
-          <>
-            <div className="table-container">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Código Postal</th>
-                    <th>Rol</th>
-                    <th>Fecha de registro</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map(user => (
-                    <tr key={user.id}>
-                      <td>{user.id}</td>
-                      <td>{user.full_name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.postal_code}</td>
-                      <td>{user.is_admin ? 'Administrador' : 'Usuario'}</td>
-                      <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                      <td className="actions-cell">
-                        <button 
-                          className="edit-button"
-                          onClick={() => handleEditUser(user.id)}
-                          title="Editar usuario"
-                        >
-                          <FaEdit />
-                        </button>
-                        <button 
-                          className="delete-button"
-                          onClick={() => handleDeleteClick(user)}
-                          title="Eliminar usuario"
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="pagination">
-              <button 
-                onClick={() => handlePageChange(1)}
-                disabled={pagination.page === 1}
-              >
-                &laquo;
-              </button>
-              <button 
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page === 1}
-              >
-                &lsaquo;
-              </button>
-              
-              <span className="page-info">
-                Página {pagination.page} de {pagination.pages}
-              </span>
-              
-              <button 
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.pages}
-              >
-                &rsaquo;
-              </button>
-              <button 
-                onClick={() => handlePageChange(pagination.pages)}
-                disabled={pagination.page === pagination.pages}
-              >
-                &raquo;
-              </button>
-            </div>
-          </>
-        )}
+        <DataTable
+          data={users}
+          columns={columns}
+          title="Usuarios registrados"
+          onView={handleViewUser}
+          onEdit={handleEditUser}
+          onDelete={handleDeleteClick}
+          loading={loading}
+          error={error}
+          emptyMessage="No hay usuarios registrados"
+        />
 
         {showDeleteModal && (
           <div className="modal-overlay">

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Componente que protege las rutas de administración.
  * Solo permite el acceso a usuarios con el rol de administrador.
  */
 const AdminProtectedRoute = ({ children }) => {
+  const { currentUser, loading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -13,13 +15,23 @@ const AdminProtectedRoute = ({ children }) => {
     // Verificar si el usuario está autenticado y es administrador
     const checkAdminStatus = () => {
       try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const token = localStorage.getItem('token');
-        
-        // Verificar si el usuario existe, tiene token y es administrador
-        if (user && token && user.is_admin === true) {
+        // Verificar con el nuevo sistema de autenticación
+        const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+        const token = localStorage.getItem('akademia_auth_token');
+
+        console.log('Verificando estado de administrador:', userData);
+
+        // Verificar explícitamente si es el usuario administrador por email
+        const isAdminUser = userData && userData.email === 'admin@gmail.com';
+
+        if (isAdminUser) {
+          console.log('Usuario es administrador (email: admin@gmail.com)');
+          setIsAdmin(true);
+        } else if (userData && token && userData.isAdmin === true) {
+          console.log('Usuario es administrador (propiedad isAdmin)');
           setIsAdmin(true);
         } else {
+          console.log('Usuario NO es administrador');
           setIsAdmin(false);
         }
       } catch (error) {
@@ -30,11 +42,14 @@ const AdminProtectedRoute = ({ children }) => {
       }
     };
 
-    checkAdminStatus();
-  }, []);
+    // Solo verificar cuando la autenticación haya terminado de cargar
+    if (!authLoading) {
+      checkAdminStatus();
+    }
+  }, [authLoading, currentUser]);
 
   // Mientras se verifica, mostrar un indicador de carga
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="admin-loading">
         <div className="loading-spinner">Verificando permisos...</div>
@@ -44,10 +59,12 @@ const AdminProtectedRoute = ({ children }) => {
 
   // Si no es administrador, redirigir a la página de inicio
   if (!isAdmin) {
+    console.log('Redirigiendo a inicio - No es administrador');
     return <Navigate to="/" replace />;
   }
 
   // Si es administrador, mostrar el contenido protegido
+  console.log('Mostrando contenido de administrador');
   return children;
 };
 

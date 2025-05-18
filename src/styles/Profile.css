@@ -457,8 +457,10 @@
 
 .course-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .course-card {
@@ -469,7 +471,9 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 5px rgba(212, 175, 55, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid rgba(212, 175, 55, 0.1);
-  height: 140px; /* Altura más grande */
+  height: 200px; /* Altura más grande */
+  margin-bottom: 1.5rem;
+  position: relative;
 }
 
 .course-card:hover {
@@ -479,11 +483,13 @@
 }
 
 .course-image {
-  width: 140px;
-  height: 140px;
+  width: 200px;
+  height: 200px;
   object-fit: cover;
   transition: transform 0.5s ease;
   flex-shrink: 0;
+  border-right: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .course-card:hover .course-image {
@@ -492,15 +498,15 @@
 
 .course-info {
   flex: 1;
-  padding: 1.2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .course-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.05rem;
+  margin: 0 0 0.8rem 0;
+  font-size: 1.2rem;
   color: #ffd700;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   /* Limitar a 2 líneas y añadir elipsis */
@@ -509,27 +515,29 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: bold;
+  letter-spacing: 0.5px;
 }
 
 .course-price {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: bold;
   color: #ffd700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
 }
 
 .course-actions {
   display: flex;
   gap: 0.7rem;
   margin-top: auto;
-  padding-right: 1rem;
+  justify-content: flex-end;
   align-items: center;
-  margin-bottom: 1rem;
 }
 
 .action-button {
-  padding: 0.5rem;
+  padding: 0.7rem;
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -538,7 +546,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
 .view-button {
@@ -553,32 +562,40 @@
 .add-to-cart-button {
   background: linear-gradient(160deg, #006400, #008000);
   color: white;
-  width: 36px;
-  height: 36px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .add-to-cart-button:hover {
   transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(160deg, #008000, #00a000);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .remove-button {
-  background-color: #8b0000;
+  background: linear-gradient(160deg, #8b0000, #a00);
   color: white;
-  width: 36px;
-  height: 36px;
+  width: 45px;
+  height: 45px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .remove-button:hover {
-  background-color: #a00;
+  background: linear-gradient(160deg, #a00, #c00);
   transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Estilos para el resumen del carrito */

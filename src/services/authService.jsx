@@ -277,8 +277,32 @@ export const getProfile = async () => {
  * Cierra la sesión del usuario actual
  */
 export const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  try {
+    console.log('Ejecutando función logout en authService.jsx...');
+
+    // Eliminar datos de autenticación
+    localStorage.removeItem('akademia_auth_token');
+    localStorage.removeItem('akademia_user_data');
+    localStorage.removeItem('akademia_token_expiry');
+    localStorage.removeItem('akademia_session_id');
+
+    // Eliminar también de sessionStorage
+    sessionStorage.removeItem('akademia_auth_token');
+    sessionStorage.removeItem('akademia_user_data');
+    sessionStorage.removeItem('akademia_token_expiry');
+    sessionStorage.removeItem('akademia_session_id');
+
+    // Eliminar también las claves antiguas por si acaso
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    console.log('Datos de sesión eliminados desde authService.jsx');
+
+    return true;
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+    return false;
+  }
 };
 
 /**
@@ -286,7 +310,28 @@ export const logout = () => {
  * @returns {boolean} - true si el usuario está autenticado, false en caso contrario
  */
 export const isAuthenticated = () => {
-  return !!localStorage.getItem('token');
+  try {
+    // Intentar obtener el token de localStorage o sessionStorage
+    const token = localStorage.getItem('akademia_auth_token') || sessionStorage.getItem('akademia_auth_token');
+    const expiry = localStorage.getItem('akademia_token_expiry') || sessionStorage.getItem('akademia_token_expiry');
+
+    if (!token || !expiry) {
+      return false;
+    }
+
+    // Verificar si el token ha expirado
+    if (new Date().getTime() > parseInt(expiry)) {
+      console.log('Token expirado, cerrando sesión');
+      // Token expirado, limpiar datos
+      logout();
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error al verificar autenticación:', error);
+    return false;
+  }
 };
 
 /**
@@ -294,13 +339,15 @@ export const isAuthenticated = () => {
  * @returns {boolean} - true si el usuario es administrador, false en caso contrario
  */
 export const isAdmin = () => {
-  const user = localStorage.getItem('user');
-  if (!user) return false;
-
   try {
-    const userData = JSON.parse(user);
-    return userData.is_admin === true;
+    // Intentar obtener los datos del usuario de localStorage o sessionStorage
+    const userDataStr = localStorage.getItem('akademia_user_data') || sessionStorage.getItem('akademia_user_data');
+    if (!userDataStr) return false;
+
+    const userData = JSON.parse(userDataStr);
+    return userData && userData.isAdmin === true;
   } catch (error) {
+    console.error('Error al verificar si el usuario es administrador:', error);
     return false;
   }
 };

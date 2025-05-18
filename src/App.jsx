@@ -6,12 +6,15 @@ import HeroSection from "./components/HeroSection.jsx";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ChatBot from "./components/ChatBot.jsx";
 import ParticlesBackground from "./components/ParticlesBackground.jsx";
-// Eliminado el componente SettingsPanel
 import Footer from "./components/Footer.jsx";
 import Profile from './pages/Profile';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+
+// Importar estilos globales
+import "./styles/index.css";
 import "./styles/Interactions.css";
+import "./styles/Animations.css";
 // Importaciones con lazy loading para mejorar el rendimiento
 const AboutSection = lazy(() => import("./components/AboutSection.jsx"));
 const Courses = lazy(() => import("./components/Courses.jsx"));
@@ -32,6 +35,7 @@ const ContentForm = lazy(() => import('./pages/admin/ContentForm'));
 const ContactsManagement = lazy(() => import('./pages/admin/ContactsManagement'));
 const CoursesManagement = lazy(() => import('./pages/admin/CoursesManagement'));
 const OrdersManagement = lazy(() => import('./pages/admin/OrdersManagement'));
+const SessionsManagement = lazy(() => import('./pages/admin/SessionsManagement'));
 
 // Payment components
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
@@ -184,7 +188,7 @@ export function App() {
           <Route path="/aviso-legal" element={<ErrorBoundary componentName="AvisoLegal"><AvisoLegal /></ErrorBoundary>} />
           <Route path="/cookies" element={<ErrorBoundary componentName="CookiesPolicy"><CookiesPolicy /></ErrorBoundary>} />
           <Route path="/condiciones-de-compra" element={<ErrorBoundary componentName="CondicionesDeCompra"><CondicionesDeCompra /></ErrorBoundary>} />
-          <Route path="/profile" element={<ErrorBoundary componentName="Profile"><Profile /></ErrorBoundary>} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/curso/:courseId" element={
             <ErrorBoundary componentName="CourseDetail">
               <Suspense fallback={<LoadingFallback />}>
@@ -210,76 +214,85 @@ export function App() {
 
           {/* Rutas del panel de administración - Protegidas */}
           <Route path="/admin" element={
-            <AdminProtectedRoute>
-              <ErrorBoundary componentName="AdminDashboard">
+            <ErrorBoundary componentName="AdminDashboard">
+              <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <AdminDashboard />
                 </Suspense>
-              </ErrorBoundary>
-            </AdminProtectedRoute>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
           } />
           <Route path="/admin/users" element={
-            <AdminProtectedRoute>
-              <ErrorBoundary componentName="UsersManagement">
+            <ErrorBoundary componentName="UsersManagement">
+              <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <UsersManagement />
                 </Suspense>
-              </ErrorBoundary>
-            </AdminProtectedRoute>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
           } />
           <Route path="/admin/users/:userId" element={
-            <AdminProtectedRoute>
-              <ErrorBoundary componentName="UserForm">
+            <ErrorBoundary componentName="UserForm">
+              <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <UserForm />
                 </Suspense>
-              </ErrorBoundary>
-            </AdminProtectedRoute>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
           } />
           <Route path="/admin/content" element={
-            <AdminProtectedRoute>
-              <ErrorBoundary componentName="ContentManagement">
+            <ErrorBoundary componentName="ContentManagement">
+              <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <ContentManagement />
                 </Suspense>
-              </ErrorBoundary>
-            </AdminProtectedRoute>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
           } />
           <Route path="/admin/content/:contentId" element={
-            <AdminProtectedRoute>
-              <ErrorBoundary componentName="ContentForm">
+            <ErrorBoundary componentName="ContentForm">
+              <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <ContentForm />
                 </Suspense>
-              </ErrorBoundary>
-            </AdminProtectedRoute>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
           } />
           <Route path="/admin/contacts" element={
-            <AdminProtectedRoute>
-              <ErrorBoundary componentName="ContactsManagement">
+            <ErrorBoundary componentName="ContactsManagement">
+              <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <ContactsManagement />
                 </Suspense>
-              </ErrorBoundary>
-            </AdminProtectedRoute>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
           } />
           <Route path="/admin/courses" element={
-            <AdminProtectedRoute>
-              <ErrorBoundary componentName="CoursesManagement">
+            <ErrorBoundary componentName="CoursesManagement">
+              <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <CoursesManagement />
                 </Suspense>
-              </ErrorBoundary>
-            </AdminProtectedRoute>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
           } />
           <Route path="/admin/orders" element={
-            <AdminProtectedRoute>
-              <ErrorBoundary componentName="OrdersManagement">
+            <ErrorBoundary componentName="OrdersManagement">
+              <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <OrdersManagement />
                 </Suspense>
-              </ErrorBoundary>
-            </AdminProtectedRoute>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
+          } />
+          <Route path="/admin/sessions" element={
+            <ErrorBoundary componentName="SessionsManagement">
+              <AdminProtectedRoute>
+                <Suspense fallback={<LoadingFallback />}>
+                  <SessionsManagement />
+                </Suspense>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
           } />
         </Routes>
         <Footer />

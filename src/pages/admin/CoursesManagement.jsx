@@ -21,159 +21,36 @@ const CoursesManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
-  // Datos simulados para cursos
-  const mockCourses = [
-    {
-      id: 1,
-      slug: "curso-de-maquillaje-profesional",
-      title: "Curso de Maquillaje Profesional",
-      description: "Aprende técnicas de maquillaje artístico y desarrolla tu creatividad con los mejores productos.",
-      image: maquillajeImg,
-      duration: "60 horas",
-      level: "Avanzado",
-      price: 499.99,
-      instructor: "Tania Calvo",
-      status: "active",
-      enrollments: 24,
-      created_at: "2023-05-15T10:00:00",
-      videos: [
-        { id: 1, title: "Introducción al maquillaje profesional", duration: "15:30", url: "https://vimeo.com/123456789" },
-        { id: 2, title: "Técnicas básicas de aplicación", duration: "22:45", url: "https://vimeo.com/123456790" },
-        { id: 3, title: "Maquillaje para sesiones fotográficas", duration: "30:15", url: "https://vimeo.com/123456791" }
-      ],
-      materials: [
-        { id: 1, title: "Guía de productos recomendados", type: "pdf" },
-        { id: 2, title: "Plantillas de diseño", type: "pdf" }
-      ]
-    },
-    {
-      id: 2,
-      slug: "curso-de-unas-esculpidas",
-      title: "Curso de Uñas Esculpidas",
-      description: "Domina el arte de las uñas acrílicas y gel. Técnicas profesionales para resultados perfectos.",
-      image: unasImg,
-      duration: "45 horas",
-      level: "Intermedio",
-      price: 399.99,
-      instructor: "Tania Calvo",
-      status: "active",
-      enrollments: 18,
-      created_at: "2023-06-20T14:30:00",
-      videos: [
-        { id: 4, title: "Preparación de uñas", duration: "18:20", url: "https://vimeo.com/123456792" },
-        { id: 5, title: "Aplicación de acrílico", duration: "25:10", url: "https://vimeo.com/123456793" }
-      ],
-      materials: [
-        { id: 3, title: "Lista de materiales necesarios", type: "pdf" }
-      ]
-    },
-    {
-      id: 3,
-      slug: "estetica-integral",
-      title: "Estética Integral",
-      description: "Formación completa en tratamientos faciales y corporales. Todo lo que necesitas para ser profesional.",
-      image: esteticaImg,
-      duration: "120 horas",
-      level: "Todos los niveles",
-      price: 799.99,
-      instructor: "Tania Calvo",
-      status: "active",
-      enrollments: 12,
-      created_at: "2023-07-10T09:15:00",
-      videos: [
-        { id: 6, title: "Introducción a la estética integral", duration: "20:45", url: "https://vimeo.com/123456794" },
-        { id: 7, title: "Análisis de piel", duration: "28:30", url: "https://vimeo.com/123456795" },
-        { id: 8, title: "Tratamientos faciales básicos", duration: "35:15", url: "https://vimeo.com/123456796" }
-      ],
-      materials: [
-        { id: 4, title: "Guía de diagnóstico facial", type: "pdf" },
-        { id: 5, title: "Protocolos de tratamiento", type: "pdf" }
-      ]
-    },
-    {
-      id: 4,
-      slug: "curso-de-manicura-y-pedicura",
-      title: "Curso de Manicura y Pedicura",
-      description: "Domina el arte y el cuidado de manos y pies. Aprende técnicas de spa y tratamientos especiales.",
-      image: manicuraImg,
-      duration: "30 horas",
-      level: "Principiante",
-      price: 299.99,
-      instructor: "Tania Calvo",
-      status: "active",
-      enrollments: 30,
-      created_at: "2023-08-05T11:45:00",
-      videos: [
-        { id: 9, title: "Preparación para manicura", duration: "15:20", url: "https://vimeo.com/123456797" },
-        { id: 10, title: "Técnicas de limado y pulido", duration: "18:45", url: "https://vimeo.com/123456798" }
-      ],
-      materials: [
-        { id: 6, title: "Guía de herramientas", type: "pdf" }
-      ]
-    },
-    {
-      id: 5,
-      slug: "curso-de-maquillaje-social",
-      title: "Curso de Maquillaje Social",
-      description: "Descubre técnicas de maquillaje social para eventos, bodas y ocasiones especiales.",
-      image: socialImg,
-      duration: "40 horas",
-      level: "Intermedio",
-      price: 349.99,
-      instructor: "Tania Calvo",
-      status: "draft",
-      enrollments: 0,
-      created_at: "2023-09-15T13:30:00",
-      videos: [
-        { id: 11, title: "Maquillaje para eventos diurnos", duration: "22:10", url: "https://vimeo.com/123456799" },
-        { id: 12, title: "Maquillaje para eventos nocturnos", duration: "24:35", url: "https://vimeo.com/123456800" }
-      ],
-      materials: [
-        { id: 7, title: "Paletas de colores recomendadas", type: "pdf" }
-      ]
-    },
-    {
-      id: 6,
-      slug: "curso-de-extension-de-pestanas",
-      title: "Curso de Extensión de Pestañas",
-      description: "Extensiones de pestañas de cero a cien. Aprende todas las técnicas: pelo a pelo, volumen ruso y más.",
-      image: extensionImg,
-      duration: "25 horas",
-      level: "Avanzado",
-      price: 449.99,
-      instructor: "Tania Calvo",
-      status: "active",
-      enrollments: 15,
-      created_at: "2023-10-01T10:00:00",
-      videos: [
-        { id: 13, title: "Introducción a las extensiones", duration: "16:40", url: "https://vimeo.com/123456801" },
-        { id: 14, title: "Técnica pelo a pelo", duration: "28:15", url: "https://vimeo.com/123456802" },
-        { id: 15, title: "Volumen ruso", duration: "32:50", url: "https://vimeo.com/123456803" }
-      ],
-      materials: [
-        { id: 8, title: "Guía de productos y adhesivos", type: "pdf" },
-        { id: 9, title: "Cuidados post-aplicación", type: "pdf" }
-      ]
-    }
-  ];
+
 
   useEffect(() => {
-    // Simulación de carga de datos desde el backend
+    // Función para cargar los cursos desde la API
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        // En una implementación real, aquí harías una llamada a la API
-        // const response = await fetch('/api/admin/courses');
-        // const data = await response.json();
-        
-        // Simulamos un retraso para la carga
-        setTimeout(() => {
-          setCourses(mockCourses);
-          setLoading(false);
-        }, 800);
+
+        // Intentar obtener los cursos de la API
+        try {
+          const response = await fetch('/api/admin/courses');
+
+          if (response.ok) {
+            const data = await response.json();
+            setCourses(data || []);
+          } else {
+            console.error('Error al obtener cursos:', response.status);
+            setCourses([]);
+          }
+        } catch (apiError) {
+          console.error('Error al conectar con la API:', apiError);
+          setCourses([]);
+        }
+
+        setError(null);
       } catch (err) {
         console.error('Error al cargar los cursos:', err);
         setError('Error al cargar los cursos. Por favor, inténtalo de nuevo.');
+        setCourses([]);
+      } finally {
         setLoading(false);
       }
     };
@@ -182,7 +59,7 @@ const CoursesManagement = () => {
   }, []);
 
   // Filtrar cursos según el término de búsqueda
-  const filteredCourses = courses.filter(course => 
+  const filteredCourses = courses.filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.level.toLowerCase().includes(searchTerm.toLowerCase())
@@ -207,7 +84,7 @@ const CoursesManagement = () => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este curso?')) {
       // En una implementación real, aquí harías una llamada a la API
       // await fetch(`/api/admin/courses/${id}`, { method: 'DELETE' });
-      
+
       const updatedCourses = courses.filter(course => course.id !== id);
       setCourses(updatedCourses);
     }
@@ -224,7 +101,7 @@ const CoursesManagement = () => {
       <div className="admin-content">
         <div className="page-header">
           <h1>Gestión de Cursos</h1>
-          <button 
+          <button
             className="add-button"
             onClick={handleAddCourse}
           >
@@ -271,9 +148,9 @@ const CoursesManagement = () => {
                   <tr key={course.id}>
                     <td>{course.id}</td>
                     <td>
-                      <img 
-                        src={course.image} 
-                        alt={course.title} 
+                      <img
+                        src={course.image}
+                        alt={course.title}
                         className="course-thumbnail"
                       />
                     </td>
@@ -288,21 +165,21 @@ const CoursesManagement = () => {
                     </td>
                     <td>{course.enrollments}</td>
                     <td className="actions-cell">
-                      <button 
+                      <button
                         className="view-button"
                         onClick={() => handleViewCourse(course)}
                         title="Ver detalles"
                       >
                         <FaEye />
                       </button>
-                      <button 
+                      <button
                         className="edit-button"
                         onClick={() => handleEditCourse(course.id)}
                         title="Editar curso"
                       >
                         <FaEdit />
                       </button>
-                      <button 
+                      <button
                         className="delete-button"
                         onClick={() => handleDeleteCourse(course.id)}
                         title="Eliminar curso"
@@ -323,7 +200,7 @@ const CoursesManagement = () => {
             <div className="modal-content course-modal">
               <div className="modal-header">
                 <h2>{selectedCourse.title}</h2>
-                <button 
+                <button
                   className="close-button"
                   onClick={() => setShowModal(false)}
                 >
@@ -332,9 +209,9 @@ const CoursesManagement = () => {
               </div>
               <div className="modal-body">
                 <div className="course-image-container">
-                  <img 
-                    src={selectedCourse.image} 
-                    alt={selectedCourse.title} 
+                  <img
+                    src={selectedCourse.image}
+                    alt={selectedCourse.title}
                     className="course-detail-image"
                   />
                 </div>

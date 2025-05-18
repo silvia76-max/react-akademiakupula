@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaEye, FaTrash, FaEnvelope, FaReply } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
+import DataTable from '../../components/admin/DataTable';
+import { getContacts } from '../../services/dbService';
 import './ContactsManagement.css';
 
 const ContactsManagement = () => {
@@ -14,81 +16,53 @@ const ContactsManagement = () => {
   const [replyText, setReplyText] = useState('');
   const navigate = useNavigate();
 
-  // Datos simulados para mensajes de contacto
-  const mockContacts = [
+  // Columnas para la tabla de contactos
+  const columns = [
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'nombre', label: 'Nombre', sortable: true },
+    { key: 'email', label: 'Email', sortable: true },
+    { key: 'telefono', label: 'Teléfono', sortable: true },
     {
-      id: 1,
-      nombre: 'María López',
-      email: 'maria.lopez@example.com',
-      telefono: '600123456',
-      mensaje: 'Me gustaría recibir más información sobre el curso de maquillaje profesional. ¿Cuándo comienza la próxima edición?',
-      fecha_creacion: '2023-10-15T14:30:00',
-      leido: true
+      key: 'fecha_creacion',
+      label: 'Fecha',
+      sortable: true,
+      render: (value) => new Date(value).toLocaleDateString()
     },
     {
-      id: 2,
-      nombre: 'Carlos Rodríguez',
-      email: 'carlos.rodriguez@example.com',
-      telefono: '611234567',
-      mensaje: 'Estoy interesado en el curso de uñas esculpidas. ¿Ofrecen algún tipo de certificación al finalizar?',
-      fecha_creacion: '2023-10-18T09:45:00',
-      leido: false
-    },
-    {
-      id: 3,
-      nombre: 'Laura Martínez',
-      email: 'laura.martinez@example.com',
-      telefono: '622345678',
-      mensaje: 'Quisiera saber si tienen modalidad online para el curso de estética integral, ya que vivo fuera de Madrid.',
-      fecha_creacion: '2023-10-20T16:15:00',
-      leido: false
-    },
-    {
-      id: 4,
-      nombre: 'Javier Sánchez',
-      email: 'javier.sanchez@example.com',
-      telefono: '633456789',
-      mensaje: 'Me gustaría conocer los métodos de pago disponibles para el curso de extensión de pestañas.',
-      fecha_creacion: '2023-10-22T11:20:00',
-      leido: true
-    },
-    {
-      id: 5,
-      nombre: 'Ana García',
-      email: 'ana.garcia@example.com',
-      telefono: '644567890',
-      mensaje: '¿Tienen algún descuento para grupos? Somos tres amigas interesadas en el curso de manicura y pedicura.',
-      fecha_creacion: '2023-10-25T13:10:00',
-      leido: false
+      key: 'leido',
+      label: 'Estado',
+      sortable: true,
+      render: (value) => (
+        <span className={`status-badge ${value ? 'read' : 'unread'}`}>
+          {value ? 'Leído' : 'No leído'}
+        </span>
+      )
     }
   ];
 
-  useEffect(() => {
-    // Simulación de carga de datos desde el backend
-    const fetchContacts = async () => {
-      try {
-        setLoading(true);
-        // En una implementación real, aquí harías una llamada a la API
-        // const response = await fetch('/api/admin/contacts');
-        // const data = await response.json();
-        
-        // Simulamos un retraso para la carga
-        setTimeout(() => {
-          setContacts(mockContacts);
-          setLoading(false);
-        }, 800);
-      } catch (err) {
-        console.error('Error al cargar los mensajes:', err);
-        setError('Error al cargar los mensajes. Por favor, inténtalo de nuevo.');
-        setLoading(false);
-      }
-    };
 
+
+  const fetchContacts = async () => {
+    try {
+      setLoading(true);
+      const data = await getContacts();
+      setContacts(data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error al cargar los mensajes:', err);
+      setError('Error al cargar los mensajes. Por favor, inténtalo de nuevo.');
+      setContacts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchContacts();
   }, []);
 
   // Filtrar contactos según el término de búsqueda
-  const filteredContacts = contacts.filter(contact => 
+  const filteredContacts = contacts.filter(contact =>
     contact.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
     contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     contact.mensaje.toLowerCase().includes(searchTerm.toLowerCase())
@@ -102,10 +76,10 @@ const ContactsManagement = () => {
   const handleViewContact = (contact) => {
     setSelectedContact(contact);
     setShowModal(true);
-    
+
     // Marcar como leído (en una implementación real, esto se haría con una llamada a la API)
     if (!contact.leido) {
-      const updatedContacts = contacts.map(c => 
+      const updatedContacts = contacts.map(c =>
         c.id === contact.id ? { ...c, leido: true } : c
       );
       setContacts(updatedContacts);
@@ -116,7 +90,7 @@ const ContactsManagement = () => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este mensaje?')) {
       // En una implementación real, aquí harías una llamada a la API
       // await fetch(`/api/admin/contacts/${id}`, { method: 'DELETE' });
-      
+
       const updatedContacts = contacts.filter(contact => contact.id !== id);
       setContacts(updatedContacts);
     }
@@ -124,12 +98,12 @@ const ContactsManagement = () => {
 
   const handleReply = (e) => {
     e.preventDefault();
-    
+
     if (!replyText.trim()) {
       alert('Por favor, escribe un mensaje de respuesta.');
       return;
     }
-    
+
     // En una implementación real, aquí enviarías el email
     // await fetch('/api/admin/contacts/reply', {
     //   method: 'POST',
@@ -138,7 +112,7 @@ const ContactsManagement = () => {
     //     replyText
     //   })
     // });
-    
+
     alert(`Respuesta enviada a ${selectedContact.email}`);
     setReplyText('');
     setShowModal(false);
@@ -166,59 +140,16 @@ const ContactsManagement = () => {
           </form>
         </div>
 
-        {error && <div className="error-message">{error}</div>}
-
-        {loading ? (
-          <div className="loading-spinner">Cargando...</div>
-        ) : (
-          <div className="table-container">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Email</th>
-                  <th>Teléfono</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredContacts.map(contact => (
-                  <tr key={contact.id} className={contact.leido ? '' : 'unread'}>
-                    <td>{contact.id}</td>
-                    <td>{contact.nombre}</td>
-                    <td>{contact.email}</td>
-                    <td>{contact.telefono}</td>
-                    <td>{new Date(contact.fecha_creacion).toLocaleDateString()}</td>
-                    <td>
-                      <span className={`status-badge ${contact.leido ? 'read' : 'unread'}`}>
-                        {contact.leido ? 'Leído' : 'No leído'}
-                      </span>
-                    </td>
-                    <td className="actions-cell">
-                      <button 
-                        className="view-button"
-                        onClick={() => handleViewContact(contact)}
-                        title="Ver mensaje"
-                      >
-                        <FaEye />
-                      </button>
-                      <button 
-                        className="delete-button"
-                        onClick={() => handleDeleteContact(contact.id)}
-                        title="Eliminar mensaje"
-                      >
-                        <FaTrash />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <DataTable
+          data={filteredContacts}
+          columns={columns}
+          title="Mensajes de contacto"
+          onView={handleViewContact}
+          onDelete={handleDeleteContact}
+          loading={loading}
+          error={error}
+          emptyMessage="No hay mensajes de contacto"
+        />
 
         {/* Modal para ver el mensaje completo */}
         {showModal && selectedContact && (
@@ -226,7 +157,7 @@ const ContactsManagement = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h2>Mensaje de {selectedContact.nombre}</h2>
-                <button 
+                <button
                   className="close-button"
                   onClick={() => setShowModal(false)}
                 >

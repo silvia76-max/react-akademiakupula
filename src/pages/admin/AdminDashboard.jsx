@@ -1,79 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUsers, FaEnvelope, FaBook, FaShoppingCart } from 'react-icons/fa';
+import { FaUsers, FaEnvelope, FaBook, FaShoppingCart, FaSync } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import { getDashboardData } from '../../services/adminService';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardData, setDashboardData] = useState({
+    stats: {
+      total_users: 0,
+      total_contacts: 0,
+      total_courses: 0,
+      total_sales: 0
+    },
+    recent_users: [],
+    recent_contacts: []
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Verificar si el usuario es administrador y cargar datos
   useEffect(() => {
-    const fetchDashboardData = async () => {
+    const checkAdminAndLoadData = async () => {
       try {
+        // Verificar si el usuario es administrador
+        const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+        const isAdminUser = userData && (userData.email === 'admin@gmail.com' || userData.isAdmin === true);
+
+        if (!isAdminUser) {
+          console.log('No es administrador, redirigiendo a la página principal...');
+          navigate('/');
+          return;
+        }
+
+        // Cargar datos del dashboard
         setLoading(true);
-        // Verificar si el token existe
-        const token = localStorage.getItem('token');
-        console.log('Token de autenticación:', token ? 'Existe' : 'No existe');
-
-        // Verificar si el usuario es admin
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        console.log('Usuario:', user);
-        console.log('¿Es admin?:', user.is_admin);
-
         const data = await getDashboardData();
         console.log('Datos recibidos del dashboard:', data);
         setDashboardData(data);
         setError(null);
       } catch (err) {
         console.error('Error al cargar datos del dashboard:', err);
-        // Mostrar más detalles del error
-        if (err.response) {
-          console.error('Respuesta del servidor:', err.response.data);
-          console.error('Código de estado:', err.response.status);
-          setError(`Error ${err.response.status}: ${err.response.data.message || 'Error al cargar los datos'}`);
-        } else if (err.request) {
-          console.error('No se recibió respuesta del servidor');
-          setError('No se pudo conectar con el servidor. Verifica tu conexión a internet.');
-        } else {
-          setError(`Error: ${err.message}`);
-        }
+        setError('Error al cargar los datos. Por favor, inténtalo de nuevo.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDashboardData();
-  }, []);
-
-  // Verificar si el usuario es administrador
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user.is_admin) {
-      navigate('/login');
-    }
+    checkAdminAndLoadData();
   }, [navigate]);
+
+  // Función para recargar los datos
+  const refreshData = async () => {
+    try {
+      setLoading(true);
+      const data = await getDashboardData();
+      setDashboardData(data);
+      setError(null);
+    } catch (err) {
+      console.error('Error al recargar datos:', err);
+      setError('Error al recargar los datos. Por favor, inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
       <div className="admin-layout">
         <AdminSidebar />
         <div className="admin-content">
-          <div className="loading-spinner">Cargando...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="admin-layout">
-        <AdminSidebar />
-        <div className="admin-content">
-          <div className="error-message">{error}</div>
+          <div className="loading-spinner">Cargando datos del dashboard...</div>
         </div>
       </div>
     );
@@ -83,7 +81,19 @@ const AdminDashboard = () => {
     <div className="admin-layout">
       <AdminSidebar />
       <div className="admin-content">
-        <h1>Dashboard de Administración</h1>
+        <div className="dashboard-header">
+          <h1>Dashboard de Administración</h1>
+          <button className="refresh-button" onClick={refreshData} disabled={loading}>
+            <FaSync className={loading ? 'spinning' : ''} />
+            {loading ? 'Cargando...' : 'Actualizar'}
+          </button>
+        </div>
+
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
 
         <div className="stats-container">
           <div className="stat-card">
@@ -141,14 +151,20 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dashboardData?.recent_users?.map(user => (
-                    <tr key={user.id}>
-                      <td>{user.id}</td>
-                      <td>{user.full_name}</td>
-                      <td>{user.email}</td>
-                      <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                  {dashboardData?.recent_users?.length > 0 ? (
+                    dashboardData.recent_users.map(user => (
+                      <tr key={user.id}>
+                        <td>{user.id}</td>
+                        <td>{user.full_name}</td>
+                        <td>{user.email}</td>
+                        <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="no-data">No hay datos disponibles</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -167,14 +183,20 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dashboardData?.recent_contacts?.map(contact => (
-                    <tr key={contact.id}>
-                      <td>{contact.id}</td>
-                      <td>{contact.nombre}</td>
-                      <td>{contact.email}</td>
-                      <td>{new Date(contact.fecha_creacion).toLocaleDateString()}</td>
+                  {dashboardData?.recent_contacts?.length > 0 ? (
+                    dashboardData.recent_contacts.map(contact => (
+                      <tr key={contact.id}>
+                        <td>{contact.id}</td>
+                        <td>{contact.nombre}</td>
+                        <td>{contact.email}</td>
+                        <td>{new Date(contact.fecha_creacion).toLocaleDateString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="no-data">No hay datos disponibles</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

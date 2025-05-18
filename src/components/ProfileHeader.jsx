@@ -37,9 +37,27 @@ const ProfileHeader = ({ activeTab, setActiveTab }) => {
 
   // Cerrar sesión
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    console.log('Cerrando sesión desde ProfileHeader...');
+
+    // Eliminar datos de autenticación
+    localStorage.removeItem('akademia_auth_token');
+    localStorage.removeItem('akademia_user_data');
+    localStorage.removeItem('akademia_token_expiry');
+    localStorage.removeItem('akademia_session_id');
+
+    // Eliminar también de sessionStorage
+    sessionStorage.removeItem('akademia_auth_token');
+    sessionStorage.removeItem('akademia_user_data');
+    sessionStorage.removeItem('akademia_token_expiry');
+    sessionStorage.removeItem('akademia_session_id');
+
+    console.log('Datos de sesión eliminados');
+
+    // Redirigir a la página principal
     navigate('/');
+
+    // Recargar la página para asegurar que se limpien todos los estados
+    window.location.reload();
   };
 
   // Lista de enlaces de navegación para el perfil

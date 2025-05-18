@@ -15,35 +15,7 @@ import MyCourses from '../components/profile/MyCourses';
 import SessionsManager from '../components/profile/SessionsManager';
 import '../styles/Profile.css';
 
-// Importamos las imágenes de los cursos (simulación)
-import maquillajeImg from '../assets/images/unas-kupula3.jpg';
-import unasImg from '../assets/images/unas-kupula5.jpg';
-import esteticaImg from '../assets/images/unasdeco001.jpg';
 
-// Datos simulados para la lista de deseos y el carrito
-const wishlistData = [
-  {
-    id: 'curso-de-maquillaje-profesional',
-    title: 'Curso de Maquillaje Profesional',
-    price: 499.99,
-    image: maquillajeImg
-  },
-  {
-    id: 'curso-de-unas-esculpidas',
-    title: 'Curso de Uñas Esculpidas',
-    price: 349.99,
-    image: unasImg
-  }
-];
-
-const cartData = [
-  {
-    id: 'estetica-integral',
-    title: 'Estética Integral',
-    price: 799.99,
-    image: esteticaImg
-  }
-];
 
 function Profile() {
   const { currentUser, updateProfile, logout, isAuthenticated } = useAuth();
@@ -80,80 +52,90 @@ function Profile() {
     localStorage.setItem('activeProfileTab', activeTab);
   }, [activeTab]);
 
-  // Actualizar el usuario cuando cambie currentUser
+  // Actualizar el usuario cuando cambie currentUser y cargar avatar
   useEffect(() => {
-    if (currentUser) {
+    // Intentar obtener los datos del usuario del localStorage
+    const storedUserData = localStorage.getItem('akademia_user_data');
+
+    // Cargar el avatar desde localStorage
+    const storedAvatar = localStorage.getItem('user_avatar');
+    if (storedAvatar) {
+      console.log('Avatar cargado desde localStorage');
+      setAvatar(storedAvatar);
+    }
+
+    if (storedUserData) {
+      try {
+        const parsedUserData = JSON.parse(storedUserData);
+        setUser(parsedUserData);
+        setEditedUser(parsedUserData);
+        console.log('Datos de usuario cargados desde localStorage:', parsedUserData);
+      } catch (error) {
+        console.error('Error al parsear los datos del usuario:', error);
+      }
+    } else if (currentUser) {
       setUser(currentUser);
       setEditedUser(currentUser);
+      console.log('Datos de usuario cargados desde currentUser:', currentUser);
     }
   }, [currentUser]);
 
   // Cargar datos del carrito y la lista de deseos
   useEffect(() => {
-    try {
-      setLoading(true);
+    const loadUserData = async () => {
+      try {
+        setLoading(true);
 
-      // Verificar si el usuario está autenticado
-      if (!isAuthenticated()) {
-        navigate('/');
-        return;
+        // Verificar si hay datos de usuario en localStorage
+        const storedUserData = localStorage.getItem('akademia_user_data');
+        const isUserLoggedIn = storedUserData || isAuthenticated();
+
+        if (!isUserLoggedIn) {
+          console.log('Usuario no autenticado, redirigiendo a la página principal');
+          navigate('/');
+          return;
+        }
+
+        // Cargar datos del carrito y la lista de deseos
+        const wishlistItems = getWishlist();
+        const cartItems = getCart();
+
+        console.log('Wishlist items cargados:', wishlistItems);
+        console.log('Cart items cargados:', cartItems);
+
+        // Actualizar el estado con los datos cargados
+        setWishlist(wishlistItems || []);
+        setCart(cartItems || []);
+
+        // Calcular el total del carrito
+        if (cartItems && cartItems.length > 0) {
+          const total = cartItems.reduce((sum, item) => sum + (item.price || 0), 0);
+          setCartTotal(total);
+        } else {
+          setCartTotal(0);
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error general al cargar los datos:', error);
+        setError('Error al cargar los datos. Por favor, inténtalo de nuevo.');
+        setLoading(false);
       }
+    };
 
-      // Cargar datos del carrito y la lista de deseos
-      const wishlistItems = getWishlist();
-      const cartItems = getCart();
-
-      console.log('Wishlist items:', wishlistItems);
-      console.log('Cart items:', cartItems);
-
-      // Para usuarios nuevos, mostrar listas vacías
-      // Para usuarios existentes, mostrar los datos guardados o datos de ejemplo solo si no hay datos guardados
-      const isNewUser = currentUser && currentUser.isNewUser;
-
-      if (isNewUser) {
-        setWishlist([]);
-        setCart([]);
-      } else {
-        setWishlist(wishlistItems.length > 0 ? wishlistItems : []);
-        setCart(cartItems.length > 0 ? cartItems : []);
-      }
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error al cargar los datos:', error);
-      setError('Error al cargar los datos. Por favor, inténtalo de nuevo.');
-      setLoading(false);
-    }
+    loadUserData();
   }, [navigate, isAuthenticated]);
 
   // Función para cerrar sesión
-  const handleLogout = () => {
+  const handleLogout = async () => {
     console.log('Cerrando sesión...');
     try {
-      const result = logout();
-      console.log('Resultado de logout:', result);
-
-      // Forzar la limpieza de datos
-      localStorage.removeItem('akademia_auth_token');
-      localStorage.removeItem('akademia_user_data');
-      localStorage.removeItem('akademia_token_expiry');
-      localStorage.removeItem('akademia_session_id');
-
-      sessionStorage.removeItem('akademia_auth_token');
-      sessionStorage.removeItem('akademia_user_data');
-      sessionStorage.removeItem('akademia_token_expiry');
-      sessionStorage.removeItem('akademia_session_id');
-
-      console.log('Datos de sesión eliminados');
-
-      // Redirigir a la página principal
-      navigate('/');
-
-      // Recargar la página para asegurar que se limpien todos los estados
-      window.location.reload();
+      // Usar la función de cierre de sesión del contexto de autenticación
+      await logout();
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
-      alert('Error al cerrar sesión. Por favor, inténtalo de nuevo.');
+      // En caso de error, forzar la redirección a la página principal
+      window.location.href = '/';
     }
   };
 
@@ -163,7 +145,15 @@ function Profile() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setAvatar(e.target.result);
+        const avatarData = e.target.result;
+
+        // Guardar el avatar en localStorage para persistencia
+        localStorage.setItem('user_avatar', avatarData);
+
+        // Actualizar el estado
+        setAvatar(avatarData);
+
+        console.log('Avatar guardado en localStorage');
       };
       reader.readAsDataURL(file);
     }
@@ -493,26 +483,36 @@ function Profile() {
               <div className="course-list">
                 {wishlist.map(course => (
                   <div className="course-card" key={course.id}>
-                    <img src={course.image} alt={course.title} className="course-image" />
+                    <img
+                      src={course.image || '/images/default-course.jpg'}
+                      alt={course.title || 'Curso'}
+                      className="course-image"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/images/default-course.jpg';
+                      }}
+                    />
                     <div className="course-info">
-                      <h3 className="course-title">{course.title}</h3>
-                      <p className="course-price">{course.price.toFixed(2)} €</p>
-                    </div>
-                    <div className="course-actions">
-                      <button
-                        className="action-button remove-button"
-                        onClick={() => handleRemoveFromWishlist(course.id)}
-                        title="Eliminar de la lista de deseos"
-                      >
-                        <FaTrash />
-                      </button>
-                      <button
-                        className="action-button add-to-cart-button"
-                        onClick={() => handleMoveToCart(course)}
-                        title="Añadir al carrito"
-                      >
-                        <FaShoppingCart />
-                      </button>
+                      <div>
+                        <h3 className="course-title">{course.title || 'Curso sin título'}</h3>
+                        <p className="course-price">{(course.price || 0).toFixed(2)} €</p>
+                      </div>
+                      <div className="course-actions">
+                        <button
+                          className="action-button remove-button"
+                          onClick={() => handleRemoveFromWishlist(course.id)}
+                          title="Eliminar de la lista de deseos"
+                        >
+                          <FaTrash />
+                        </button>
+                        <button
+                          className="action-button add-to-cart-button"
+                          onClick={() => handleMoveToCart(course)}
+                          title="Añadir al carrito"
+                        >
+                          <FaShoppingCart />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -540,19 +540,29 @@ function Profile() {
                 <div className="course-list">
                   {cart.map(course => (
                     <div className="course-card" key={course.id}>
-                      <img src={course.image} alt={course.title} className="course-image" />
+                      <img
+                        src={course.image || '/images/default-course.jpg'}
+                        alt={course.title || 'Curso'}
+                        className="course-image"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/images/default-course.jpg';
+                        }}
+                      />
                       <div className="course-info">
-                        <h3 className="course-title">{course.title}</h3>
-                        <p className="course-price">{course.price.toFixed(2)} €</p>
-                      </div>
-                      <div className="course-actions">
-                        <button
-                          className="action-button remove-button"
-                          onClick={() => handleRemoveFromCart(course.id)}
-                          title="Eliminar del carrito"
-                        >
-                          <FaTrash />
-                        </button>
+                        <div>
+                          <h3 className="course-title">{course.title || 'Curso sin título'}</h3>
+                          <p className="course-price">{(course.price || 0).toFixed(2)} €</p>
+                        </div>
+                        <div className="course-actions">
+                          <button
+                            className="action-button remove-button"
+                            onClick={() => handleRemoveFromCart(course.id)}
+                            title="Eliminar del carrito"
+                          >
+                            <FaTrash />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}

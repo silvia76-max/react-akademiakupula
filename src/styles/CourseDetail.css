@@ -125,20 +125,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  border: none;
+  border: 2px solid transparent;
   background-color: #333;
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .icon-button:hover:not(:disabled) {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.icon-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(0);
+  opacity: 0;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.icon-button:hover::before:not(:disabled) {
+  transform: scale(1);
+  opacity: 1;
 }
 
 .wishlist-button {
@@ -152,6 +173,19 @@
 .wishlist-button.active {
   background-color: #ff4d4d;
   color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 77, 77, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0);
+  }
 }
 
 .cart-button {
@@ -162,10 +196,30 @@
   background-color: #008000;
 }
 
+.cart-button.active {
+  background-color: #00a000;
+  color: white;
+  animation: pulse-green 1.5s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 160, 0, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 160, 0, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 160, 0, 0);
+  }
+}
+
 .icon-button.disabled {
   background-color: #555;
   cursor: not-allowed;
   opacity: 0.6;
+  transform: none;
+  box-shadow: none;
 }
 
 .enroll-button {

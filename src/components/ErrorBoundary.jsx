@@ -24,6 +24,12 @@ class ErrorBoundary extends React.Component {
     console.error("Componente:", this.props.componentName || "Desconocido");
     console.error("Error:", error);
     console.error("Error Info:", errorInfo);
+
+    // Si el error es de tipo NotFoundError relacionado con removeChild,
+    // podría ser un problema de React con componentes desmontados
+    if (error.name === 'NotFoundError' && error.message.includes('removeChild')) {
+      console.warn('Error de React relacionado con removeChild. Este error suele ser inofensivo y relacionado con componentes desmontados.');
+    }
   }
 
   handleReset = () => {

@@ -83,18 +83,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Función para cerrar sesión
-  const logout = () => {
+  const logout = async () => {
     try {
-      const result = logoutService();
-      console.log('Resultado de logoutService:', result);
+      // Llamar a la función de cierre de sesión del servicio
+      await logoutService();
 
       // Actualizar el estado
       setCurrentUser(null);
       setIsAdminUser(false);
 
-      return result;
+      return true;
     } catch (error) {
       console.error('Error en función logout del contexto:', error);
+
+      // Actualizar el estado de todas formas
+      setCurrentUser(null);
+      setIsAdminUser(false);
+
       return false;
     }
   };

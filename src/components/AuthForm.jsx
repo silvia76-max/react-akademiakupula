@@ -28,7 +28,13 @@ const AuthForm = ({ onClose }) => {
   useEffect(() => {
     if (currentUser) {
       if (onClose) onClose();
-      navigate('/profile');
+
+      // Redirigir según el tipo de usuario
+      if (currentUser.isAdmin) {
+        navigate('/admin');
+      } else {
+        navigate('/profile');
+      }
     }
   }, [currentUser, navigate, onClose]);
 
@@ -144,16 +150,28 @@ const AuthForm = ({ onClose }) => {
         }, 2000);
       } else if (isLogin) {
         try {
+          console.log('Intentando iniciar sesión con:', formData.email);
+
+          // Verificar explícitamente si es el usuario administrador
+          const isAdminUser = formData.email === 'admin@gmail.com' && formData.password === 'AkademiaKupula';
+
+          if (isAdminUser) {
+            console.log('Detectadas credenciales de administrador');
+          }
+
           // Usar el contexto de autenticación para iniciar sesión con la opción de recordar sesión
           const user = await login({
             email: formData.email,
             password: formData.password
           }, formData.rememberMe);
 
+          console.log('Usuario autenticado:', user);
+
+          // Mostrar notificación de éxito
           setNotification({
             show: true,
             type: 'success',
-            message: '¡Inicio de sesión exitoso!'
+            message: isAdminUser ? '¡Bienvenido Administrador!' : '¡Inicio de sesión exitoso!'
           });
 
           // Cerrar el modal después de un breve retraso
@@ -161,35 +179,64 @@ const AuthForm = ({ onClose }) => {
             if (onClose) onClose();
 
             // Redirigir según el tipo de usuario
-            if (user && user.isAdmin) {
+            if (isAdminUser) {
+              console.log('Redirigiendo a panel de administración...');
               navigate('/admin');
             } else {
+              console.log('Redirigiendo a perfil de usuario...');
               navigate('/profile');
             }
           }, 1000);
         } catch (error) {
           console.error('Error al iniciar sesión:', error);
+
+          // Mostrar mensaje de error específico si está disponible
+          let errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
+
+          if (error.message) {
+            if (error.message.includes('token')) {
+              errorMessage = 'Error en la autenticación. Por favor, inténtalo de nuevo.';
+            } else if (error.message.includes('404')) {
+              errorMessage = 'Servicio no disponible. Por favor, inténtalo más tarde.';
+            } else if (error.message.includes('500')) {
+              errorMessage = 'Error en el servidor. Por favor, inténtalo más tarde.';
+            }
+          }
+
           setNotification({
             show: true,
             type: 'error',
-            message: 'Error al iniciar sesión. Verifica tus credenciales.'
+            message: errorMessage
           });
         }
       } else {
         try {
           // Usar el contexto de autenticación para registrar
-          await register(formData);
+          const user = await register(formData);
+
+          // Verificar explícitamente si es el usuario administrador
+          const isAdminUser = formData.email === 'admin@gmail.com';
+
+          console.log('Usuario registrado:', user);
+          console.log('¿Es administrador?', isAdminUser);
 
           setNotification({
             show: true,
             type: 'success',
-            message: 'Registro exitoso. ¡Ahora puedes iniciar sesión!'
+            message: isAdminUser ? '¡Administrador registrado!' : 'Registro exitoso. ¡Bienvenido/a!'
           });
 
-          // Cambiar a modo login después de un breve retraso
+          // Redirigir según el tipo de usuario
           setTimeout(() => {
-            setIsLogin(true);
-            setFormData({ ...formData, full_name: '', postal_code: '' });
+            if (onClose) onClose();
+
+            if (isAdminUser) {
+              console.log('Redirigiendo a panel de administración...');
+              navigate('/admin');
+            } else {
+              console.log('Redirigiendo a perfil de usuario...');
+              navigate('/profile');
+            }
           }, 1000);
         } catch (error) {
           console.error('Error al registrar:', error);
@@ -365,11 +412,9 @@ const AuthForm = ({ onClose }) => {
                 type="checkbox"
                 name="rememberMe"
                 checked={formData.rememberMe}
-                onChange={(e) => handleInputChange({
-                  target: {
-                    name: 'rememberMe',
-                    value: e.target.checked
-                  }
+                onChange={(e) => setFormData({
+                  ...formData,
+                  rememberMe: e.target.checked
                 })}
                 className="remember-me-checkbox"
               />
