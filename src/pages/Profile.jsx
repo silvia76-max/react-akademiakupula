@@ -8,6 +8,7 @@ import {
   FaShieldAlt
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { getUserData } from '../services/authService';
 import { getCart, saveCart, getWishlist, saveWishlist, removeFromCart, removeFromWishlist, moveFromWishlistToCart } from '../services/cartService';
 import ProfileHeader from '../components/ProfileHeader';
 import PaymentButton from '../components/PaymentButton';
@@ -85,16 +86,27 @@ function Profile() {
     const loadUserData = async () => {
       try {
         setLoading(true);
+        console.log('Cargando datos de usuario en Profile...');
 
         // Verificar si hay datos de usuario en localStorage
         const storedUserData = localStorage.getItem('akademia_user_data');
-        const isUserLoggedIn = storedUserData || isAuthenticated();
+        console.log('Datos almacenados en localStorage:', storedUserData ? 'Sí' : 'No');
+
+        // Verificar autenticación
+        const isUserAuth = isAuthenticated();
+        console.log('¿Usuario autenticado según isAuthenticated?', isUserAuth);
+
+        const isUserLoggedIn = storedUserData || isUserAuth;
+        console.log('¿Usuario considerado como logueado?', isUserLoggedIn);
 
         if (!isUserLoggedIn) {
           console.log('Usuario no autenticado, redirigiendo a la página principal');
           navigate('/');
           return;
         }
+
+        // Si llegamos aquí, el usuario está autenticado
+        console.log('Usuario autenticado, cargando datos...');
 
         // Cargar datos del carrito y la lista de deseos
         const wishlistItems = getWishlist();
@@ -144,7 +156,7 @@ function Profile() {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const avatarData = e.target.result;
 
         // Guardar el avatar en localStorage para persistencia
@@ -152,6 +164,28 @@ function Profile() {
 
         // Actualizar el estado
         setAvatar(avatarData);
+
+        // Actualizar el perfil del usuario para indicar que tiene avatar
+        try {
+          // Obtener los datos actuales del usuario
+          const currentUserData = getUserData();
+
+          if (currentUserData) {
+            // Actualizar la propiedad hasAvatar
+            const updatedUser = {
+              ...currentUserData,
+              hasAvatar: true
+            };
+
+            // Guardar los datos actualizados
+            await updateProfile(updatedUser);
+            setUser(updatedUser);
+
+            console.log('Perfil actualizado con información de avatar');
+          }
+        } catch (error) {
+          console.error('Error al actualizar el perfil con información de avatar:', error);
+        }
 
         console.log('Avatar guardado en localStorage');
       };
@@ -233,8 +267,8 @@ function Profile() {
     }
   };
 
-  // Calcular el total del carrito
-  const cartTotal = cart.reduce((total, course) => total + course.price, 0);
+  // Calcular el total del carrito de forma segura
+  const cartTotal = cart.reduce((total, course) => total + (course.price || 0), 0);
 
   if (loading) {
     return (
@@ -482,18 +516,20 @@ function Profile() {
             ) : (
               <div className="course-list">
                 {wishlist.map(course => (
-                  <div className="course-card" key={course.id}>
-                    <img
-                      src={course.image || '/images/default-course.jpg'}
-                      alt={course.title || 'Curso'}
-                      className="course-image"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/images/default-course.jpg';
-                      }}
-                    />
+                  <div className="course-card" key={course.id || Math.random().toString()}>
+                    <div className="course-image-container">
+                      <img
+                        src={course.image || '/images/default-course.jpg'}
+                        alt={course.title || 'Curso'}
+                        className="course-image"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/images/default-course.jpg';
+                        }}
+                      />
+                    </div>
                     <div className="course-info">
-                      <div>
+                      <div className="course-details">
                         <h3 className="course-title">{course.title || 'Curso sin título'}</h3>
                         <p className="course-price">{(course.price || 0).toFixed(2)} €</p>
                       </div>
@@ -502,6 +538,7 @@ function Profile() {
                           className="action-button remove-button"
                           onClick={() => handleRemoveFromWishlist(course.id)}
                           title="Eliminar de la lista de deseos"
+                          aria-label="Eliminar de la lista de deseos"
                         >
                           <FaTrash />
                         </button>
@@ -509,6 +546,7 @@ function Profile() {
                           className="action-button add-to-cart-button"
                           onClick={() => handleMoveToCart(course)}
                           title="Añadir al carrito"
+                          aria-label="Añadir al carrito"
                         >
                           <FaShoppingCart />
                         </button>
@@ -539,18 +577,20 @@ function Profile() {
               <>
                 <div className="course-list">
                   {cart.map(course => (
-                    <div className="course-card" key={course.id}>
-                      <img
-                        src={course.image || '/images/default-course.jpg'}
-                        alt={course.title || 'Curso'}
-                        className="course-image"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = '/images/default-course.jpg';
-                        }}
-                      />
+                    <div className="course-card" key={course.id || Math.random().toString()}>
+                      <div className="course-image-container">
+                        <img
+                          src={course.image || '/images/default-course.jpg'}
+                          alt={course.title || 'Curso'}
+                          className="course-image"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = '/images/default-course.jpg';
+                          }}
+                        />
+                      </div>
                       <div className="course-info">
-                        <div>
+                        <div className="course-details">
                           <h3 className="course-title">{course.title || 'Curso sin título'}</h3>
                           <p className="course-price">{(course.price || 0).toFixed(2)} €</p>
                         </div>
@@ -559,6 +599,7 @@ function Profile() {
                             className="action-button remove-button"
                             onClick={() => handleRemoveFromCart(course.id)}
                             title="Eliminar del carrito"
+                            aria-label="Eliminar del carrito"
                           >
                             <FaTrash />
                           </button>

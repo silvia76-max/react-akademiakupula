@@ -13,18 +13,7 @@ const SESSION_ID_KEY = 'akademia_session_id';
 // Tiempo de expiración del token en milisegundos (7 días para mayor persistencia)
 const TOKEN_EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000;
 
-// Función para simular una respuesta de API
-const simulateApiResponse = (data, success = true, delay = 500) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (success) {
-        resolve(data);
-      } else {
-        reject(new Error('Error en la solicitud'));
-      }
-    }, delay);
-  });
-};
+
 
 // Importar el servicio de base de datos
 import { createUser, createSession, detectDeviceType, getClientIP, generateSessionId } from './dbService';
@@ -100,6 +89,8 @@ export const register = async (userData) => {
 // Función para iniciar sesión
 export const login = async (credentials, rememberMe = true) => {
   try {
+    console.log('Iniciando sesión con credenciales:', credentials.email);
+
     // Verificar si son credenciales de administrador
     if (credentials.email === 'admin@gmail.com' && credentials.password === 'AkademiaKupula') {
       console.log('¡CREDENCIALES DE ADMINISTRADOR DETECTADAS!');
@@ -118,197 +109,43 @@ export const login = async (credentials, rememberMe = true) => {
         lastLogin: new Date().toISOString()
       };
 
-      const token = 'jwt_token_admin_' + Math.random().toString(36).substring(2);
+      // Generar un token simple
+      const token = 'admin_token_' + Date.now();
 
-      // Limpiar cualquier sesión anterior
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
-      localStorage.removeItem(TOKEN_EXPIRY_KEY);
-      localStorage.removeItem(SESSION_ID_KEY);
-      sessionStorage.removeItem(TOKEN_KEY);
-      sessionStorage.removeItem(USER_KEY);
-      sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
-      sessionStorage.removeItem(SESSION_ID_KEY);
+      // Limpiar datos de sesión anteriores
+      localStorage.clear();
+      sessionStorage.clear();
 
-      // Guardamos el token y los datos del usuario
+      // Guardar datos en localStorage para persistencia
       localStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(USER_KEY, JSON.stringify(user));
       localStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
-      localStorage.setItem(SESSION_ID_KEY, 'admin_session_' + Math.random().toString(36).substring(2));
 
-      // Redirigir directamente al panel de administración
-      window.location.href = '/admin';
+      console.log('Datos de administrador guardados correctamente');
+      console.log('Token:', token);
+      console.log('Usuario:', user);
 
       return user;
     } else {
       // Para usuarios normales, intentar iniciar sesión a través de la API
       try {
-        const loginUrl = `${API_BASE_URL}/auth/login`;
-        console.log('Intentando iniciar sesión en:', loginUrl);
+        console.log('Iniciando sesión de usuario normal con email:', credentials.email);
 
-        // Intentar hacer la solicitud a la API
-        try {
-          const response = await fetch(loginUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(credentials)
-          });
-
-          if (!response.ok) {
-            console.error(`Error de respuesta: ${response.status} ${response.statusText}`);
-
-            // Si la API devuelve un error, crear un usuario simulado para pruebas
-            // Esto es temporal hasta que la API funcione correctamente
-            const user = {
-              id: 1,
-              full_name: credentials.email.split('@')[0],
-              email: credentials.email,
-              phone: '600000000',
-              address: 'Dirección de prueba',
-              city: 'Ciudad',
-              postal_code: '28000',
-              dni: '12345678X',
-              isAdmin: false,
-              lastLogin: new Date().toISOString()
-            };
-
-            const token = 'jwt_token_user_' + Math.random().toString(36).substring(2);
-
-            // Limpiar cualquier sesión anterior
-            localStorage.removeItem(TOKEN_KEY);
-            localStorage.removeItem(USER_KEY);
-            localStorage.removeItem(TOKEN_EXPIRY_KEY);
-            localStorage.removeItem(SESSION_ID_KEY);
-            sessionStorage.removeItem(TOKEN_KEY);
-            sessionStorage.removeItem(USER_KEY);
-            sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
-            sessionStorage.removeItem(SESSION_ID_KEY);
-
-            // Guardamos el token y los datos del usuario
-            if (rememberMe) {
-              localStorage.setItem(TOKEN_KEY, token);
-              localStorage.setItem(USER_KEY, JSON.stringify(user));
-              localStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
-              localStorage.setItem(SESSION_ID_KEY, 'user_session_' + Math.random().toString(36).substring(2));
-            } else {
-              sessionStorage.setItem(TOKEN_KEY, token);
-              sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-              sessionStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
-              sessionStorage.setItem(SESSION_ID_KEY, 'user_session_' + Math.random().toString(36).substring(2));
-            }
-
-            console.log('Usando usuario simulado para pruebas:', user);
-            return user;
-          }
-
-          // Si la respuesta es correcta, intentar parsear los datos
-          try {
-            const data = await response.json();
-            console.log('Datos recibidos de la API:', data);
-
-            // Verificar la estructura de los datos
-            // La API puede devolver diferentes estructuras, intentamos manejar todas
-            let user, token;
-
-            if (data.user && data.token) {
-              // Estructura esperada: { user: {...}, token: "..." }
-              user = data.user;
-              token = data.token;
-            } else if (data.data && data.data.user && data.data.token) {
-              // Estructura alternativa: { data: { user: {...}, token: "..." } }
-              user = data.data.user;
-              token = data.data.token;
-            } else if (data.usuario && data.token) {
-              // Otra estructura posible: { usuario: {...}, token: "..." }
-              user = data.usuario;
-              token = data.token;
-            } else {
-              // Intentar encontrar cualquier objeto que parezca un usuario y un token
-              for (const key in data) {
-                if (typeof data[key] === 'object' && data[key] !== null && data[key].email) {
-                  user = data[key];
-                }
-                if (typeof data[key] === 'string' && data[key].length > 20) {
-                  token = data[key];
-                }
-              }
-            }
-
-            // Si no se encontró usuario o token, usar los datos completos como usuario
-            if (!user && !token && typeof data === 'object') {
-              console.log('No se encontró estructura esperada, usando datos completos');
-              user = {
-                ...data,
-                id: data.id || data.user_id || 1,
-                email: credentials.email,
-                full_name: data.full_name || data.nombre || credentials.email.split('@')[0]
-              };
-              token = 'token_' + Math.random().toString(36).substring(2);
-            }
-
-            if (!user || !token) {
-              console.error('No se pudo extraer usuario o token de la respuesta:', data);
-              throw new Error('No se pudo extraer usuario o token de la respuesta');
-            }
-
-            console.log('Usuario extraído:', user);
-            console.log('Token extraído:', token);
-
-            // Limpiar cualquier sesión anterior
-            localStorage.removeItem(TOKEN_KEY);
-            localStorage.removeItem(USER_KEY);
-            localStorage.removeItem(TOKEN_EXPIRY_KEY);
-            localStorage.removeItem(SESSION_ID_KEY);
-            sessionStorage.removeItem(TOKEN_KEY);
-            sessionStorage.removeItem(USER_KEY);
-            sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
-            sessionStorage.removeItem(SESSION_ID_KEY);
-
-            // Guardamos el token y los datos del usuario
-            if (rememberMe) {
-              localStorage.setItem(TOKEN_KEY, token);
-              localStorage.setItem(USER_KEY, JSON.stringify(user));
-              localStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
-              localStorage.setItem(SESSION_ID_KEY, 'user_session_' + Math.random().toString(36).substring(2));
-            } else {
-              sessionStorage.setItem(TOKEN_KEY, token);
-              sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-              sessionStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
-              sessionStorage.setItem(SESSION_ID_KEY, 'user_session_' + Math.random().toString(36).substring(2));
-            }
-
-            return user;
-          } catch (parseError) {
-            console.error('Error al parsear la respuesta JSON:', parseError);
-            throw new Error('Error al parsear la respuesta del servidor');
-          }
-        } catch (fetchError) {
-          console.error('Error al realizar la solicitud fetch:', fetchError);
-          throw new Error('Error de conexión con el servidor');
-        }
-      } catch (apiError) {
-        console.error('Error en la comunicación con la API:', apiError);
-
-        // Si todo falla, crear un usuario simulado para pruebas
-        // Esto es temporal hasta que la API funcione correctamente
-        const user = {
-          id: 1,
+        // Crear un usuario de prueba para desarrollo (esto permite probar sin backend)
+        // En un entorno de producción, esto se reemplazaría con la llamada real a la API
+        const testUser = {
+          id: Math.floor(Math.random() * 1000) + 1,
           full_name: credentials.email.split('@')[0],
           email: credentials.email,
-          phone: '600000000',
-          address: 'Dirección de prueba',
-          city: 'Ciudad',
-          postal_code: '28000',
-          dni: '12345678X',
           isAdmin: false,
           lastLogin: new Date().toISOString()
         };
 
-        const token = 'jwt_token_user_' + Math.random().toString(36).substring(2);
+        const testToken = 'user_token_' + Date.now();
 
-        // Limpiar cualquier sesión anterior
+        console.log('Creando usuario de prueba:', testUser);
+
+        // Limpiar datos de sesión anteriores
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
         localStorage.removeItem(TOKEN_EXPIRY_KEY);
@@ -318,21 +155,21 @@ export const login = async (credentials, rememberMe = true) => {
         sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
         sessionStorage.removeItem(SESSION_ID_KEY);
 
-        // Guardamos el token y los datos del usuario
-        if (rememberMe) {
-          localStorage.setItem(TOKEN_KEY, token);
-          localStorage.setItem(USER_KEY, JSON.stringify(user));
-          localStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
-          localStorage.setItem(SESSION_ID_KEY, 'user_session_' + Math.random().toString(36).substring(2));
-        } else {
-          sessionStorage.setItem(TOKEN_KEY, token);
-          sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-          sessionStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
-          sessionStorage.setItem(SESSION_ID_KEY, 'user_session_' + Math.random().toString(36).substring(2));
-        }
+        // Guardar datos en localStorage o sessionStorage según la opción de recordar
+        const storage = rememberMe ? localStorage : sessionStorage;
 
-        console.log('Usando usuario simulado para pruebas:', user);
-        return user;
+        storage.setItem(TOKEN_KEY, testToken);
+        storage.setItem(USER_KEY, JSON.stringify(testUser));
+        storage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
+        storage.setItem(SESSION_ID_KEY, 'user_session_' + Date.now());
+
+        console.log('Datos de usuario guardados en:', rememberMe ? 'localStorage' : 'sessionStorage');
+        console.log('Token guardado:', testToken);
+
+        return testUser;
+      } catch (error) {
+        console.error('Error al iniciar sesión de usuario normal:', error);
+        throw new Error('Error al iniciar sesión. Por favor, inténtalo de nuevo.');
       }
     }
   } catch (error) {
@@ -344,37 +181,32 @@ export const login = async (credentials, rememberMe = true) => {
 // Función para cerrar sesión
 export const logout = async () => {
   try {
-    // Obtener el token y el ID de sesión antes de eliminarlos
-    const token = getAuthToken();
-    const sessionId = localStorage.getItem(SESSION_ID_KEY) || sessionStorage.getItem(SESSION_ID_KEY);
+    console.log('Cerrando sesión...');
 
-    // Si hay un token y un ID de sesión, intentar cerrar la sesión en el servidor
-    if (token && sessionId) {
-      try {
-        const logoutUrl = `${API_BASE_URL}/auth/logout`;
-        console.log('Intentando cerrar sesión en:', logoutUrl);
+    // Guardar temporalmente el avatar si existe
+    const avatar = localStorage.getItem('user_avatar');
 
-        await fetch(logoutUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ session_id: sessionId })
-        });
-
-        console.log('Sesión cerrada en el servidor');
-      } catch (apiError) {
-        console.error('Error al cerrar sesión en el servidor:', apiError);
-        // Continuamos con el cierre de sesión local aunque falle en el servidor
-      }
-    }
-
-    // Limpiar datos de localStorage
+    // Limpiar datos de autenticación de localStorage
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(TOKEN_EXPIRY_KEY);
     localStorage.removeItem(SESSION_ID_KEY);
+
+    // Limpiar datos de carrito y wishlist
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (
+        key.startsWith('cart_') ||
+        key.startsWith('wishlist_') ||
+        key === 'activeProfileTab'
+      )) {
+        keysToRemove.push(key);
+      }
+    }
+
+    // Eliminar las claves recopiladas
+    keysToRemove.forEach(key => localStorage.removeItem(key));
 
     // Limpiar datos de sessionStorage
     sessionStorage.removeItem(TOKEN_KEY);
@@ -382,25 +214,42 @@ export const logout = async () => {
     sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
     sessionStorage.removeItem(SESSION_ID_KEY);
 
-    // Forzar redirección a la página principal
-    window.location.href = '/';
+    console.log('Datos de sesión eliminados');
+
+    // No forzar redirección, dejar que React Router maneje la navegación
+    console.log('Sesión cerrada correctamente');
 
     return true;
   } catch (error) {
     console.error('Error al cerrar sesión:', error);
 
     // En caso de error, intentar limpiar los datos de todas formas
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(TOKEN_EXPIRY_KEY);
-    localStorage.removeItem(SESSION_ID_KEY);
-    sessionStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(USER_KEY);
-    sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
-    sessionStorage.removeItem(SESSION_ID_KEY);
+    try {
+      // Limpiar datos de localStorage
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(TOKEN_EXPIRY_KEY);
+      localStorage.removeItem(SESSION_ID_KEY);
 
-    // Forzar redirección a la página principal
-    window.location.href = '/';
+      // Limpiar datos de carrito y wishlist
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('cart_') || key.startsWith('wishlist_'))) {
+          localStorage.removeItem(key);
+        }
+      }
+
+      // Limpiar datos de sessionStorage
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(USER_KEY);
+      sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
+      sessionStorage.removeItem(SESSION_ID_KEY);
+    } catch (cleanupError) {
+      console.error('Error al limpiar datos durante la recuperación:', cleanupError);
+    }
+
+    // No forzar redirección, dejar que React Router maneje la navegación
+    console.log('Sesión cerrada correctamente (recuperación de error)');
 
     return false;
   }
@@ -409,31 +258,30 @@ export const logout = async () => {
 // Función para verificar si el usuario está autenticado
 export const isAuthenticated = () => {
   try {
-    // Intentar obtener el token de localStorage o sessionStorage
-    const token = getAuthToken();
-    const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY) || sessionStorage.getItem(TOKEN_EXPIRY_KEY);
+    console.log('Verificando autenticación...');
 
-    if (!token || !expiry) {
+    // Intentar obtener el token y datos de usuario
+    const token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+    const userDataStr = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
+
+    console.log('Token encontrado:', token ? 'Sí' : 'No');
+    console.log('Datos de usuario encontrados:', userDataStr ? 'Sí' : 'No');
+
+    // Si no hay token o datos de usuario, no está autenticado
+    if (!token || !userDataStr) {
+      console.log('No hay token o datos de usuario, no está autenticado');
       return false;
     }
 
-    // Verificar si el token ha expirado
-    if (new Date().getTime() > parseInt(expiry)) {
-      console.log('Token expirado, cerrando sesión');
-      // Token expirado, limpiar datos
-      logout();
+    // Intentar parsear los datos de usuario
+    try {
+      const userData = JSON.parse(userDataStr);
+      console.log('Usuario autenticado:', userData.email);
+      return true;
+    } catch (parseError) {
+      console.error('Error al parsear datos de usuario:', parseError);
       return false;
     }
-
-    // Verificar si hay datos de usuario
-    const userData = getUserData();
-    if (!userData) {
-      console.log('No hay datos de usuario, cerrando sesión');
-      logout();
-      return false;
-    }
-
-    return true;
   } catch (error) {
     console.error('Error al verificar autenticación:', error);
     return false;
@@ -477,52 +325,34 @@ export const setAuthToken = (token, rememberMe = true) => {
 // Función para obtener los datos del usuario
 export const getUserData = () => {
   try {
+    console.log('Obteniendo datos de usuario...');
+
     // Intentar obtener de localStorage primero, luego de sessionStorage
     const userDataStr = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
 
     if (!userDataStr) {
-      console.warn('No se encontraron datos de usuario en el almacenamiento local');
+      console.warn('No se encontraron datos de usuario en el almacenamiento');
       return null;
     }
 
     try {
       const userData = JSON.parse(userDataStr);
+      console.log('Datos de usuario obtenidos:', userData);
 
       // Verificar si los datos son válidos
       if (!userData || typeof userData !== 'object') {
-        console.warn('Datos de usuario inválidos, limpiando...');
-        localStorage.removeItem(USER_KEY);
-        sessionStorage.removeItem(USER_KEY);
+        console.warn('Datos de usuario inválidos');
         return null;
       }
 
-      // Verificar si los datos contienen la información mínima necesaria
-      if (!userData.email) {
-        console.warn('Datos de usuario incompletos, falta email');
-        return null;
+      // Verificar si es el usuario administrador
+      if (userData.email === 'admin@gmail.com') {
+        userData.isAdmin = true;
       }
 
-      // Asegurarse de que el usuario tenga un ID
-      if (!userData.id) {
-        userData.id = Math.floor(Math.random() * 10000);
-        // Guardar los datos actualizados
-        localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      }
-
-      // Asegurarse de que el usuario tenga un nombre completo
-      if (!userData.full_name && userData.email) {
-        userData.full_name = userData.email.split('@')[0];
-        // Guardar los datos actualizados
-        localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      }
-
-      console.log('Datos de usuario obtenidos correctamente:', userData);
       return userData;
     } catch (parseError) {
       console.error('Error al parsear datos del usuario:', parseError);
-      // Intentar limpiar los datos corruptos
-      localStorage.removeItem(USER_KEY);
-      sessionStorage.removeItem(USER_KEY);
       return null;
     }
   } catch (error) {
@@ -555,6 +385,13 @@ export const setUserData = (userData, rememberMe = true) => {
 
     // Asegurarse de que los datos tengan un timestamp de última actualización
     userData.lastUpdated = new Date().toISOString();
+
+    // Verificar si hay un avatar guardado y asociarlo al usuario
+    const avatar = localStorage.getItem('user_avatar');
+    if (avatar) {
+      console.log('Asociando avatar existente al usuario');
+      userData.hasAvatar = true;
+    }
 
     // Guardar en localStorage (persistente) siempre para asegurar persistencia
     // Y opcionalmente en sessionStorage si rememberMe es false
@@ -647,10 +484,14 @@ export const updateUserData = async (userData) => {
     // actualizar solo los datos locales
     console.log('Actualizando datos localmente');
 
+    // Preservar el estado del avatar
+    const hasAvatar = currentUserData.hasAvatar;
+
     const updatedUser = {
       ...currentUserData,
       ...userData,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
+      hasAvatar: hasAvatar // Preservar el estado del avatar
     };
 
     // Guardar los datos actualizados
@@ -660,6 +501,8 @@ export const updateUserData = async (userData) => {
       console.error('Error al guardar los datos actualizados localmente');
       throw new Error('Error al guardar los datos actualizados localmente');
     }
+
+    console.log('Perfil actualizado correctamente:', updatedUser);
 
     return updatedUser;
   } catch (error) {

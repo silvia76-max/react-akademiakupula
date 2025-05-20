@@ -37,32 +37,9 @@ export const getCart = () => {
       }
     }
 
-    // Si no hay elementos en el carrito, crear algunos de ejemplo para pruebas
+    // No creamos datos de ejemplo para mantener el carrito vacío si no hay elementos
     if (cartItems.length === 0) {
-      console.log('Carrito vacío, creando datos de ejemplo');
-
-      // Crear algunos cursos de ejemplo
-      const exampleCourses = [
-        {
-          id: 'curso-maquillaje',
-          title: 'Curso de Maquillaje Profesional',
-          price: 499.99,
-          image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80'
-        },
-        {
-          id: 'curso-unas',
-          title: 'Curso de Uñas Esculpidas',
-          price: 349.99,
-          image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80'
-        }
-      ];
-
-      // Guardar los cursos de ejemplo en localStorage
-      exampleCourses.forEach(course => {
-        localStorage.setItem(`cart_${course.id}`, 'true');
-        localStorage.setItem(`cart_data_${course.id}`, JSON.stringify(course));
-        cartItems.push(course);
-      });
+      console.log('Carrito vacío');
     }
 
     console.log('Carrito cargado:', cartItems);
@@ -175,32 +152,9 @@ export const getWishlist = () => {
       }
     }
 
-    // Si no hay elementos en la lista de deseos, crear algunos de ejemplo para pruebas
+    // No creamos datos de ejemplo para mantener la lista de deseos vacía si no hay elementos
     if (wishlistItems.length === 0) {
-      console.log('Lista de deseos vacía, creando datos de ejemplo');
-
-      // Crear algunos cursos de ejemplo
-      const exampleCourses = [
-        {
-          id: 'curso-estetica',
-          title: 'Curso de Estética Integral',
-          price: 799.99,
-          image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80'
-        },
-        {
-          id: 'curso-peluqueria',
-          title: 'Curso de Peluquería Profesional',
-          price: 599.99,
-          image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80'
-        }
-      ];
-
-      // Guardar los cursos de ejemplo en localStorage
-      exampleCourses.forEach(course => {
-        localStorage.setItem(`wishlist_${course.id}`, 'true');
-        localStorage.setItem(`wishlist_data_${course.id}`, JSON.stringify(course));
-        wishlistItems.push(course);
-      });
+      console.log('Lista de deseos vacía');
     }
 
     console.log('Lista de deseos cargada:', wishlistItems);

@@ -7,6 +7,7 @@ import logo from "../assets/images/logo.jpeg";
 import taniaImage from "../assets/images/fundadora.png";
 import GoldenButton from "./GoldenButton";
 import AuthForm from './AuthForm';
+import ErrorBoundary from './ErrorBoundary';
 import { useAuth } from '../context/AuthContext';
 import "../styles/Header.css";
 import "../styles/Modal.css";
@@ -27,7 +28,10 @@ const Header = () => {
   // Función para abrir el modal de login o ir al perfil
   const openLoginModal = () => {
     if (isLoggedIn) {
-      navigate('/profile');
+      // Usar un pequeño retraso para evitar problemas con el desmontaje
+      setTimeout(() => {
+        navigate('/profile');
+      }, 50);
     } else {
       console.log("Abriendo modal de login");
       setShowLoginModal(true);
@@ -194,7 +198,12 @@ const Header = () => {
       {showLoginModal && (
         <div
           className="modal-overlay"
-          onClick={closeLoginModal}
+          onClick={(e) => {
+            // Evitar cierres accidentales durante la interacción con el formulario
+            if (e.target.className === 'modal-overlay') {
+              closeLoginModal();
+            }
+          }}
           role="dialog"
           aria-modal="true"
         >
@@ -204,12 +213,23 @@ const Header = () => {
           >
             <button
               className="close-button"
-              onClick={closeLoginModal}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                closeLoginModal();
+              }}
               aria-label="Cerrar modal"
             >
               <IoMdClose />
             </button>
-            <AuthForm onClose={closeLoginModal} />
+            <ErrorBoundary componentName="AuthForm">
+              <AuthForm
+                onClose={() => {
+                  // Pequeño retraso para evitar problemas de desmontaje
+                  setTimeout(closeLoginModal, 50);
+                }}
+              />
+            </ErrorBoundary>
           </div>
         </div>
       )}

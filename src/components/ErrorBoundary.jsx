@@ -29,6 +29,24 @@ class ErrorBoundary extends React.Component {
     // podría ser un problema de React con componentes desmontados
     if (error.name === 'NotFoundError' && error.message.includes('removeChild')) {
       console.warn('Error de React relacionado con removeChild. Este error suele ser inofensivo y relacionado con componentes desmontados.');
+
+      // Para errores de removeChild, intentamos recuperarnos automáticamente
+      // en lugar de mostrar la UI de error
+      this.setState({ hasError: false, error: null, errorInfo: null });
+
+      // Si estamos en un componente relacionado con la autenticación,
+      // intentamos recargar la página para resolver el problema
+      if (this.props.componentName &&
+          (this.props.componentName.includes('Auth') ||
+           this.props.componentName.includes('Login') ||
+           this.props.componentName === 'HomePage')) {
+        console.log('Intentando recuperarse automáticamente del error de removeChild...');
+
+        // Usar setTimeout para permitir que React complete el ciclo actual
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
     }
   }
 

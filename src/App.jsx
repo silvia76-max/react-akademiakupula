@@ -29,13 +29,11 @@ const CondicionesDeCompra = lazy(() => import("./components/CondicionesDeCompra"
 // Admin components
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const UsersManagement = lazy(() => import('./pages/admin/UsersManagement'));
-const UserForm = lazy(() => import('./pages/admin/UserForm'));
-const ContentManagement = lazy(() => import('./pages/admin/ContentManagement'));
-const ContentForm = lazy(() => import('./pages/admin/ContentForm'));
-const ContactsManagement = lazy(() => import('./pages/admin/ContactsManagement'));
 const CoursesManagement = lazy(() => import('./pages/admin/CoursesManagement'));
+const ContactsManagement = lazy(() => import('./pages/admin/ContactsManagement'));
 const OrdersManagement = lazy(() => import('./pages/admin/OrdersManagement'));
 const SessionsManagement = lazy(() => import('./pages/admin/SessionsManagement'));
+const DatabaseTablesView = lazy(() => import('./pages/admin/DatabaseTablesView'));
 
 // Payment components
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
@@ -231,29 +229,11 @@ export function App() {
               </AdminProtectedRoute>
             </ErrorBoundary>
           } />
-          <Route path="/admin/users/:userId" element={
-            <ErrorBoundary componentName="UserForm">
+          <Route path="/admin/courses" element={
+            <ErrorBoundary componentName="CoursesManagement">
               <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
-                  <UserForm />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/content" element={
-            <ErrorBoundary componentName="ContentManagement">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <ContentManagement />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/content/:contentId" element={
-            <ErrorBoundary componentName="ContentForm">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <ContentForm />
+                  <CoursesManagement />
                 </Suspense>
               </AdminProtectedRoute>
             </ErrorBoundary>
@@ -263,15 +243,6 @@ export function App() {
               <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <ContactsManagement />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/courses" element={
-            <ErrorBoundary componentName="CoursesManagement">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <CoursesManagement />
                 </Suspense>
               </AdminProtectedRoute>
             </ErrorBoundary>
@@ -290,6 +261,15 @@ export function App() {
               <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <SessionsManagement />
+                </Suspense>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
+          } />
+          <Route path="/admin/database" element={
+            <ErrorBoundary componentName="DatabaseTablesView">
+              <AdminProtectedRoute>
+                <Suspense fallback={<LoadingFallback />}>
+                  <DatabaseTablesView />
                 </Suspense>
               </AdminProtectedRoute>
             </ErrorBoundary>

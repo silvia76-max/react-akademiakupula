@@ -5,10 +5,12 @@ import SalonKupulaimg from '../assets/images/salonkupula.jpg';
 import Unaskupula15img from '../assets/images/unas-kupula15.jpg';
 import UnasKupula29img from '../assets/images/unas-kupula29.jpg';
 import UnasKupula26img from '../assets/images/unas-kupula26.jpg';
+import flayerTania from '../assets/images/flayertania.png';
 
 const AboutSection = () => {
   const sectionRefs = useRef([]);
 
+  // Efecto para la animación de fade-in
   useEffect(() => {
     const observerOptions = {
       root: null,
@@ -38,6 +40,41 @@ const AboutSection = () => {
     };
   }, []);
 
+  // Efecto para cargar el script de Instagram
+  useEffect(() => {
+    // Función para cargar el script de Instagram
+    const loadInstagramEmbed = () => {
+      // Eliminar cualquier script existente para evitar duplicados
+      const existingScript = document.getElementById('instagram-embed-script');
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      // Crear y añadir el nuevo script
+      const script = document.createElement('script');
+      script.id = 'instagram-embed-script';
+      script.src = '//www.instagram.com/embed.js';
+      script.async = true;
+      document.body.appendChild(script);
+
+      // Intentar inicializar el widget si ya existe la función
+      if (window.instgrm) {
+        window.instgrm.Embeds.process();
+      }
+    };
+
+    // Cargar el script
+    loadInstagramEmbed();
+
+    // Volver a cargar el script cuando el componente se desmonte y se vuelva a montar
+    return () => {
+      const script = document.getElementById('instagram-embed-script');
+      if (script) {
+        script.remove();
+      }
+    };
+  }, []);
+
   const addToRefs = (el) => {
     if (el && !sectionRefs.current.includes(el)) {
       sectionRefs.current.push(el);
@@ -63,29 +100,7 @@ const AboutSection = () => {
         </p>
       </div>
 
-      <div className="about-subsection fade-in-section" ref={addToRefs}>
-        <div className="section-header">
-          <h3 className="about-subtitle">Nuestra Filosofía</h3>
-          <div className="subtitle-underline"></div>
-        </div>
-        <div className="philosophy-container">
-          <div className="philosophy-card">
-            <div className="philosophy-icon">✨</div>
-            <h4>Excelencia</h4>
-            <p>Compromiso con la calidad y la mejora continua en cada formación</p>
-          </div>
-          <div className="philosophy-card">
-            <div className="philosophy-icon">💪</div>
-            <h4>Empoderamiento</h4>
-            <p>Herramientas para que desarrolles tu potencial profesional</p>
-          </div>
-          <div className="philosophy-card">
-            <div className="philosophy-icon">🌱</div>
-            <h4>Crecimiento</h4>
-            <p>Aprendizaje continuo y desarrollo personal y profesional</p>
-          </div>
-        </div>
-      </div>
+
 
       {/* Directora */}
       <div className="about-subsection fade-in-section" ref={addToRefs}>
@@ -138,6 +153,55 @@ const AboutSection = () => {
               <li>✓ Ambiente acogedor y creativo</li>
               <li>✓ Ubicación céntrica y accesible</li>
             </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Reproductor de Instagram */}
+      <div className="about-subsection fade-in-section" ref={addToRefs}>
+        <div className="section-header">
+          <h3 className="about-subtitle">Conoce Nuestra Academia</h3>
+          <div className="subtitle-underline"></div>
+        </div>
+        <div className="instagram-container">
+          <div className="instagram-video-container">
+            {/* Reproductor de video de Instagram con iframe oculto */}
+            <div className="instagram-video-wrapper">
+              <iframe
+                className="instagram-video-iframe"
+                src="https://www.instagram.com/reel/DGjn9YcNr2B/embed/captioned/?hidecaption=true&amp;autoplay=true"
+                frameBorder="0"
+                scrolling="no"
+                allowFullScreen
+                title="Video de Instagram de la Academia"
+              ></iframe>
+            </div>
+          </div>
+          <p className="instagram-description">
+            Descubre nuestras instalaciones y conoce más sobre nuestra metodología de enseñanza.
+          </p>
+        </div>
+      </div>
+
+      {/* Sección de Flyer */}
+      <div className="about-subsection fade-in-section" ref={addToRefs}>
+        <div className="section-header">
+          <h3 className="about-subtitle">Información Destacada</h3>
+          <div className="subtitle-underline"></div>
+        </div>
+        <div className="flyer-container">
+          <div className="flyer-content">
+            <img
+              src={flayerTania}
+              alt="Flyer informativo de Akademia Kupula"
+              className="flyer-image"
+            />
+            <div className="flyer-info">
+              <h4 className="flyer-title">Próximos Cursos y Eventos</h4>
+              <p className="flyer-text">
+                Mantente al día con nuestras últimas novedades, promociones especiales y eventos exclusivos.
+              </p>
+            </div>
           </div>
         </div>
       </div>

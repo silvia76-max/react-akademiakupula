@@ -27,21 +27,27 @@ const AuthForm = ({ onClose }) => {
   // Redirigir si el usuario ya está autenticado
   useEffect(() => {
     if (currentUser) {
-      if (onClose) onClose();
+      // Usar un pequeño retraso para evitar problemas con el desmontaje
+      setTimeout(() => {
+        if (onClose) onClose();
 
-      // Redirigir según el tipo de usuario
-      if (currentUser.isAdmin) {
-        navigate('/admin');
-      } else {
-        navigate('/profile');
-      }
+        // Redirigir según el tipo de usuario
+        if (currentUser.isAdmin) {
+          navigate('/admin');
+        } else {
+          navigate('/profile');
+        }
+      }, 50);
     }
   }, [currentUser, navigate, onClose]);
 
   // Efecto para animar la entrada del formulario
   useEffect(() => {
     const timer = setTimeout(() => {
-      document.querySelector('.auth-container').classList.add('active');
+      const container = document.querySelector('.auth-container');
+      if (container) {
+        container.classList.add('active');
+      }
     }, 100);
 
     return () => clearTimeout(timer);
@@ -160,12 +166,37 @@ const AuthForm = ({ onClose }) => {
           }
 
           // Usar el contexto de autenticación para iniciar sesión con la opción de recordar sesión
-          const user = await login({
+          console.log('Iniciando proceso de login con credenciales:', {
             email: formData.email,
-            password: formData.password
-          }, formData.rememberMe);
+            rememberMe: formData.rememberMe
+          });
 
-          console.log('Usuario autenticado:', user);
+          try {
+            const user = await login({
+              email: formData.email,
+              password: formData.password
+            }, formData.rememberMe);
+
+            if (!user) {
+              throw new Error('No se recibieron datos de usuario después del login');
+            }
+
+            console.log('Usuario autenticado correctamente:', user);
+
+            // Verificar que los datos se guardaron correctamente
+            const storedToken = localStorage.getItem('akademia_auth_token') || sessionStorage.getItem('akademia_auth_token');
+            const storedUser = localStorage.getItem('akademia_user_data') || sessionStorage.getItem('akademia_user_data');
+
+            console.log('Token almacenado:', storedToken ? 'Sí' : 'No');
+            console.log('Datos de usuario almacenados:', storedUser ? 'Sí' : 'No');
+
+            if (!storedToken || !storedUser) {
+              console.warn('Advertencia: No se encontraron datos de sesión almacenados después del login');
+            }
+          } catch (loginError) {
+            console.error('Error durante el proceso de login:', loginError);
+            throw loginError;
+          }
 
           // Mostrar notificación de éxito
           setNotification({
@@ -176,8 +207,7 @@ const AuthForm = ({ onClose }) => {
 
           // Cerrar el modal después de un breve retraso
           setTimeout(() => {
-            if (onClose) onClose();
-
+            // Primero navegar y luego cerrar el modal para evitar problemas de desmontaje
             // Redirigir según el tipo de usuario
             if (isAdminUser) {
               console.log('Redirigiendo a panel de administración...');
@@ -186,6 +216,11 @@ const AuthForm = ({ onClose }) => {
               console.log('Redirigiendo a perfil de usuario...');
               navigate('/profile');
             }
+
+            // Pequeño retraso adicional para cerrar el modal después de la navegación
+            setTimeout(() => {
+              if (onClose) onClose();
+            }, 100);
           }, 1000);
         } catch (error) {
           console.error('Error al iniciar sesión:', error);
@@ -228,8 +263,7 @@ const AuthForm = ({ onClose }) => {
 
           // Redirigir según el tipo de usuario
           setTimeout(() => {
-            if (onClose) onClose();
-
+            // Primero navegar y luego cerrar el modal para evitar problemas de desmontaje
             if (isAdminUser) {
               console.log('Redirigiendo a panel de administración...');
               navigate('/admin');
@@ -237,6 +271,11 @@ const AuthForm = ({ onClose }) => {
               console.log('Redirigiendo a perfil de usuario...');
               navigate('/profile');
             }
+
+            // Pequeño retraso adicional para cerrar el modal después de la navegación
+            setTimeout(() => {
+              if (onClose) onClose();
+            }, 100);
           }, 1000);
         } catch (error) {
           console.error('Error al registrar:', error);
