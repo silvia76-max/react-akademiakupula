@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaEye, FaTrash, FaEnvelope, FaReply } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import DataTable from '../../components/admin/DataTable';
-import { getContacts } from '../../services/dbService';
+import { getContacts, deleteContact, replyToContact } from '../../services/adminService';
 import './ContactsManagement.css';
 
 const ContactsManagement = () => {
@@ -45,7 +45,18 @@ const ContactsManagement = () => {
   const fetchContacts = async () => {
     try {
       setLoading(true);
+
+      // Verificar si el usuario es administrador
+      const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+      if (!userData || !userData.isAdmin) {
+        console.log('No es administrador, redirigiendo a la página principal...');
+        navigate('/');
+        return;
+      }
+
+      // Obtener los mensajes usando el servicio adminService
       const data = await getContacts();
+      console.log('Mensajes obtenidos:', data);
       setContacts(data || []);
       setError(null);
     } catch (err) {
@@ -59,7 +70,7 @@ const ContactsManagement = () => {
 
   useEffect(() => {
     fetchContacts();
-  }, []);
+  }, [navigate]);
 
   // Filtrar contactos según el término de búsqueda
   const filteredContacts = contacts.filter(contact =>
@@ -86,17 +97,26 @@ const ContactsManagement = () => {
     }
   };
 
-  const handleDeleteContact = (id) => {
+  const handleDeleteContact = async (id) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este mensaje?')) {
-      // En una implementación real, aquí harías una llamada a la API
-      // await fetch(`/api/admin/contacts/${id}`, { method: 'DELETE' });
-
-      const updatedContacts = contacts.filter(contact => contact.id !== id);
-      setContacts(updatedContacts);
+      try {
+        setLoading(true);
+        // Eliminar el mensaje usando el servicio adminService
+        await deleteContact(id);
+        // Actualizar la lista de mensajes
+        const updatedContacts = contacts.filter(contact => contact.id !== id);
+        setContacts(updatedContacts);
+        setError(null);
+      } catch (err) {
+        console.error(`Error al eliminar el mensaje ${id}:`, err);
+        setError('Error al eliminar el mensaje. Por favor, inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const handleReply = (e) => {
+  const handleReply = async (e) => {
     e.preventDefault();
 
     if (!replyText.trim()) {
@@ -104,18 +124,27 @@ const ContactsManagement = () => {
       return;
     }
 
-    // En una implementación real, aquí enviarías el email
-    // await fetch('/api/admin/contacts/reply', {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     contactId: selectedContact.id,
-    //     replyText
-    //   })
-    // });
+    try {
+      setLoading(true);
+      // Enviar la respuesta usando el servicio adminService
+      await replyToContact(selectedContact.id, replyText);
 
-    alert(`Respuesta enviada a ${selectedContact.email}`);
-    setReplyText('');
-    setShowModal(false);
+      // Actualizar el estado del mensaje a leído
+      const updatedContacts = contacts.map(c =>
+        c.id === selectedContact.id ? { ...c, leido: true } : c
+      );
+      setContacts(updatedContacts);
+
+      alert(`Respuesta enviada a ${selectedContact.email}`);
+      setReplyText('');
+      setShowModal(false);
+      setError(null);
+    } catch (err) {
+      console.error(`Error al responder al mensaje ${selectedContact.id}:`, err);
+      setError('Error al enviar la respuesta. Por favor, inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

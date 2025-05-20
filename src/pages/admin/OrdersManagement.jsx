@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaEye, FaFileInvoice, FaFilter, FaCalendarAlt } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
+import { getOrders, getOrder } from '../../services/adminService';
 import './OrdersManagement.css';
 
 const OrdersManagement = () => {
@@ -18,177 +19,56 @@ const OrdersManagement = () => {
   });
   const navigate = useNavigate();
 
-  // Datos simulados para órdenes
-  const mockOrders = [
-    {
-      id: 1,
-      order_number: 'ORD-2023-001',
-      user: {
-        id: 3,
-        name: 'Laura Martínez',
-        email: 'laura.martinez@example.com'
-      },
-      total_amount: 499.99,
-      status: 'completed',
-      payment_method: 'credit_card',
-      payment_id: 'pi_3NqKL2CDxUStkLAz0MHgaB7K',
-      created_at: '2023-10-05T14:30:00',
-      items: [
-        {
-          id: 1,
-          course_id: 1,
-          course_title: 'Curso de Maquillaje Profesional',
-          price: 499.99
-        }
-      ]
-    },
-    {
-      id: 2,
-      order_number: 'ORD-2023-002',
-      user: {
-        id: 5,
-        name: 'Ana García',
-        email: 'ana.garcia@example.com'
-      },
-      total_amount: 399.99,
-      status: 'completed',
-      payment_method: 'credit_card',
-      payment_id: 'pi_3NqKL2CDxUStkLAz0MHgaB7L',
-      created_at: '2023-10-08T10:15:00',
-      items: [
-        {
-          id: 2,
-          course_id: 2,
-          course_title: 'Curso de Uñas Esculpidas',
-          price: 399.99
-        }
-      ]
-    },
-    {
-      id: 3,
-      order_number: 'ORD-2023-003',
-      user: {
-        id: 2,
-        name: 'Carlos Rodríguez',
-        email: 'carlos.rodriguez@example.com'
-      },
-      total_amount: 799.99,
-      status: 'completed',
-      payment_method: 'credit_card',
-      payment_id: 'pi_3NqKL2CDxUStkLAz0MHgaB7M',
-      created_at: '2023-10-12T16:45:00',
-      items: [
-        {
-          id: 3,
-          course_id: 3,
-          course_title: 'Estética Integral',
-          price: 799.99
-        }
-      ]
-    },
-    {
-      id: 4,
-      order_number: 'ORD-2023-004',
-      user: {
-        id: 4,
-        name: 'Javier Sánchez',
-        email: 'javier.sanchez@example.com'
-      },
-      total_amount: 299.99,
-      status: 'pending',
-      payment_method: 'credit_card',
-      payment_id: 'pi_3NqKL2CDxUStkLAz0MHgaB7N',
-      created_at: '2023-10-15T09:30:00',
-      items: [
-        {
-          id: 4,
-          course_id: 4,
-          course_title: 'Curso de Manicura y Pedicura',
-          price: 299.99
-        }
-      ]
-    },
-    {
-      id: 5,
-      order_number: 'ORD-2023-005',
-      user: {
-        id: 1,
-        name: 'María López',
-        email: 'maria.lopez@example.com'
-      },
-      total_amount: 449.99,
-      status: 'failed',
-      payment_method: 'credit_card',
-      payment_id: 'pi_3NqKL2CDxUStkLAz0MHgaB7O',
-      created_at: '2023-10-18T13:20:00',
-      items: [
-        {
-          id: 5,
-          course_id: 6,
-          course_title: 'Curso de Extensión de Pestañas',
-          price: 449.99
-        }
-      ]
-    },
-    {
-      id: 6,
-      order_number: 'ORD-2023-006',
-      user: {
-        id: 3,
-        name: 'Laura Martínez',
-        email: 'laura.martinez@example.com'
-      },
-      total_amount: 349.99,
-      status: 'refunded',
-      payment_method: 'credit_card',
-      payment_id: 'pi_3NqKL2CDxUStkLAz0MHgaB7P',
-      created_at: '2023-10-20T11:10:00',
-      items: [
-        {
-          id: 6,
-          course_id: 5,
-          course_title: 'Curso de Maquillaje Social',
-          price: 349.99
-        }
-      ]
-    }
-  ];
+
 
   useEffect(() => {
-    // Simulación de carga de datos desde el backend
+    // Función para cargar las órdenes desde la API
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        // En una implementación real, aquí harías una llamada a la API
-        // const response = await fetch('/api/admin/orders');
-        // const data = await response.json();
-        
-        // Simulamos un retraso para la carga
-        setTimeout(() => {
-          setOrders(mockOrders);
-          setLoading(false);
-        }, 800);
+
+        // Verificar si el usuario es administrador
+        const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+        if (!userData || !userData.isAdmin) {
+          console.log('No es administrador, redirigiendo a la página principal...');
+          navigate('/');
+          return;
+        }
+
+        // Construir filtros para la API
+        const apiFilters = {};
+        if (filters.status) apiFilters.status = filters.status;
+        if (filters.dateFrom) apiFilters.dateFrom = filters.dateFrom;
+        if (filters.dateTo) apiFilters.dateTo = filters.dateTo;
+
+        // Obtener las órdenes usando el servicio adminService
+        const data = await getOrders(1, 50, apiFilters);
+        console.log('Órdenes obtenidas:', data);
+        setOrders(data || []);
+        setError(null);
       } catch (err) {
         console.error('Error al cargar las órdenes:', err);
         setError('Error al cargar las órdenes. Por favor, inténtalo de nuevo.');
+        setOrders([]);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, []);
+  }, [navigate, filters.status, filters.dateFrom, filters.dateTo]);
 
   // Filtrar órdenes según los criterios
   const filteredOrders = orders.filter(order => {
     // Filtro por término de búsqueda
-    const searchMatch = 
+    const searchMatch =
       order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     // Filtro por estado
     const statusMatch = filters.status === '' || order.status === filters.status;
-    
+
     // Filtro por fecha
     let dateMatch = true;
     if (filters.dateFrom) {
@@ -203,7 +83,7 @@ const OrdersManagement = () => {
       toDate.setHours(23, 59, 59, 999);
       dateMatch = dateMatch && orderDate <= toDate;
     }
-    
+
     return searchMatch && statusMatch && dateMatch;
   });
 
@@ -220,9 +100,20 @@ const OrdersManagement = () => {
     }));
   };
 
-  const handleViewOrder = (order) => {
-    setSelectedOrder(order);
-    setShowModal(true);
+  const handleViewOrder = async (order) => {
+    try {
+      setLoading(true);
+      // Obtener los detalles completos de la orden
+      const orderDetails = await getOrder(order.id);
+      setSelectedOrder(orderDetails);
+      setShowModal(true);
+      setError(null);
+    } catch (err) {
+      console.error(`Error al obtener detalles de la orden ${order.id}:`, err);
+      setError('Error al obtener detalles de la orden. Por favor, inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGenerateInvoice = (orderId) => {
@@ -231,9 +122,9 @@ const OrdersManagement = () => {
   };
 
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'long', 
+    const options = {
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -283,15 +174,15 @@ const OrdersManagement = () => {
               </button>
             </form>
           </div>
-          
+
           <div className="filter-options">
             <div className="filter-group">
               <label htmlFor="status">
                 <FaFilter /> Estado:
               </label>
-              <select 
-                id="status" 
-                name="status" 
+              <select
+                id="status"
+                name="status"
                 value={filters.status}
                 onChange={handleFilterChange}
               >
@@ -302,27 +193,27 @@ const OrdersManagement = () => {
                 <option value="refunded">Reembolsado</option>
               </select>
             </div>
-            
+
             <div className="filter-group">
               <label htmlFor="dateFrom">
                 <FaCalendarAlt /> Desde:
               </label>
-              <input 
-                type="date" 
-                id="dateFrom" 
+              <input
+                type="date"
+                id="dateFrom"
                 name="dateFrom"
                 value={filters.dateFrom}
                 onChange={handleFilterChange}
               />
             </div>
-            
+
             <div className="filter-group">
               <label htmlFor="dateTo">
                 <FaCalendarAlt /> Hasta:
               </label>
-              <input 
-                type="date" 
-                id="dateTo" 
+              <input
+                type="date"
+                id="dateTo"
                 name="dateTo"
                 value={filters.dateTo}
                 onChange={handleFilterChange}
@@ -363,14 +254,14 @@ const OrdersManagement = () => {
                       </span>
                     </td>
                     <td className="actions-cell">
-                      <button 
+                      <button
                         className="view-button"
                         onClick={() => handleViewOrder(order)}
                         title="Ver detalles"
                       >
                         <FaEye />
                       </button>
-                      <button 
+                      <button
                         className="invoice-button"
                         onClick={() => handleGenerateInvoice(order.id)}
                         title="Generar factura"
@@ -391,7 +282,7 @@ const OrdersManagement = () => {
             <div className="modal-content order-modal">
               <div className="modal-header">
                 <h2>Detalles de la Orden #{selectedOrder.order_number}</h2>
-                <button 
+                <button
                   className="close-button"
                   onClick={() => setShowModal(false)}
                 >
@@ -423,7 +314,7 @@ const OrdersManagement = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="order-section">
                     <h3>Información del Cliente</h3>
                     <div className="detail-grid">
@@ -441,7 +332,7 @@ const OrdersManagement = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="order-section">
                     <h3>Productos</h3>
                     <table className="order-items-table">
@@ -470,9 +361,9 @@ const OrdersManagement = () => {
                     </table>
                   </div>
                 </div>
-                
+
                 <div className="order-actions">
-                  <button 
+                  <button
                     className="invoice-button-large"
                     onClick={() => handleGenerateInvoice(selectedOrder.id)}
                   >

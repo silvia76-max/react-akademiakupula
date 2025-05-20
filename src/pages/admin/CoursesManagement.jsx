@@ -2,15 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEdit, FaTrash, FaSearch, FaPlus, FaEye, FaVideo, FaFileAlt, FaLink } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
+import { getCourses, deleteCourse } from '../../services/adminService';
 import './CoursesManagement.css';
-
-// Importar imágenes de cursos
-import maquillajeImg from '../../assets/images/maquillaje.jpg';
-import unasImg from '../../assets/images/unas.jpg';
-import esteticaImg from '../../assets/images/estetica.jpg';
-import manicuraImg from '../../assets/images/manicura.jpg';
-import socialImg from '../../assets/images/social.jpg';
-import extensionImg from '../../assets/images/extension.jpg';
 
 const CoursesManagement = () => {
   const [courses, setCourses] = useState([]);
@@ -29,22 +22,18 @@ const CoursesManagement = () => {
       try {
         setLoading(true);
 
-        // Intentar obtener los cursos de la API
-        try {
-          const response = await fetch('/api/admin/courses');
-
-          if (response.ok) {
-            const data = await response.json();
-            setCourses(data || []);
-          } else {
-            console.error('Error al obtener cursos:', response.status);
-            setCourses([]);
-          }
-        } catch (apiError) {
-          console.error('Error al conectar con la API:', apiError);
-          setCourses([]);
+        // Verificar si el usuario es administrador
+        const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+        if (!userData || !userData.isAdmin) {
+          console.log('No es administrador, redirigiendo a la página principal...');
+          navigate('/');
+          return;
         }
 
+        // Obtener los cursos usando el servicio adminService
+        const data = await getCourses();
+        console.log('Cursos obtenidos:', data);
+        setCourses(data || []);
         setError(null);
       } catch (err) {
         console.error('Error al cargar los cursos:', err);
@@ -56,7 +45,7 @@ const CoursesManagement = () => {
     };
 
     fetchCourses();
-  }, []);
+  }, [navigate]);
 
   // Filtrar cursos según el término de búsqueda
   const filteredCourses = courses.filter(course =>
@@ -80,13 +69,22 @@ const CoursesManagement = () => {
     alert(`Editar curso con ID: ${id}`);
   };
 
-  const handleDeleteCourse = (id) => {
+  const handleDeleteCourse = async (id) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este curso?')) {
-      // En una implementación real, aquí harías una llamada a la API
-      // await fetch(`/api/admin/courses/${id}`, { method: 'DELETE' });
-
-      const updatedCourses = courses.filter(course => course.id !== id);
-      setCourses(updatedCourses);
+      try {
+        setLoading(true);
+        // Eliminar el curso usando el servicio adminService
+        await deleteCourse(id);
+        // Actualizar la lista de cursos
+        const updatedCourses = courses.filter(course => course.id !== id);
+        setCourses(updatedCourses);
+        setError(null);
+      } catch (err) {
+        console.error(`Error al eliminar el curso ${id}:`, err);
+        setError('Error al eliminar el curso. Por favor, inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

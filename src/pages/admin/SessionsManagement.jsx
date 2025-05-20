@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaTrash, FaSignOutAlt, FaInfoCircle } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import DataTable from '../../components/admin/DataTable';
-import { getSessions, endSession } from '../../services/dbService';
+import { getSessions, endSession } from '../../services/adminService';
 import '../admin/AdminDashboard.css';
 import '../../styles/admin/SessionsManagement.css';
 
@@ -51,7 +51,18 @@ const SessionsManagement = () => {
   const fetchSessions = async () => {
     try {
       setLoading(true);
+
+      // Verificar si el usuario es administrador
+      const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+      if (!userData || !userData.isAdmin) {
+        console.log('No es administrador, redirigiendo a la página principal...');
+        navigate('/');
+        return;
+      }
+
+      // Obtener las sesiones usando el servicio adminService
       const data = await getSessions();
+      console.log('Sesiones obtenidas:', data);
       setSessions(data || []);
       setError(null);
     } catch (err) {
@@ -65,14 +76,6 @@ const SessionsManagement = () => {
 
   useEffect(() => {
     fetchSessions();
-  }, []);
-
-  // Verificar si el usuario es administrador
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
-    if (!userData || !userData.isAdmin) {
-      navigate('/');
-    }
   }, [navigate]);
 
   const handleSearch = (e) => {

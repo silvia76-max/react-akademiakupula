@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaUserPlus, FaCheck, FaTimes } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import DataTable from '../../components/admin/DataTable';
-import { getUsers, deleteUser } from '../../services/dbService';
+import { getUsers, deleteUser } from '../../services/adminService';
 import './UsersManagement.css';
 
 const UsersManagement = () => {
@@ -38,7 +38,18 @@ const UsersManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+
+      // Verificar si el usuario es administrador
+      const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+      if (!userData || !userData.isAdmin) {
+        console.log('No es administrador, redirigiendo a la página principal...');
+        navigate('/');
+        return;
+      }
+
+      // Obtener los usuarios usando el servicio adminService
       const data = await getUsers();
+      console.log('Usuarios obtenidos:', data);
 
       // Usar los datos reales de la API
       setUsers(data || []);
@@ -54,14 +65,6 @@ const UsersManagement = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
-
-  // Verificar si el usuario es administrador
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
-    if (!userData || !userData.isAdmin) {
-      navigate('/');
-    }
   }, [navigate]);
 
   const handleSearch = (e) => {
