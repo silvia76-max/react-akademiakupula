@@ -86,12 +86,7 @@ const AdminSidebar = () => {
               <span>Sesiones</span>
             </Link>
           </li>
-          <li className={isActive('/admin/database') ? 'active' : ''}>
-            <Link to="/admin/database">
-              <FaDatabase className="sidebar-icon" />
-              <span>Base de Datos</span>
-            </Link>
-          </li>
+
         </ul>
       </nav>
 

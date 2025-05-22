@@ -5,7 +5,6 @@ import Header from "./components/Header.jsx";
 import HeroSection from "./components/HeroSection.jsx";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ChatBot from "./components/ChatBot.jsx";
-import ParticlesBackground from "./components/ParticlesBackground.jsx";
 import Footer from "./components/Footer.jsx";
 import Profile from './pages/Profile';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
@@ -33,14 +32,11 @@ const CoursesManagement = lazy(() => import('./pages/admin/CoursesManagement'));
 const ContactsManagement = lazy(() => import('./pages/admin/ContactsManagement'));
 const OrdersManagement = lazy(() => import('./pages/admin/OrdersManagement'));
 const SessionsManagement = lazy(() => import('./pages/admin/SessionsManagement'));
-const DatabaseTablesView = lazy(() => import('./pages/admin/DatabaseTablesView'));
 
 // Payment components
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
 const PaymentCancel = lazy(() => import('./pages/PaymentCancel'));
-// Import for development debugging only
-import PingTest from "./components/pingTest.jsx";
-import TestForm from "./components/TestForm.jsx";
+// Import carousel styles
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 // Estilos globales ya importados en main.jsx
@@ -139,9 +135,6 @@ export function App() {
       <AuthProvider>
         <BrowserRouter>
           <div className="app-container">
-            {/* Development test component */}
-            <PingTest />
-
             {/* Sistema de notificaciones */}
             {notification && (
               <Notification
@@ -208,7 +201,6 @@ export function App() {
               </Suspense>
             </ErrorBoundary>
           } />
-          <Route path="/test" element={<ErrorBoundary componentName="TestForm"><TestForm /></ErrorBoundary>} />
 
           {/* Rutas del panel de administración - Protegidas */}
           <Route path="/admin" element={
@@ -261,15 +253,6 @@ export function App() {
               <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
                   <SessionsManagement />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/database" element={
-            <ErrorBoundary componentName="DatabaseTablesView">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <DatabaseTablesView />
                 </Suspense>
               </AdminProtectedRoute>
             </ErrorBoundary>

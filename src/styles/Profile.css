@@ -4,6 +4,8 @@
   flex-direction: column;
   background-color: #000000 !important;
   color: #ffffff;
+  padding-top: 200px !important; /* Aumentar significativamente el padding para evitar que el contenido se meta debajo del header */
+  margin-top: 50px !important; /* Añadir margen adicional */
 }
 
 /* Asegurarse de que el footer tenga fondo negro en la página de perfil */
@@ -22,7 +24,7 @@
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 80px; /* Aumentamos el espacio para evitar que se esconda debajo del header */
+  padding-top: 0; /* Ya no necesitamos padding-top aquí porque lo aplicamos a .profile-page */
   width: 100%;
 }
 
@@ -366,11 +368,16 @@
   font-size: 1.2rem;
 }
 
-/* Estilos para la lista de deseos y carrito */
+/* Estilos para todas las secciones */
 .wishlist-container,
 .cart-container,
 .courses-container,
-.certificates-container {
+.certificates-container,
+.wishlist-section,
+.cart-section,
+.my-courses-section,
+.certificates-section,
+.sessions-section {
   width: 100%;
   max-width: 800px;
 }

@@ -9,25 +9,21 @@ import "../styles/ProfileHeader.css";
 
 const ProfileHeader = ({ activeTab, setActiveTab }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const navigate = useNavigate();
 
-  // Manejar el scroll para cambiar el estilo del header
+  // Solo manejar el resize para dispositivos móviles
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    // Ejecutar una vez al inicio
+    handleResize();
+
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
@@ -85,7 +81,7 @@ const ProfileHeader = ({ activeTab, setActiveTab }) => {
   };
 
   return (
-    <header className={`header profile-header ${isScrolled ? 'header-scrolled' : ''}`}>
+    <header className="header profile-header">
       <div className="header-container">
         <div className="header-top">
           <div className="header-left">
