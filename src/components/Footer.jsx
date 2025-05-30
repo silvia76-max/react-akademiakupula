@@ -76,52 +76,6 @@ const Footer = () => {
           </ul>
         )}
       </div>
-
-      <nav className="footer-links" aria-label="Redes sociales">
-        <a 
-          href="https://www.tiktok.com/@taniadelacupula" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          aria-label="TikTok"
-          className="social-icon"
-        >
-           <SiTiktok aria-hidden="true" />
-        </a>
-        <a 
-          href="https://www.facebook.com/tania.laCupula" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          aria-label="Facebook"
-          className="social-icon"
-        >
-          <FaFacebook aria-hidden="true" />
-        </a>
-        <a 
-          href="https://www.instagram.com/taniadelacupula" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          aria-label="Instagram"
-          className="social-icon"
-        >
-          <FaInstagram aria-hidden="true" />
-        </a>
-        <a 
-          href="https://wa.me/+34620576646" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          aria-label="WhatsApp"
-          className="social-icon"
-        >
-          <FaWhatsapp aria-hidden="true" />
-        </a>
-        <a 
-          href="mailto:institutodebellezataniacalvo@gmail.com" 
-          aria-label="Email"
-          className="social-icon"
-        >
-          <FaEnvelope aria-hidden="true" />
-        </a>
-      </nav>
       <p>&copy; {new Date().getFullYear()} Akademia La Kúpula. Todos los derechos reservados.</p>
     </footer>
   );

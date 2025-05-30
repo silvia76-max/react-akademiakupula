@@ -1,46 +1,17 @@
 import React from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import "../styles/ReviewCard.css";
 import "../styles/ReviewCarrousel.css";
+import ReviewCard from "./ReviewCard.jsx";
 
 // Placeholder images for avatars
 import defaultAvatar1 from "../assets/images/unas-kupula3.jpg";
 import defaultAvatar2 from "../assets/images/unas-kupula5.jpg";
 import defaultAvatar3 from "../assets/images/unas-kupula2.jpg";
 
-// Componente simplificado de ReviewCard
-const SimpleReviewCard = ({ name, avatar, rating, comment, date, course }) => {
-  return (
-    <div className="review-card">
-      <div className="review-content">
-        <p className="review-comment">"{comment}"</p>
-        <div className="review-stars">
-          {[...Array(5)].map((_, i) => (
-            <span key={i} className="star">
-              {i < rating ? "★" : "☆"}
-            </span>
-          ))}
-        </div>
-        {course && <p className="review-course">{course}</p>}
-      </div>
-
-      <div className="review-footer">
-        <div className="review-header">
-          <img
-            src={avatar}
-            alt={`${name} avatar`}
-            className="review-avatar"
-          />
-          <div className="review-info">
-            <h4>{name}</h4>
-            <p className="review-date">{new Date(date).toLocaleDateString()}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Datos de reseñas
+// Review data
 const reviews = [
   {
     name: "Laura Gómez",
@@ -51,7 +22,7 @@ const reviews = [
     course: "Curso de Maquillaje Profesional"
   },
   {
-    name: "Carlos Martín",
+    name: "Carla Martín",
     avatar: defaultAvatar2,
     rating: 4,
     comment: "Muy buenos cursos, dinámicos y actualizados. El ambiente es muy agradable y el material de primera calidad. ¡Repetiré sin duda!",
@@ -68,32 +39,47 @@ const reviews = [
   }
 ];
 
-// Componente simplificado de ReviewCarousel
-const ReviewCarousel = () => {
-  return (
-    <div className="review-section">
-      <div className="review-carousel-container">
-        <div className="review-carousel-header">
-          <div className="section-header">
-            <h2 className="section-title">Lo que dicen nuestros alumnos</h2>
-            <div className="title-underline"></div>
-          </div>
-        </div>
-
-        <div className="simple-review-grid">
-          {reviews.map((review, index) => (
-            <div key={index} className="review-item">
-              <SimpleReviewCard {...review} />
-            </div>
-          ))}
-        </div>
-
-        <div className="review-carousel-footer">
-          <p>Más de 500 alumnos satisfechos nos avalan</p>
-        </div>
-      </div>
-    </div>
-  );
+// Slider settings
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 2,
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 5000,
+  responsive: [
+    {
+      breakpoint: 900,
+      settings: {
+        slidesToShow: 1
+      }
+    }
+  ]
 };
 
-export default ReviewCarousel;
+// Review carousel component
+const ReviewCarrousel = () => (
+  <div className="review-section">
+    <div className="review-carousel-container">
+      <div className="review-carousel-header">
+        <div className="section-header">
+          <h2 className="section-title">Lo que dicen nuestros alumnos</h2>
+          <div className="title-underline"></div>
+        </div>
+      </div>
+      <Slider {...settings}>
+        {reviews.map((review, index) => (
+          <div key={index} className="review-item">
+            <ReviewCard {...review} />
+          </div>
+        ))}
+      </Slider>
+      <div className="review-carousel-footer">
+        <p>Más de 500 alumnos satisfechos nos avalan</p>
+      </div>
+    </div>
+  </div>
+);
+
+export default ReviewCarrousel;

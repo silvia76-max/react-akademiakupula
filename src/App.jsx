@@ -1,14 +1,19 @@
+/* eslint-disable no-undef */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect, lazy, Suspense } from "react";
-import { FaArrowUp } from "react-icons/fa";
 import Header from "./components/Header.jsx";
 import HeroSection from "./components/HeroSection.jsx";
 import ErrorBoundary from "./components/ErrorBoundary";
+
+import ReviewCarousel from "./components/ReviewCarrousel.jsx";
 import ChatBot from "./components/ChatBot.jsx";
 import Footer from "./components/Footer.jsx";
 import Profile from './pages/Profile';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 // Importar estilos globales
 import "./styles/index.css";
@@ -18,7 +23,6 @@ import "./styles/Animations.css";
 const AboutSection = lazy(() => import("./components/AboutSection.jsx"));
 const Courses = lazy(() => import("./components/Courses.jsx"));
 const ContactSection = lazy(() => import("./components/ContactSection.jsx"));
-const ReviewCarousel = lazy(() => import("./components/ReviewCarrousel.jsx"));
 // Profile ya está importado al principio del archivo
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const PoliticaPrivacidad = lazy(() => import("./components/PoliticaPrivacidad"));
@@ -36,48 +40,7 @@ const SessionsManagement = lazy(() => import('./pages/admin/SessionsManagement')
 // Payment components
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
 const PaymentCancel = lazy(() => import('./pages/PaymentCancel'));
-// Import carousel styles
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-// Estilos globales ya importados en main.jsx
 
-// Componente para el botón de volver arriba
-const BackToTopButton = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Mostrar el botón cuando se desplaza hacia abajo
-  useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.pageYOffset > 500) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
-
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []);
-
-  // Función para volver arriba suavemente
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  };
-
-  return (
-    <button
-      className={`back-to-top ${isVisible ? 'visible' : ''}`}
-      onClick={scrollToTop}
-      aria-label="Volver arriba"
-      title="Volver arriba"
-    >
-      <FaArrowUp />
-    </button>
-  );
-};
 
 // Componente de carga para Suspense
 const LoadingFallback = () => (
@@ -159,18 +122,14 @@ export function App() {
                       <ErrorBoundary componentName="Courses">
                         <Courses />
                       </ErrorBoundary>
+                       <ErrorBoundary componentName="ReviewCarousel">
+                        <ReviewCarousel />
+                       </ErrorBoundary>
                       <ErrorBoundary componentName="ContactSection">
                         <ContactSection />
                       </ErrorBoundary>
-                      <ErrorBoundary componentName="ReviewCarousel">
-                        <ReviewCarousel />
-                      </ErrorBoundary>
                     </Suspense>
-                    <BackToTopButton />
                     <ChatBot />
-                    {/* Eliminado el componente SettingsPanel */}
-                    {/* Desactivamos temporalmente ParticlesBackground para mejorar el rendimiento */}
-                    {/* <ParticlesBackground /> */}
                   </main>
                 </ErrorBoundary>
               }
