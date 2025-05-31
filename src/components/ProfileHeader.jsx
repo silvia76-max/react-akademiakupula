@@ -48,15 +48,6 @@ const ProfileHeader = ({ activeTab, setActiveTab }) => {
     { id: "certificates", label: "Mis Diplomas", icon: <FaCertificate /> }
   ];
 
-  // Verificar si el usuario es administrador
-  const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
-  const isAdmin = userData && userData.isAdmin;
-
-  // Si es administrador, añadir la pestaña de sesiones
-  if (isAdmin) {
-    profileNavLinks.push({ id: "sessions", label: "Sesiones", icon: <FaShieldAlt /> });
-  }
-
   // Función para navegar a la página de cursos sin cerrar sesión
   const navigateToCourses = (e) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   FaCog,
   FaTimes,
@@ -36,26 +36,27 @@ const SettingsPanel = () => {
     }
 
     applySettings();
-  }, []);
+  }, [applySettings]);
 
   // Aplicar configuraciones cuando cambian
   useEffect(() => {
     applySettings();
     saveSettings();
-  }, [settings]);
+  }, [settings, applySettings, saveSettings]);
 
   const togglePanel = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSettingChange = (setting, value) => {
+  const handleSettingChange = useCallback((setting, value) => {
     setSettings(prev => ({
       ...prev,
       [setting]: value
     }));
-  };
+  }, []);
 
-  const applySettings = () => {
+
+  const applySettings = useCallback(() => {
     // Aplicar tamaño de fuente
     document.documentElement.setAttribute('data-font-size', settings.fontSize);
 
@@ -81,16 +82,16 @@ const SettingsPanel = () => {
     } else {
       removeKeyboardShortcuts();
     }
-  };
+  }, [settings, setupKeyboardShortcuts, removeKeyboardShortcuts]);
 
-  const saveSettings = () => {
+  const saveSettings = useCallback(() => {
     localStorage.setItem('fontSize', settings.fontSize);
     localStorage.setItem('contrast', settings.contrast);
     localStorage.setItem('colorAccent', settings.colorAccent);
     localStorage.setItem('animations', settings.animations ? 'enabled' : 'disabled');
     localStorage.setItem('theme', settings.theme);
     localStorage.setItem('accessibilityShortcuts', settings.shortcuts ? 'enabled' : 'disabled');
-  };
+  }, [settings]);
 
   const resetSettings = () => {
     const defaultSettings = {
@@ -113,82 +114,50 @@ const SettingsPanel = () => {
   };
 
   // Funciones de accesibilidad
-  const increaseTextSize = () => {
-    const currentSize = settings.fontSize;
-
-    let newSize;
-    switch (currentSize) {
-      case 'small':
-        newSize = 'medium';
-        break;
-      case 'medium':
-        newSize = 'large';
-        break;
-      default:
-        newSize = 'large';
-    }
-
-    handleSettingChange('fontSize', newSize);
-  };
-
-  const decreaseTextSize = () => {
-    const currentSize = settings.fontSize;
-
-    let newSize;
-    switch (currentSize) {
-      case 'large':
-        newSize = 'medium';
-        break;
-      case 'medium':
-        newSize = 'small';
-        break;
-      default:
-        newSize = 'small';
-    }
-
-    handleSettingChange('fontSize', newSize);
-  };
 
   // Configurar atajos de teclado
-  const setupKeyboardShortcuts = () => {
+  const setupKeyboardShortcuts = useCallback(() => {
     document.addEventListener('keydown', handleKeyboardShortcuts);
-  };
+  }, [handleKeyboardShortcuts]);
 
   // Eliminar atajos de teclado
-  const removeKeyboardShortcuts = () => {
+  const removeKeyboardShortcuts = useCallback(() => {
     document.removeEventListener('keydown', handleKeyboardShortcuts);
-  };
+  }, [handleKeyboardShortcuts]);
 
   // Manejar atajos de teclado
-  const handleKeyboardShortcuts = (e) => {
-    // Solo procesar si Alt está presionada
-    if (!e.altKey) return;
+  const handleKeyboardShortcuts = useCallback(
+    (e) => {
+      // Solo procesar si Alt está presionada
+      if (!e.altKey) return;
 
-    switch (e.key) {
-      case 'h': // Inicio
-        e.preventDefault();
-        window.location.href = '#inicio';
-        break;
-      case 'c': // Cursos
-        e.preventDefault();
-        window.location.href = '#cursos';
-        break;
-      case 'a': // Sobre nosotros
-        e.preventDefault();
-        window.location.href = '#sobre';
-        break;
-      case 'o': // Contacto
-        e.preventDefault();
-        window.location.href = '#contacto';
-        break;
-      case 't': // Cambiar tema
-        e.preventDefault();
-        handleSettingChange('theme', settings.theme === 'dark' ? 'light' : 'dark');
-        break;
-      default:
-        break;
-    }
-  };
+      switch (e.key) {
+        case 'h': // Inicio
+          e.preventDefault();
+          window.location.href = '#inicio';
+          break;
+        case 'c': // Cursos
+          e.preventDefault();
+          window.location.href = '#cursos';
+          break;
+        case 'a': // Sobre nosotros
+          e.preventDefault();
+          window.location.href = '#sobre';
+          break;
+        case 'o': // Contacto
+          e.preventDefault();
+          window.location.href = '#contacto';
+          break;
+        case 't': // Cambiar tema
+          e.preventDefault();
+          handleSettingChange('theme', settings.theme === 'dark' ? 'light' : 'dark');
+          break;
+        default:
+          break;
+      }
+    },
+    [handleSettingChange, settings.theme]
+  );
 
   return (
     <div className="settings-container">

@@ -61,19 +61,6 @@ const MyCourses = () => {
       <p className="empty-state-subtitle">Explora nuestro catálogo y encuentra el curso perfecto para ti</p>
       <a href="/" className="browse-courses-link">Ver cursos disponibles</a>
 
-      {isAdmin && (
-        <div className="admin-message">
-          <p>Como administrador, podrás gestionar los cursos de los usuarios cuando estén disponibles.</p>
-          <p>Esta sección mostrará:</p>
-          <ul>
-            <li>Lista de cursos del usuario</li>
-            <li>Progreso de cada curso</li>
-            <li>Reproductor de video para los contenidos</li>
-            <li>Materiales descargables</li>
-          </ul>
-        </div>
-      )}
-
       {/* Ejemplo de reproductor de video (solo visible para administradores) */}
       {isAdmin && (
         <div className="example-player">
