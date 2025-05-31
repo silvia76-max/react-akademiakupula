@@ -16,7 +16,7 @@ const TOKEN_EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000;
 
 
 // Importar el servicio de base de datos
-import { createUser, createSession, detectDeviceType, getClientIP, generateSessionId } from './dbService';
+import { createSession, detectDeviceType, getClientIP, generateSessionId } from './dbService';
 
 // Función para registrar un usuario
 export const register = async (userData) => {
@@ -91,11 +91,10 @@ export const login = async (credentials, rememberMe = true) => {
   try {
     console.log('Iniciando sesión con credenciales:', credentials.email);
 
-    // Verificar si son credenciales de administrador
+    // Login hardcodeado para admin
     if (credentials.email === 'admin@gmail.com' && credentials.password === 'AkademiaKupula') {
       console.log('¡CREDENCIALES DE ADMINISTRADOR DETECTADAS!');
 
-      // Para el administrador, usar directamente credenciales hardcodeadas
       const user = {
         id: 999,
         full_name: 'Administrador',
@@ -109,14 +108,11 @@ export const login = async (credentials, rememberMe = true) => {
         lastLogin: new Date().toISOString()
       };
 
-      // Generar un token simple
       const token = 'admin_token_' + Date.now();
 
-      // Limpiar datos de sesión anteriores
       localStorage.clear();
       sessionStorage.clear();
 
-      // Guardar datos en localStorage para persistencia
       localStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(USER_KEY, JSON.stringify(user));
       localStorage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
@@ -127,50 +123,30 @@ export const login = async (credentials, rememberMe = true) => {
 
       return user;
     } else {
-      // Para usuarios normales, intentar iniciar sesión a través de la API
-      try {
-        console.log('Iniciando sesión de usuario normal con email:', credentials.email);
+      // Login de usuario normal (simulado)
+      const user = {
+        id: Math.floor(Math.random() * 10000),
+        full_name: credentials.email.split('@')[0],
+        email: credentials.email,
+        isAdmin: false,
+        lastLogin: new Date().toISOString()
+      };
 
-        // Crear un usuario de prueba para desarrollo (esto permite probar sin backend)
-        // En un entorno de producción, esto se reemplazaría con la llamada real a la API
-        const testUser = {
-          id: Math.floor(Math.random() * 1000) + 1,
-          full_name: credentials.email.split('@')[0],
-          email: credentials.email,
-          isAdmin: false,
-          lastLogin: new Date().toISOString()
-        };
+      const token = 'user_token_' + Date.now();
 
-        const testToken = 'user_token_' + Date.now();
+      localStorage.clear();
+      sessionStorage.clear();
 
-        console.log('Creando usuario de prueba:', testUser);
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem(TOKEN_KEY, token);
+      storage.setItem(USER_KEY, JSON.stringify(user));
+      storage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
+      storage.setItem(SESSION_ID_KEY, 'user_session_' + Date.now());
 
-        // Limpiar datos de sesión anteriores
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
-        localStorage.removeItem(TOKEN_EXPIRY_KEY);
-        localStorage.removeItem(SESSION_ID_KEY);
-        sessionStorage.removeItem(TOKEN_KEY);
-        sessionStorage.removeItem(USER_KEY);
-        sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
-        sessionStorage.removeItem(SESSION_ID_KEY);
+      console.log('Datos de usuario guardados en:', rememberMe ? 'localStorage' : 'sessionStorage');
+      console.log('Token guardado:', token);
 
-        // Guardar datos en localStorage o sessionStorage según la opción de recordar
-        const storage = rememberMe ? localStorage : sessionStorage;
-
-        storage.setItem(TOKEN_KEY, testToken);
-        storage.setItem(USER_KEY, JSON.stringify(testUser));
-        storage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + TOKEN_EXPIRY_TIME).toString());
-        storage.setItem(SESSION_ID_KEY, 'user_session_' + Date.now());
-
-        console.log('Datos de usuario guardados en:', rememberMe ? 'localStorage' : 'sessionStorage');
-        console.log('Token guardado:', testToken);
-
-        return testUser;
-      } catch (error) {
-        console.error('Error al iniciar sesión de usuario normal:', error);
-        throw new Error('Error al iniciar sesión. Por favor, inténtalo de nuevo.');
-      }
+      return user;
     }
   } catch (error) {
     console.error('Error general al iniciar sesión:', error);
@@ -182,9 +158,6 @@ export const login = async (credentials, rememberMe = true) => {
 export const logout = async () => {
   try {
     console.log('Cerrando sesión...');
-
-    // Guardar temporalmente el avatar si existe
-    const avatar = localStorage.getItem('user_avatar');
 
     // Limpiar datos de autenticación de localStorage
     localStorage.removeItem(TOKEN_KEY);

@@ -7,8 +7,7 @@ import {
   FaGraduationCap,
   FaEnvelope,
   FaShoppingCart,
-  FaKey,
-  FaDatabase
+  FaKey
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import '../../styles/admin/AdminSidebar.css';
@@ -24,21 +23,14 @@ const AdminSidebar = () => {
 
   // Función para manejar el cierre de sesión
   const handleLogout = () => {
-    // Limpiar localStorage
     localStorage.removeItem('akademia_auth_token');
     localStorage.removeItem('akademia_user_data');
     localStorage.removeItem('akademia_token_expiry');
     localStorage.removeItem('akademia_session_id');
-
-    // Limpiar sessionStorage
     sessionStorage.removeItem('akademia_auth_token');
     sessionStorage.removeItem('akademia_user_data');
     sessionStorage.removeItem('akademia_token_expiry');
     sessionStorage.removeItem('akademia_session_id');
-
-    console.log('Sesión cerrada manualmente');
-
-    // Redirección forzada a la página principal
     window.location.href = '/';
   };
 
@@ -62,22 +54,22 @@ const AdminSidebar = () => {
               <span>Usuarios</span>
             </Link>
           </li>
-          <li className={isActive('/admin/courses') ? 'active' : ''}>
-            <Link to="/admin/courses">
+          <li className={isActive('/admin/cursos') ? 'active' : ''}>
+            <Link to="/admin/cursos">
               <FaGraduationCap className="sidebar-icon" />
               <span>Cursos</span>
             </Link>
           </li>
-          <li className={isActive('/admin/contacts') ? 'active' : ''}>
-            <Link to="/admin/contacts">
+          <li className={isActive('/admin/contactos') ? 'active' : ''}>
+            <Link to="/admin/contactos">
               <FaEnvelope className="sidebar-icon" />
-              <span>Mensajes</span>
+              <span>Contactos</span>
             </Link>
           </li>
           <li className={isActive('/admin/orders') ? 'active' : ''}>
             <Link to="/admin/orders">
               <FaShoppingCart className="sidebar-icon" />
-              <span>Ventas</span>
+              <span>Pedidos</span>
             </Link>
           </li>
           <li className={isActive('/admin/sessions') ? 'active' : ''}>
@@ -86,7 +78,6 @@ const AdminSidebar = () => {
               <span>Sesiones</span>
             </Link>
           </li>
-
         </ul>
       </nav>
 

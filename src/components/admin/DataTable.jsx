@@ -11,7 +11,6 @@ const DataTable = ({
   onDelete,
   loading,
   error,
-  pagination,
   onPageChange,
   emptyMessage = 'No hay datos disponibles'
 }) => {

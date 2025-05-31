@@ -36,6 +36,7 @@ const CoursesManagement = lazy(() => import('./pages/admin/CoursesManagement'));
 const ContactsManagement = lazy(() => import('./pages/admin/ContactsManagement'));
 const OrdersManagement = lazy(() => import('./pages/admin/OrdersManagement'));
 const SessionsManagement = lazy(() => import('./pages/admin/SessionsManagement'));
+const UserForm = lazy(() => import('./pages/admin/UserForm'));
 
 // Payment components
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
@@ -180,7 +181,16 @@ export function App() {
               </AdminProtectedRoute>
             </ErrorBoundary>
           } />
-          <Route path="/admin/courses" element={
+          <Route path="/admin/users/:userId" element={
+            <ErrorBoundary componentName="UserForm">
+              <AdminProtectedRoute>
+                <Suspense fallback={<LoadingFallback />}>
+                  <UserForm />
+                </Suspense>
+              </AdminProtectedRoute>
+            </ErrorBoundary>
+          } />
+          <Route path="/admin/cursos" element={
             <ErrorBoundary componentName="CoursesManagement">
               <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>
@@ -189,7 +199,7 @@ export function App() {
               </AdminProtectedRoute>
             </ErrorBoundary>
           } />
-          <Route path="/admin/contacts" element={
+          <Route path="/admin/contactos" element={
             <ErrorBoundary componentName="ContactsManagement">
               <AdminProtectedRoute>
                 <Suspense fallback={<LoadingFallback />}>

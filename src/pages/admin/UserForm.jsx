@@ -10,14 +10,14 @@ const UserForm = () => {
   const navigate = useNavigate();
   const isNewUser = userId === 'new';
   
-  const [formData, setFormData] = useState({
-    full_name: '',
-    email: '',
-    postal_code: '',
-    is_admin: false,
-    is_confirmed: false,
-    role_id: null
-  });
+const [formData, setFormData] = useState({
+  full_name: '',
+  email: '',
+  postal_code: '',
+  is_admin: false,
+  is_confirmed: false,
+  role_id: null
+});
   
   const [loading, setLoading] = useState(!isNewUser);
   const [saving, setSaving] = useState(false);

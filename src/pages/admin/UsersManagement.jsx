@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaUserPlus, FaCheck, FaTimes } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
@@ -27,15 +27,15 @@ const UsersManagement = () => {
       sortable: true,
       render: (value) => value ? <FaCheck className="admin-icon" /> : <FaTimes className="user-icon" />
     },
-    {
-      key: 'created_at',
-      label: 'Fecha de registro',
-      sortable: true,
-      render: (value) => new Date(value).toLocaleDateString()
-    }
+   {
+    key: 'is_admin',
+    label: 'Administrador',
+    sortable: true,
+    render: (value) => value ? <FaCheck className="admin-icon" /> : <FaTimes className="user-icon" />
+  },
   ];
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -61,11 +61,11 @@ const UsersManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     fetchUsers();
-  }, [navigate]);
+  }, [fetchUsers]);
 
   const handleSearch = (e) => {
     e.preventDefault();

@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
+
 import {
   login as loginService,
   register as registerService,
@@ -12,10 +13,8 @@ import {
 // Crear el contexto de autenticación
 const AuthContext = createContext();
 
-// Hook personalizado para usar el contexto de autenticación
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+// Hook personalizado para usar el contexto
+export const useAuth = () => useContext(AuthContext);
 
 // Proveedor del contexto de autenticación
 export const AuthProvider = ({ children }) => {
@@ -85,21 +84,14 @@ export const AuthProvider = ({ children }) => {
   // Función para cerrar sesión
   const logout = async () => {
     try {
-      // Llamar a la función de cierre de sesión del servicio
       await logoutService();
-
-      // Actualizar el estado
       setCurrentUser(null);
       setIsAdminUser(false);
-
       return true;
     } catch (error) {
       console.error('Error en función logout del contexto:', error);
-
-      // Actualizar el estado de todas formas
       setCurrentUser(null);
       setIsAdminUser(false);
-
       return false;
     }
   };
