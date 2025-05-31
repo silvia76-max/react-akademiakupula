@@ -1,17 +1,21 @@
+// src/services/adminService.js
+
 import axios from 'axios';
 
 // URLs base
 const API_URL = '/api/admin';
 const COURSES_API_URL = '/api/cursos';
 
-// Función para obtener el token de autenticación
+/**
+ * Recupera el token de autenticación almacenado en localStorage
+ */
 const getAuthToken = () => {
   return localStorage.getItem('akademia_auth_token');
 };
 
-// Configurar interceptor para incluir el token en todas las peticiones
+// Interceptor para añadir el token y el header Content-Type a cada petición
 axios.interceptors.request.use(
-  config => {
+  (config) => {
     const token = getAuthToken();
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
@@ -19,14 +23,15 @@ axios.interceptors.request.use(
     config.headers['Content-Type'] = 'application/json';
     return config;
   },
-  error => Promise.reject(error)
+  (error) => Promise.reject(error)
 );
 
-// Interceptor para manejar respuestas
+// Interceptor para manejar errores 401 (autorizar de nuevo al usuario)
 axios.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     if (error.response && error.response.status === 401) {
+      // Si recibimos 401, limpiamos los datos de autenticación
       localStorage.removeItem('akademia_auth_token');
       localStorage.removeItem('akademia_user_data');
       localStorage.removeItem('akademia_token_expiry');
@@ -36,7 +41,9 @@ axios.interceptors.response.use(
   }
 );
 
-// Usuarios
+/* ───────────────────────────────────────────────────────────────────────────────
+   Sección: Usuarios
+   ───────────────────────────────────────────────────────────────────────────── */
 export const getUsers = async (page = 1, perPage = 10) => {
   try {
     const response = await axios.get(`${API_URL}/users?page=${page}&per_page=${perPage}`);
@@ -61,7 +68,9 @@ export const deleteUser = async (userId) => {
   return response.data;
 };
 
-// Contactos
+/* ───────────────────────────────────────────────────────────────────────────────
+   Sección: Contactos
+   ───────────────────────────────────────────────────────────────────────────── */
 export const getContacts = async (page = 1, perPage = 10) => {
   try {
     const response = await axios.get(`${API_URL}/contacts?page=${page}&per_page=${perPage}`);
@@ -81,7 +90,9 @@ export const replyToContact = async (contactId, replyText) => {
   return response.data;
 };
 
-// Cursos (público)
+/* ───────────────────────────────────────────────────────────────────────────────
+   Sección: Cursos (público)
+   ───────────────────────────────────────────────────────────────────────────── */
 export const getCourses = async (page = 1, perPage = 10) => {
   try {
     const response = await axios.get(`${COURSES_API_URL}/?page=${page}&per_page=${perPage}`);
@@ -106,7 +117,9 @@ export const deleteCourse = async (courseId) => {
   return response.data;
 };
 
-// Órdenes
+/* ───────────────────────────────────────────────────────────────────────────────
+   Sección: Órdenes
+   ───────────────────────────────────────────────────────────────────────────── */
 export const getOrders = async (page = 1, perPage = 10, filters = {}) => {
   let queryParams = `page=${page}&per_page=${perPage}`;
   if (filters.status) queryParams += `&status=${filters.status}`;
@@ -125,8 +138,12 @@ export const getOrder = async (orderId) => {
   return response.data.data;
 };
 
-// Sesiones
-export const getSessions = async (page = 1, perPage = 50) => {
+/* ───────────────────────────────────────────────────────────────────────────────
+   Sección: Sesiones
+   ───────────────────────────────────────────────────────────────────────────── */
+
+// implementamos getAllSessions para obtener todas las sesiones (vista admin)
+export const getAllSessions = async (page = 1, perPage = 50) => {
   try {
     const response = await axios.get(`${API_URL}/sessions?page=${page}&per_page=${perPage}`);
     return response.data.data || [];
@@ -135,12 +152,30 @@ export const getSessions = async (page = 1, perPage = 50) => {
   }
 };
 
+/**
+ * Alias para getAllSessions. 
+ * De esta forma, tu SessionsManager.jsx puede importar “getUserSessions”
+ * y funcionará correctamente.
+ */
+export const getUserSessions = async () => {
+  // Si quisieras filtrar por usuario, podrías aceptar un parámetro userId.
+  // En este ejemplo se devuelven todas las sesiones y luego el componente filtra si es necesario.
+  return await getAllSessions();
+};
+
+/**
+ * Finaliza una sesión concreta (o, si quisieras, podrías detectarlo en el componente
+ * y mandar sessionId === 'all' a otro endpoint).
+ */
 export const endSession = async (sessionId) => {
   const response = await axios.delete(`${API_URL}/sessions/${sessionId}`);
+  // Devuelve true si HTTP 200, o lanza error si no
   return response.data;
 };
 
-// Dashboard
+/* ───────────────────────────────────────────────────────────────────────────────
+   Sección: Dashboard
+   ───────────────────────────────────────────────────────────────────────────── */
 export const getDashboardData = async () => {
   try {
     const [users, contacts, courses, sales] = await Promise.all([

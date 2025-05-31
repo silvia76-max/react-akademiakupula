@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaTrash, FaSignOutAlt, FaInfoCircle } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import DataTable from '../../components/admin/DataTable';
-import { getSessions, endSession } from '../../services/adminService';
+import { endSession } from '../../services/authService';
+import { getSessions } from '../../services/adminService';
 import '../admin/AdminDashboard.css';
 import '../../styles/admin/SessionsManagement.css';
 
@@ -48,7 +49,7 @@ const SessionsManagement = () => {
     }
   ];
 
-  const fetchSessions = async () => {
+  const fetchSessions = React.useCallback(async () => {
     try {
       setLoading(true);
 
@@ -72,11 +73,11 @@ const SessionsManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     fetchSessions();
-  }, [navigate]);
+  }, [fetchSessions]);
 
   const handleSearch = (e) => {
     e.preventDefault();

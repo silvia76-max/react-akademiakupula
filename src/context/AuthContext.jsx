@@ -1,5 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useEffect, useContext } from 'react';
-
 import {
   login as loginService,
   register as registerService,
@@ -13,8 +13,6 @@ import {
 // Crear el contexto de autenticación
 const AuthContext = createContext();
 
-// Hook personalizado para usar el contexto
-export const useAuth = () => useContext(AuthContext);
 
 // Proveedor del contexto de autenticación
 export const AuthProvider = ({ children }) => {
@@ -25,22 +23,21 @@ export const AuthProvider = ({ children }) => {
 
   // Cargar el usuario al iniciar la aplicación
   useEffect(() => {
-    const loadUser = () => {
-      try {
-        if (isAuthenticated()) {
-          const userData = getUserData();
-          setCurrentUser(userData);
-          setIsAdminUser(isAdmin());
-        }
-      } catch (error) {
-        console.error('Error al cargar usuario:', error);
-        setError('Error al cargar usuario');
-      } finally {
-        setLoading(false);
+    console.log('Cargando usuario...');
+    try {
+      if (isAuthenticated()) {
+        const userData = getUserData();
+        setCurrentUser(userData);
+        setIsAdminUser(isAdmin());
+        console.log('Usuario cargado:', userData);
       }
-    };
-
-    loadUser();
+    } catch (error) {
+      setError('Error al cargar usuario');
+      console.error(error);
+    } finally {
+      setLoading(false);
+      console.log('setLoading(false) ejecutado');
+    }
   }, []);
 
   // Función para registrar un usuario
@@ -135,3 +132,8 @@ export const AuthProvider = ({ children }) => {
 };
 
 export default AuthContext;
+
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaDesktop, FaMobile, FaTablet, FaTrash, FaSignOutAlt, FaInfoCircle } from 'react-icons/fa';
-import { getUserSessions, endSession, endAllOtherSessions } from '../../services/authService';
+// Ahora importamos ambas funciones desde adminService.js en lugar de authService.js
+import { getUserSessions, endSession } from '../../services/adminService';
 import '../../styles/SessionsManager.css';
 
 const SessionsManager = () => {
@@ -41,22 +42,29 @@ const SessionsManager = () => {
     setShowConfirmation(false);
   };
 
-  // Finalizar una sesión específica
+  // Finalizar una sesión específica (o todas, si sessionToEnd === 'all')
   const handleEndSession = async () => {
     if (!sessionToEnd) return;
-    
+
     try {
+      // Si sessionToEnd === 'all', asumimos que endSession('all') cerrará todas las demás sesiones
       const success = await endSession(sessionToEnd);
       if (success) {
-        setSessions(sessions.filter(session => session.id !== sessionToEnd));
+        if (sessionToEnd === 'all') {
+          // Si cerramos “todas”, dejamos únicamente la sesión actual.
+          // Aquí podrías filtrar de otra forma si tu backend te devuelve algo diferente.
+          setSessions(sessions.filter((s) => s.is_current));
+        } else {
+          setSessions(sessions.filter((session) => session.id !== sessionToEnd));
+        }
         setShowConfirmation(false);
         setSessionToEnd(null);
       } else {
-        setError('No se pudo finalizar la sesión. Inténtalo de nuevo.');
+        setError('No se pudo finalizar la(s) sesión(es). Inténtalo de nuevo.');
       }
     } catch (err) {
       console.error('Error al finalizar sesión:', err);
-      setError('Error al finalizar la sesión. Inténtalo de nuevo.');
+      setError('Error al finalizar la(s) sesión(es). Inténtalo de nuevo.');
     }
   };
 
@@ -66,28 +74,10 @@ const SessionsManager = () => {
     setShowConfirmation(true);
   };
 
-  // Finalizar todas las sesiones excepto la actual
-  const handleEndAllOtherSessions = async () => {
-    try {
-      const success = await endAllOtherSessions();
-      if (success) {
-        // Mantener solo la sesión actual
-        setSessions(sessions.filter(session => session.is_current));
-        setShowConfirmation(false);
-        setSessionToEnd(null);
-      } else {
-        setError('No se pudieron finalizar las sesiones. Inténtalo de nuevo.');
-      }
-    } catch (err) {
-      console.error('Error al finalizar sesiones:', err);
-      setError('Error al finalizar las sesiones. Inténtalo de nuevo.');
-    }
-  };
-
   // Determinar el icono del dispositivo según el user agent
   const getDeviceIcon = (deviceInfo) => {
     if (!deviceInfo) return <FaDesktop />;
-    
+
     const device = deviceInfo.toLowerCase();
     if (device.includes('smartphone') || device.includes('iphone') || device.includes('android')) {
       return <FaMobile />;
@@ -114,7 +104,7 @@ const SessionsManager = () => {
   // Calcular tiempo transcurrido
   const getTimeAgo = (dateString) => {
     if (!dateString) return '';
-    
+
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now - date;
@@ -122,7 +112,7 @@ const SessionsManager = () => {
     const diffMin = Math.floor(diffSec / 60);
     const diffHour = Math.floor(diffMin / 60);
     const diffDay = Math.floor(diffHour / 24);
-    
+
     if (diffDay > 0) {
       return `hace ${diffDay} ${diffDay === 1 ? 'día' : 'días'}`;
     }
@@ -148,7 +138,7 @@ const SessionsManager = () => {
     <div className="sessions-manager">
       <div className="sessions-header">
         <h2>Sesiones activas</h2>
-        <button 
+        <button
           className="end-all-sessions-button"
           onClick={confirmEndAllSessions}
           disabled={sessions.length <= 1}
@@ -170,8 +160,11 @@ const SessionsManager = () => {
         </div>
       ) : (
         <div className="sessions-list">
-          {sessions.map(session => (
-            <div key={session.id} className={`session-card ${session.is_current ? 'current-session' : ''}`}>
+          {sessions.map((session) => (
+            <div
+              key={session.id}
+              className={`session-card ${session.is_current ? 'current-session' : ''}`}
+            >
               <div className="session-icon">
                 {getDeviceIcon(session.device_info)}
               </div>
@@ -193,7 +186,7 @@ const SessionsManager = () => {
                 </div>
               </div>
               {!session.is_current && (
-                <button 
+                <button
                   className="end-session-button"
                   onClick={() => confirmEndSession(session.id)}
                   title="Finalizar sesión"
@@ -212,21 +205,15 @@ const SessionsManager = () => {
           <div className="confirmation-content">
             <h3>Confirmar acción</h3>
             <p>
-              {sessionToEnd === 'all' 
-                ? '¿Estás seguro de que quieres cerrar todas las otras sesiones?' 
+              {sessionToEnd === 'all'
+                ? '¿Estás seguro de que quieres cerrar todas las otras sesiones?'
                 : '¿Estás seguro de que quieres cerrar esta sesión?'}
             </p>
             <div className="confirmation-buttons">
-              <button 
-                className="confirm-button"
-                onClick={sessionToEnd === 'all' ? handleEndAllOtherSessions : handleEndSession}
-              >
+              <button className="confirm-button" onClick={handleEndSession}>
                 Confirmar
               </button>
-              <button 
-                className="cancel-button"
-                onClick={cancelEndSession}
-              >
+              <button className="cancel-button" onClick={cancelEndSession}>
                 Cancelar
               </button>
             </div>

@@ -206,9 +206,7 @@ function Profile() {
   };
 
   // Función para cancelar la edición
-  const cancelEditing = () => {
-    setIsEditing(false);
-  };
+  // (Eliminada porque no se utiliza)
 
   // Función para guardar los cambios
   const saveChanges = async () => {
@@ -322,57 +320,66 @@ function Profile() {
             <div>
               <div className="profile-content">
                 {!isEditing ? (
-                  <div className="profile-info">
-                    <div className="info-item">
-                      <FaUser className="info-icon" />
-                      <div>
-                        <h3>Nombre completo</h3>
-                        <p>{user.full_name}</p>
+                  <>
+                    <div className="profile-info">
+                      <div className="info-item">
+                        <FaUser className="info-icon" />
+                        <div>
+                          <h3>Nombre completo</h3>
+                          <p>{user.full_name}</p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <FaEnvelope className="info-icon" />
+                        <div>
+                          <h3>Email</h3>
+                          <p>{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <FaPhone className="info-icon" />
+                        <div>
+                          <h3>Teléfono</h3>
+                          <p>{user.phone || 'No especificado'}</p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <FaHome className="info-icon" />
+                        <div>
+                          <h3>Dirección</h3>
+                          <p>{user.address || 'No especificada'}</p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <FaMapMarkerAlt className="info-icon" />
+                        <div>
+                          <h3>Ciudad</h3>
+                          <p>{user.city || 'No especificada'}</p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <FaMapMarkerAlt className="info-icon" />
+                        <div>
+                          <h3>Código Postal</h3>
+                          <p>{user.postal_code || 'No especificado'}</p>
+                        </div>
+                      </div>
+                      <div className="info-item">
+                        <FaIdCard className="info-icon" />
+                        <div>
+                          <h3>DNI/NIE</h3>
+                          <p>{user.dni || 'No especificado'}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="info-item">
-                      <FaEnvelope className="info-icon" />
-                      <div>
-                        <h3>Email</h3>
-                        <p>{user.email}</p>
-                      </div>
-                    </div>
-                    <div className="info-item">
-                      <FaPhone className="info-icon" />
-                      <div>
-                        <h3>Teléfono</h3>
-                        <p>{user.phone || 'No especificado'}</p>
-                      </div>
-                    </div>
-                    <div className="info-item">
-                      <FaHome className="info-icon" />
-                      <div>
-                        <h3>Dirección</h3>
-                        <p>{user.address || 'No especificada'}</p>
-                      </div>
-                    </div>
-                    <div className="info-item">
-                      <FaMapMarkerAlt className="info-icon" />
-                      <div>
-                        <h3>Ciudad</h3>
-                        <p>{user.city || 'No especificada'}</p>
-                      </div>
-                    </div>
-                    <div className="info-item">
-                      <FaMapMarkerAlt className="info-icon" />
-                      <div>
-                        <h3>Código Postal</h3>
-                        <p>{user.postal_code || 'No especificado'}</p>
-                      </div>
-                    </div>
-                    <div className="info-item">
-                      <FaIdCard className="info-icon" />
-                      <div>
-                        <h3>DNI/NIE</h3>
-                        <p>{user.dni || 'No especificado'}</p>
-                      </div>
-                    </div>
-                  </div>
+                    <button
+                      className="edit-profile-button"
+                      onClick={startEditing}
+                    >
+                      <FaPencilAlt className="edit-icon" />
+                      Editar perfil
+                    </button>
+                  </>
                 ) : (
                   <div className="profile-edit-form">
                     <div className="form-group">
@@ -445,6 +452,14 @@ function Profile() {
                         onChange={handleInputChange}
                       />
                     </div>
+                    <button
+                      className="save-profile-button"
+                      onClick={saveChanges}
+                      type="button"
+                    >
+                      <FaSave className="save-icon" />
+                      Guardar
+                    </button>
                   </div>
                 )}
               </div>
