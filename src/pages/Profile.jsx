@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { getUserData } from '../services/authService';
-import { getCart, saveCart, getWishlist, saveWishlist, removeFromCart, removeFromWishlist, moveFromWishlistToCart } from '../services/cartService';
+import { getCart, getWishlist, removeFromCart, removeFromWishlist, moveFromWishlistToCart } from '../services/cartService';
 import ProfileHeader from '../components/ProfileHeader';
 import PaymentButton from '../components/PaymentButton';
 import MyCourses from '../components/profile/MyCourses';
@@ -39,6 +39,7 @@ function Profile() {
 
   const [wishlist, setWishlist] = useState([]);
   const [cart, setCart] = useState([]);
+  const [cartTotal, setCartTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // Usamos un avatar por defecto en lugar del logo
@@ -266,9 +267,8 @@ function Profile() {
       alert(result.message);
     }
   };
-
   // Calcular el total del carrito de forma segura
-  const cartTotal = cart.reduce((total, course) => total + (course.price || 0), 0);
+  // const cartTotal = cart.reduce((total, course) => total + (course.price || 0), 0);
 
   if (loading) {
     return (
@@ -299,213 +299,171 @@ function Profile() {
       <div className="profile-container">
         {activeTab === 'profile' && (
           <div className="profile-card">
-            <div className="profile-header">
-              <div className="avatar-container">
-                <div className="avatar-wrapper" onClick={handleAvatarClick}>
-                  {avatar ? (
-                    <img src={avatar} alt="Avatar de usuario" className="user-avatar" />
-                  ) : (
-                    <FaUserCircle className="default-avatar-icon" />
-                  )}
-                  <div className="avatar-overlay">
-                    <FaCamera className="camera-icon" />
-                  </div>
-                </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleAvatarChange}
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                />
-              </div>
-
-              <div className="profile-title-container">
-                <h1 className="profile-title">
-                  {isEditing ? 'Editar perfil' : `Bienvenido, ${user.full_name}`}
-                </h1>
-
-                {currentUser && currentUser.isNewUser && (
-                  <div className="welcome-message">
-                    <p>¡Gracias por registrarte! Comienza a explorar cursos y añádelos a tu lista de deseos o carrito.</p>
-                  </div>
-                )}
-
-                {!isEditing ? (
-                  <button className="edit-button" onClick={startEditing}>
-                    <FaPencilAlt /> Editar perfil
-                  </button>
+            <div className="avatar-container">
+              <div className="avatar-wrapper" onClick={handleAvatarClick}>
+                {avatar ? (
+                  <img src={avatar} alt="Avatar de usuario" className="user-avatar" />
                 ) : (
-                  <div className="edit-actions">
-                    <button className="save-button" onClick={saveChanges}>
-                      <FaSave /> Guardar
-                    </button>
-                    <button className="cancel-button" onClick={cancelEditing}>
-                      <FaTimes /> Cancelar
-                    </button>
+                  <FaUserCircle className="default-avatar-icon" />
+                )}
+                <div className="avatar-overlay">
+                  <FaCamera className="camera-icon" />
+                </div>
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleAvatarChange}
+                accept="image/*"
+                style={{ display: 'none' }}
+              />
+            </div>
+            <div className="profile-actions"></div>
+            <div>
+              <div className="profile-content">
+                {!isEditing ? (
+                  <div className="profile-info">
+                    <div className="info-item">
+                      <FaUser className="info-icon" />
+                      <div>
+                        <h3>Nombre completo</h3>
+                        <p>{user.full_name}</p>
+                      </div>
+                    </div>
+                    <div className="info-item">
+                      <FaEnvelope className="info-icon" />
+                      <div>
+                        <h3>Email</h3>
+                        <p>{user.email}</p>
+                      </div>
+                    </div>
+                    <div className="info-item">
+                      <FaPhone className="info-icon" />
+                      <div>
+                        <h3>Teléfono</h3>
+                        <p>{user.phone || 'No especificado'}</p>
+                      </div>
+                    </div>
+                    <div className="info-item">
+                      <FaHome className="info-icon" />
+                      <div>
+                        <h3>Dirección</h3>
+                        <p>{user.address || 'No especificada'}</p>
+                      </div>
+                    </div>
+                    <div className="info-item">
+                      <FaMapMarkerAlt className="info-icon" />
+                      <div>
+                        <h3>Ciudad</h3>
+                        <p>{user.city || 'No especificada'}</p>
+                      </div>
+                    </div>
+                    <div className="info-item">
+                      <FaMapMarkerAlt className="info-icon" />
+                      <div>
+                        <h3>Código Postal</h3>
+                        <p>{user.postal_code || 'No especificado'}</p>
+                      </div>
+                    </div>
+                    <div className="info-item">
+                      <FaIdCard className="info-icon" />
+                      <div>
+                        <h3>DNI/NIE</h3>
+                        <p>{user.dni || 'No especificado'}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="profile-edit-form">
+                    <div className="form-group">
+                      <label htmlFor="full_name">Nombre completo</label>
+                      <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
+                        value={editedUser.full_name || ''}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="email">Email</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={editedUser.email || ''}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="phone">Teléfono</label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={editedUser.phone || ''}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="address">Dirección</label>
+                      <input
+                        type="text"
+                        id="address"
+                        name="address"
+                        value={editedUser.address || ''}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="city">Ciudad</label>
+                      <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        value={editedUser.city || ''}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="postal_code">Código Postal</label>
+                      <input
+                        type="text"
+                        id="postal_code"
+                        name="postal_code"
+                        value={editedUser.postal_code || ''}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="dni">DNI/NIE</label>
+                      <input
+                        type="text"
+                        id="dni"
+                        name="dni"
+                        value={editedUser.dni || ''}
+                        onChange={handleInputChange}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
+              <button
+                className="logout-button"
+                onClick={handleLogout}
+              >
+                <FaSignOutAlt className="logout-icon" />
+                <span>Cerrar sesión</span>
+              </button>
             </div>
-
-            <div className="profile-content">
-              {!isEditing ? (
-                <div className="profile-info">
-                  <div className="info-item">
-                    <FaUser className="info-icon" />
-                    <div>
-                      <h3>Nombre completo</h3>
-                      <p>{user.full_name}</p>
-                    </div>
-                  </div>
-
-                  <div className="info-item">
-                    <FaEnvelope className="info-icon" />
-                    <div>
-                      <h3>Email</h3>
-                      <p>{user.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="info-item">
-                    <FaPhone className="info-icon" />
-                    <div>
-                      <h3>Teléfono</h3>
-                      <p>{user.phone || 'No especificado'}</p>
-                    </div>
-                  </div>
-
-                  <div className="info-item">
-                    <FaHome className="info-icon" />
-                    <div>
-                      <h3>Dirección</h3>
-                      <p>{user.address || 'No especificada'}</p>
-                    </div>
-                  </div>
-
-                  <div className="info-item">
-                    <FaMapMarkerAlt className="info-icon" />
-                    <div>
-                      <h3>Ciudad</h3>
-                      <p>{user.city || 'No especificada'}</p>
-                    </div>
-                  </div>
-
-                  <div className="info-item">
-                    <FaMapMarkerAlt className="info-icon" />
-                    <div>
-                      <h3>Código Postal</h3>
-                      <p>{user.postal_code || 'No especificado'}</p>
-                    </div>
-                  </div>
-
-                  <div className="info-item">
-                    <FaIdCard className="info-icon" />
-                    <div>
-                      <h3>DNI/NIE</h3>
-                      <p>{user.dni || 'No especificado'}</p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="profile-edit-form">
-                  <div className="form-group">
-                    <label htmlFor="full_name">Nombre completo</label>
-                    <input
-                      type="text"
-                      id="full_name"
-                      name="full_name"
-                      value={editedUser.full_name || ''}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={editedUser.email || ''}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="phone">Teléfono</label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={editedUser.phone || ''}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="address">Dirección</label>
-                    <input
-                      type="text"
-                      id="address"
-                      name="address"
-                      value={editedUser.address || ''}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="city">Ciudad</label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      value={editedUser.city || ''}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="postal_code">Código Postal</label>
-                    <input
-                      type="text"
-                      id="postal_code"
-                      name="postal_code"
-                      value={editedUser.postal_code || ''}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="dni">DNI/NIE</label>
-                    <input
-                      type="text"
-                      id="dni"
-                      name="dni"
-                      value={editedUser.dni || ''}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <button
-              className="logout-button"
-              onClick={handleLogout}
-            >
-              <FaSignOutAlt className="logout-icon" />
-              <span>Cerrar sesión</span>
-            </button>
           </div>
         )}
-
         {activeTab === 'wishlist' && (
           <div className="wishlist-section">
             <h2 className="section-title">
               <FaHeart className="section-icon" />
               Mi lista de deseos
             </h2>
-
             {wishlist.length === 0 ? (
               <div className="empty-state">
                 <p>No tienes cursos en tu lista de deseos.</p>
@@ -558,14 +516,12 @@ function Profile() {
             )}
           </div>
         )}
-
         {activeTab === 'cart' && (
           <div className="cart-section">
             <h2 className="section-title">
               <FaShoppingCart className="section-icon" />
               Mi carrito
             </h2>
-
             {cart.length === 0 ? (
               <div className="empty-state">
                 <p>No tienes cursos en tu carrito.</p>
@@ -608,7 +564,6 @@ function Profile() {
                     </div>
                   ))}
                 </div>
-
                 <div className="cart-summary">
                   <div className="cart-total">
                     <span>Total:</span>
@@ -625,14 +580,12 @@ function Profile() {
             )}
           </div>
         )}
-
         {activeTab === 'courses' && (
           <div className="my-courses-section">
             <h2 className="section-title">
               <FaGraduationCap className="section-icon" />
               Mis cursos
             </h2>
-
             {currentUser && currentUser.isNewUser ? (
               <div className="empty-state">
                 <p>Aún no tienes cursos.</p>
@@ -648,14 +601,12 @@ function Profile() {
             )}
           </div>
         )}
-
         {activeTab === 'certificates' && (
           <div className="certificates-section">
             <h2 className="section-title">
               <FaCertificate className="section-icon" />
               Mis diplomas
             </h2>
-
             <div className="empty-state">
               <p>No tienes diplomas disponibles.</p>
               <p className="certificate-info">
@@ -664,14 +615,12 @@ function Profile() {
             </div>
           </div>
         )}
-
         {activeTab === 'sessions' && (
           <div className="sessions-section">
             <h2 className="section-title">
               <FaShieldAlt className="section-icon" />
               Mis sesiones
             </h2>
-
             <SessionsManager />
           </div>
         )}
