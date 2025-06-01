@@ -84,6 +84,10 @@ src/
 - El backend debe estar disponible y configurado para que la app funcione correctamente.
 - Si encuentras errores, revisa la consola del navegador para obtener detalles.
 
+## Contribución
+
+¡Las contribuciones son bienvenidas! Por favor, abre un issue o pull request para sugerencias o mejoras.
+
 ## Autor
 
 - [silvia76-max]
