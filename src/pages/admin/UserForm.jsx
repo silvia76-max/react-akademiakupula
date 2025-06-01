@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaSave, FaArrowLeft } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
-import { getUser, updateUser } from '../../services/adminService';
+import { getUser, updateUser } from '../../services/adminService.js';
 import './UserForm.css';
 
 const UserForm = () => {
@@ -91,8 +91,6 @@ const [formData, setFormData] = useState({
   }
   
   return (
-    <div className="admin-layout">
-      <AdminSidebar />
       <div className="admin-content">
         <div className="page-header">
           <h1>{isNewUser ? 'Nuevo Usuario' : 'Editar Usuario'}</h1>
@@ -192,7 +190,6 @@ const [formData, setFormData] = useState({
           </form>
         </div>
       </div>
-    </div>
   );
 };
 

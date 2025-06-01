@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaEye, FaTrash, FaEnvelope, FaReply } from 'react-icons/fa';
-import AdminSidebar from '../../components/admin/AdminSidebar';
 import DataTable from '../../components/admin/DataTable';
-import { getContacts, deleteContact, replyToContact } from '../../services/adminService';
+import { getContacts, deleteContact, replyToContact } from '../../services/adminService.js';
 import './ContactsManagement.css';
 
 const ContactsManagement = () => {
@@ -21,57 +20,32 @@ const ContactsManagement = () => {
     { key: 'id', label: 'ID', sortable: true },
     { key: 'nombre', label: 'Nombre', sortable: true },
     { key: 'email', label: 'Email', sortable: true },
-    { key: 'telefono', label: 'Teléfono', sortable: true },
-    {
-      key: 'fecha_creacion',
-      label: 'Fecha',
-      sortable: true,
-      render: (value) => new Date(value).toLocaleDateString()
-    },
-    {
-      key: 'leido',
-      label: 'Estado',
-      sortable: true,
-      render: (value) => (
-        <span className={`status-badge ${value ? 'read' : 'unread'}`}>
-          {value ? 'Leído' : 'No leído'}
-        </span>
-      )
-    }
+    { key: 'telefono', label: 'Teléfono', sortable: false },
+    { key: 'curso', label: 'Curso', sortable: true },
+    { key: 'mensaje', label: 'Mensaje', sortable: false },
+    { key: 'estado', label: 'Estado', sortable: true },
+    { key: 'fecha_creacion', label: 'Fecha', sortable: true }
   ];
 
-
-
-  const fetchContacts = async () => {
+  const fetchContacts = useCallback(async () => {
     try {
       setLoading(true);
-
-      // Verificar si el usuario es administrador
-      const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
-      if (!userData || !userData.isAdmin) {
-        console.log('No es administrador, redirigiendo a la página principal...');
-        navigate('/');
-        return;
-      }
-
       // Obtener los mensajes usando el servicio adminService
       const data = await getContacts();
-      console.log('Mensajes obtenidos:', data);
       setContacts(data || []);
       setError(null);
     } catch (err) {
-      console.error('Error al cargar los mensajes:', err);
       setError('Error al cargar los mensajes. Por favor, inténtalo de nuevo.');
       setContacts([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchContacts();
-  }, [navigate]);
-
+  }, [fetchContacts]);
+    
   // Filtrar contactos según el término de búsqueda
   const filteredContacts = contacts.filter(contact =>
     contact.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -148,8 +122,6 @@ const ContactsManagement = () => {
   };
 
   return (
-    <div className="admin-layout">
-      <AdminSidebar />
       <div className="admin-content">
         <div className="page-header">
           <h1>Gestión de Mensajes</h1>
@@ -222,7 +194,6 @@ const ContactsManagement = () => {
           </div>
         )}
       </div>
-    </div>
   );
 };
 

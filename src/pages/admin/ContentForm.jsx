@@ -124,12 +124,11 @@ const ContentForm = () => {
         }
       });
       
-      let response;
       if (isNewContent) {
-        response = await createContent(formDataToSend);
+        await createContent(formDataToSend);
         setSuccessMessage('Contenido creado correctamente');
       } else {
-        response = await updateContent(contentId, formDataToSend);
+        await updateContent(contentId, formDataToSend);
         setSuccessMessage('Contenido actualizado correctamente');
       }
       
@@ -164,8 +163,6 @@ const ContentForm = () => {
   }
   
   return (
-    <div className="admin-layout">
-      <AdminSidebar />
       <div className="admin-content">
         <div className="page-header">
           <h1>{isNewContent ? 'Nuevo Contenido' : 'Editar Contenido'}</h1>
@@ -456,7 +453,6 @@ const ContentForm = () => {
           </form>
         </div>
       </div>
-    </div>
   );
 };
 

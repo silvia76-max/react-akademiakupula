@@ -115,8 +115,6 @@ const ContentManagement = () => {
   };
 
   return (
-    <div className="admin-layout">
-      <AdminSidebar />
       <div className="admin-content">
         <div className="page-header">
           <h1>Gestión de Contenido</h1>
@@ -273,7 +271,6 @@ const ContentManagement = () => {
           </div>
         )}
       </div>
-    </div>
   );
 };
 

@@ -9,12 +9,10 @@ import {
   FaShoppingCart,
   FaKey
 } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthContext';
 import '../../styles/admin/AdminSidebar.css';
 
 const AdminSidebar = () => {
   const location = useLocation();
-  const { logout } = useAuth();
 
   // Determinar qué enlace está activo
   const isActive = (path) => {

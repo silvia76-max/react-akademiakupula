@@ -11,6 +11,7 @@ import Footer from "./components/Footer.jsx";
 import Profile from './pages/Profile';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import AdminLayout from './components/admin/AdminLayout';
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -164,68 +165,18 @@ export function App() {
 
           {/* Rutas del panel de administración - Protegidas */}
           <Route path="/admin" element={
-            <ErrorBoundary componentName="AdminDashboard">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <AdminDashboard />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/users" element={
-            <ErrorBoundary componentName="UsersManagement">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <UsersManagement />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/users/:userId" element={
-            <ErrorBoundary componentName="UserForm">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <UserForm />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/cursos" element={
-            <ErrorBoundary componentName="CoursesManagement">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <CoursesManagement />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/contactos" element={
-            <ErrorBoundary componentName="ContactsManagement">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <ContactsManagement />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/orders" element={
-            <ErrorBoundary componentName="OrdersManagement">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <OrdersManagement />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
-          <Route path="/admin/sessions" element={
-            <ErrorBoundary componentName="SessionsManagement">
-              <AdminProtectedRoute>
-                <Suspense fallback={<LoadingFallback />}>
-                  <SessionsManagement />
-                </Suspense>
-              </AdminProtectedRoute>
-            </ErrorBoundary>
-          } />
+            <AdminProtectedRoute>
+              <AdminLayout />
+            </AdminProtectedRoute>
+          }>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<UsersManagement />} />
+            <Route path="users/:userId" element={<UserForm />} />
+            <Route path="cursos" element={<CoursesManagement />} />
+            <Route path="contactos" element={<ContactsManagement />} />
+            <Route path="orders" element={<OrdersManagement />} />
+            <Route path="sessions" element={<SessionsManagement />} />
+          </Route>
         </Routes>
         <Footer />
       </div>

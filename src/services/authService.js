@@ -1,7 +1,6 @@
 // Servicio de autenticación mejorado con persistencia de sesión
 const API_BASE_URL = '/api';
 
-// Claves para localStorage/sessionStorage
 const TOKEN_KEY = 'akademia_auth_token';
 const USER_KEY = 'akademia_user_data';
 const TOKEN_EXPIRY_KEY = 'akademia_token_expiry';
@@ -13,12 +12,12 @@ function setAuthToken(token, rememberMe = true) {
   storage.setItem(TOKEN_EXPIRY_KEY, (Date.now() + 7 * 24 * 60 * 60 * 1000).toString());
 }
 function setUserData(user, rememberMe = true) {
-  if (!user) return; // <-- Añade esta línea
+  if (!user) return;
   const storage = rememberMe ? localStorage : sessionStorage;
   storage.setItem(USER_KEY, JSON.stringify(user));
 }
 
-// LOGIN REAL
+// LOGIN
 export const login = async (credentials, rememberMe = true) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -45,7 +44,7 @@ export const login = async (credentials, rememberMe = true) => {
   }
 };
 
-// REGISTER REAL
+// REGISTER
 export const register = async (userData, rememberMe = true) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -72,47 +71,33 @@ export const register = async (userData, rememberMe = true) => {
   }
 };
 
+// Obtener usuario actual
 export function getUserData() {
-  const user = localStorage.getItem('akademia_user_data') || sessionStorage.getItem('akademia_user_data');
-  if (!user || user === "undefined" || user === "null") return null;
-  try {
-    return JSON.parse(user);
-  } catch {
-    return null;
-  }
+  const user = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
+  return user ? JSON.parse(user) : null;
 }
 
-export function isAdmin() {
-  const user = localStorage.getItem('akademia_user_data') || sessionStorage.getItem('akademia_user_data');
-  if (!user) return false;
-  try {
-    const parsed = JSON.parse(user);
-    return parsed.isAdmin === true || parsed.is_admin === true;
-  } catch {
-    return false;
-  }
-}
-
+// Verificar autenticación
 export function isAuthenticated() {
-  const token = localStorage.getItem('akademia_auth_token') || sessionStorage.getItem('akademia_auth_token');
-  // Puedes agregar más validaciones si quieres comprobar expiración
+  const token = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
   return !!token;
 }
 
+// Logout
 export function logout() {
-  localStorage.removeItem('akademia_auth_token');
-  localStorage.removeItem('akademia_user_data');
-  localStorage.removeItem('akademia_token_expiry');
-  sessionStorage.removeItem('akademia_auth_token');
-  sessionStorage.removeItem('akademia_user_data');
-  sessionStorage.removeItem('akademia_token_expiry');
-
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  localStorage.removeItem(TOKEN_EXPIRY_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(TOKEN_EXPIRY_KEY);
   return true;
 }
 
+// Actualizar datos de usuario
 export function updateUserData(newUserData, rememberMe = true) {
   const storage = rememberMe ? localStorage : sessionStorage;
-  storage.setItem('akademia_user_data', JSON.stringify(newUserData));
+  storage.setItem(USER_KEY, JSON.stringify(newUserData));
 }
 
 // Función para manejar el inicio de sesión desde un formulario
@@ -132,7 +117,7 @@ export async function handleLogin(formData) {
   }
 }
 
-// useEffect para redirigir después del inicio de sesión
+// Hook para redirigir después del login
 import { useEffect } from 'react';
 
 export function useRedirectAfterLogin(currentUser, navigate, onClose) {
@@ -149,3 +134,12 @@ export function useRedirectAfterLogin(currentUser, navigate, onClose) {
     }
   }, [currentUser, navigate, onClose]);
 }
+
+import axios from 'axios';
+
+const API_URL = '/api/admin';
+
+export const endSession = async (sessionId) => {
+  const response = await axios.delete(`${API_URL}/sessions/${sessionId}`);
+  return response.data;
+};
