@@ -1,0 +1,103 @@
+.session-modal {
+  max-width: 700px;
+  width: 90%;
+}
+
+.session-details {
+  margin: 20px 0;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.session-field {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.session-field:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.field-label {
+  font-weight: bold;
+  width: 150px;
+  color: #D4AF37;
+}
+
+.field-value {
+  flex: 1;
+  word-break: break-word;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+}
+
+.status-badge.inactive {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #F44336;
+  border: 1px solid #F44336;
+}
+
+.status-badge.read {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+}
+
+.status-badge.unread {
+  background-color: rgba(33, 150, 243, 0.2);
+  color: #2196F3;
+  border: 1px solid #2196F3;
+}
+
+.danger-button {
+  background-color: #F44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s;
+}
+
+.danger-button:hover {
+  background-color: #D32F2F;
+}
+
+.admin-icon {
+  color: #4CAF50;
+}
+
+.user-icon {
+  color: #F44336;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .session-field {
+    flex-direction: column;
+  }
+  
+  .field-label {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+}

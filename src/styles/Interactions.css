@@ -1,0 +1,309 @@
+/* Microinteracciones y efectos avanzados */
+
+/* Efecto de brillo para botones dorados */
+.golden-button,
+.sendMessage-btn,
+.courses-cta-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.golden-button::before,
+.sendMessage-btn::before,
+.courses-cta-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.golden-button:hover::before,
+.sendMessage-btn:hover::before,
+.courses-cta-button:hover::before {
+  animation: shine 1.5s ease-in-out;
+}
+
+@keyframes shine {
+  0% {
+    opacity: 0;
+    transform: rotate(30deg) translateX(-300%);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(30deg) translateX(300%);
+  }
+}
+
+/* Efecto de ondas al hacer clic */
+.ripple-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%, -50%);
+  transform-origin: 50% 50%;
+}
+
+.ripple-effect:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0) translate(-50%, -50%);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(20, 20) translate(-50%, -50%);
+    opacity: 0;
+  }
+}
+
+/* Efecto de hover 3D para tarjetas */
+.course-card,
+.review-card,
+.gallery-item,
+.philosophy-card,
+.social-icon {
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.tilt-effect {
+  transform: perspective(1000px) rotateX(0) rotateY(0) scale(1);
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Efecto de desenfoque para elementos de fondo */
+.blur-on-scroll {
+  transition: filter 0.5s ease;
+}
+
+.blur-active {
+  filter: blur(5px);
+}
+
+/* Efecto de resaltado para elementos activos */
+.highlight-effect {
+  position: relative;
+}
+
+.highlight-effect::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-dorado);
+  transition: width 0.3s ease;
+}
+
+.highlight-effect:hover::after,
+.highlight-effect.active::after {
+  width: 100%;
+}
+
+/* Efecto de pulsación para elementos interactivos */
+.pulse-on-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pulse-on-hover:hover {
+  animation: subtle-pulse 2s infinite;
+}
+
+@keyframes subtle-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Efecto de escritura para títulos */
+.typing-effect {
+  overflow: hidden;
+  border-right: 2px solid var(--color-dorado);
+  white-space: nowrap;
+  margin: 0 auto;
+  animation:
+    typing 3.5s steps(40, end),
+    blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: var(--color-dorado) }
+}
+
+/* Efecto de desvanecimiento para imágenes */
+.fade-in-image {
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.fade-in-image.loaded {
+  opacity: 1;
+}
+
+/* Efecto de partículas doradas */
+.gold-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.gold-particles::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background-image:
+    radial-gradient(circle, var(--color-dorado) 20%, transparent 20%),
+    radial-gradient(circle, var(--color-dorado) 20%, transparent 20%);
+  background-size: 10px 10px;
+  background-position: 0 0, 5px 5px;
+  animation: fall 8s linear infinite;
+  opacity: 0;
+}
+
+.gold-particles:hover::before {
+  opacity: 0.6;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(1000px);
+  }
+}
+
+/* Efecto de enfoque para elementos importantes */
+.focus-attention {
+  animation: attention-pulse 2s ease-in-out 1;
+}
+
+@keyframes attention-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+  }
+}
+
+/* Estilos para la pantalla de carga de verificación de administrador */
+.admin-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #f5f7fa;
+}
+
+.admin-loading .loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.2rem;
+  color: var(--color-dorado);
+}
+
+.admin-loading .loading-spinner::before {
+  content: "";
+  width: 40px;
+  height: 40px;
+  margin-bottom: 15px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--color-dorado);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Botón de volver arriba */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #000000;
+  color: #ffd700;
+  border: 2px solid #ffd700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 99;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.back-to-top:hover {
+  background-color: #ffd700;
+  color: #000000;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}

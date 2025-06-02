@@ -1,0 +1,60 @@
+.review-section {
+  padding: 50px 0 40px 0;
+}
+
+.review-carousel-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.review-carousel-header .section-title {
+  color: #ffd700;
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.title-underline {
+  width: 60px;
+  height: 4px;
+  background: #ffd700;
+  margin: 0 auto 30px auto;
+  border-radius: 2px;
+}
+
+.simple-review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  margin-bottom: 30px;
+}
+
+.review-item {
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.review-carousel-footer {
+  text-align: center;
+  color: #ffd700;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 700px) {
+  .review-section {
+    padding: 30px 0 20px 0;
+  }
+  .simple-review-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .review-carousel-header .section-title {
+    font-size: 1.4rem;
+  }
+}

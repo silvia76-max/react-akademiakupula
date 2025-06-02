@@ -1,0 +1,113 @@
+.admin-sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #000000;
+  color: #D4AF37; /* Color dorado */
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid #333333;
+  background-color: #111111;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #D4AF37; /* Color dorado */
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 5px;
+}
+
+.sidebar-nav li a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: #D4AF37; /* Color dorado */
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-nav li a:hover {
+  background-color: #111111;
+  border-left: 3px solid #D4AF37; /* Borde dorado al hover */
+}
+
+.sidebar-nav li.active a {
+  background-color: #111111;
+  color: #FFFFFF;
+  border-left: 3px solid #D4AF37; /* Borde dorado cuando está activo */
+}
+
+.sidebar-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+  color: #D4AF37; /* Color dorado para los iconos */
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid #333333;
+  background-color: #111111;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  color: #D4AF37; /* Color dorado */
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.logout-button:hover {
+  background-color: #D4AF37; /* Fondo dorado al hover */
+  color: #000000; /* Texto negro al hover */
+}
+
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 70px;
+  }
+
+  .sidebar-header h2,
+  .sidebar-nav li a span,
+  .sidebar-footer .logout-button span {
+    display: none;
+  }
+
+  .sidebar-icon {
+    margin-right: 0;
+    font-size: 1.5rem;
+  }
+
+  .sidebar-nav li a,
+  .logout-button {
+    justify-content: center;
+  }
+}
