@@ -94,5 +94,4 @@ bash
 
 ---
 
-¡Gracias por usar React-akademiaKupula!     y este el del back # Backend de Akademia Kupula
 
