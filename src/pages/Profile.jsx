@@ -206,9 +206,7 @@ function Profile() {
   };
 
   // Función para cancelar la edición
-  const cancelEditing = () => {
-    setIsEditing(false);
-  };
+  // (Eliminada porque no se utiliza)
 
   // Función para guardar los cambios
   const saveChanges = async () => {

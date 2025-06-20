@@ -24,23 +24,11 @@ const AuthForm = ({ onClose }) => {
   const navigate = useNavigate();
   const { login, register, currentUser } = useAuth();
 
-<<<<<<< HEAD
   useEffect(() => {
     if (currentUser) {
       setTimeout(() => {
         if (onClose) onClose();
         if (currentUser.is_admin) {
-=======
-  // Redirigir si el usuario ya está autenticado
-  useEffect(() => {
-    if (currentUser) {
-      // Usar un pequeño retraso para evitar problemas con el desmontaje
-      setTimeout(() => {
-        if (onClose) onClose();
-
-        // Redirigir según el tipo de usuario
-        if (currentUser.isAdmin) {
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
           navigate('/admin');
         } else {
           navigate('/profile');
@@ -49,10 +37,6 @@ const AuthForm = ({ onClose }) => {
     }
   }, [currentUser, navigate, onClose]);
 
-<<<<<<< HEAD
-=======
-  // Efecto para animar la entrada del formulario
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   useEffect(() => {
     const timer = setTimeout(() => {
       const container = document.querySelector('.auth-container');
@@ -60,7 +44,6 @@ const AuthForm = ({ onClose }) => {
         container.classList.add('active');
       }
     }, 100);
-<<<<<<< HEAD
     return () => clearTimeout(timer);
   }, []);
 
@@ -78,75 +61,25 @@ const AuthForm = ({ onClose }) => {
         break;
       case 'password':
         if (value.length < 6) error = 'La contraseña debe tener al menos 6 caracteres';
-=======
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Validación de campos
-  const validateField = (name, value) => {
-    let error = '';
-
-    switch (name) {
-      case 'full_name':
-        if (value.trim().length < 3) {
-          error = 'El nombre debe tener al menos 3 caracteres';
-        }
-        break;
-      case 'postal_code':
-        if (!/^\d{5}$/.test(value)) {
-          error = 'El código postal debe tener 5 dígitos';
-        }
-        break;
-      case 'email':
-        if (!/\S+@\S+\.\S+/.test(value)) {
-          error = 'Introduce un email válido';
-        }
-        break;
-      case 'password':
-        if (value.length < 6) {
-          error = 'La contraseña debe tener al menos 6 caracteres';
-        }
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
         break;
       default:
         break;
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
     return error;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-<<<<<<< HEAD
     setFormData({ ...formData, [name]: value });
     if (formSubmitted) {
       const error = validateField(name, value);
       setErrors({ ...errors, [name]: error });
-=======
-
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-
-    if (formSubmitted) {
-      const error = validateField(name, value);
-      setErrors({
-        ...errors,
-        [name]: error
-      });
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
     let isValid = true;
-<<<<<<< HEAD
     if (!isLogin && !isForgotPassword) {
       newErrors.full_name = validateField('full_name', formData.full_name);
       newErrors.postal_code = validateField('postal_code', formData.postal_code);
@@ -155,29 +88,6 @@ const AuthForm = ({ onClose }) => {
     newErrors.email = validateField('email', formData.email);
     if (!isForgotPassword) newErrors.password = validateField('password', formData.password);
     if (newErrors.email || (!isForgotPassword && newErrors.password)) isValid = false;
-=======
-
-    // Solo validamos los campos que son relevantes para el modo actual
-    if (!isLogin && !isForgotPassword) {
-      newErrors.full_name = validateField('full_name', formData.full_name);
-      newErrors.postal_code = validateField('postal_code', formData.postal_code);
-
-      if (newErrors.full_name || newErrors.postal_code) {
-        isValid = false;
-      }
-    }
-
-    newErrors.email = validateField('email', formData.email);
-
-    if (!isForgotPassword) {
-      newErrors.password = validateField('password', formData.password);
-    }
-
-    if (newErrors.email || (!isForgotPassword && newErrors.password)) {
-      isValid = false;
-    }
-
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
     setErrors(newErrors);
     return isValid;
   };
@@ -185,40 +95,23 @@ const AuthForm = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormSubmitted(true);
-<<<<<<< HEAD
     if (!validateForm()) return;
-=======
-
-    if (!validateForm()) {
-      return;
-    }
-
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
     setIsLoading(true);
     setNotification({ show: false, type: '', message: '' });
 
     try {
       if (isForgotPassword) {
-<<<<<<< HEAD
-=======
-        // Implementar recuperación de contraseña
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
         setNotification({
           show: true,
           type: 'success',
           message: 'Si tu email está registrado, recibirás instrucciones para recuperar tu contraseña.'
         });
-<<<<<<< HEAD
-=======
-
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
         setTimeout(() => {
           setIsForgotPassword(false);
           setFormData({ ...formData, email: '' });
         }, 2000);
       } else if (isLogin) {
         try {
-<<<<<<< HEAD
           const user = await login({
             email: formData.email,
             password: formData.password
@@ -260,131 +153,6 @@ const AuthForm = ({ onClose }) => {
             setTimeout(() => { if (onClose) onClose(); }, 100);
           }, 1000);
         } catch {
-=======
-          console.log('Intentando iniciar sesión con:', formData.email);
-
-          // Verificar explícitamente si es el usuario administrador
-          const isAdminUser = formData.email === 'admin@gmail.com' && formData.password === 'AkademiaKupula';
-
-          if (isAdminUser) {
-            console.log('Detectadas credenciales de administrador');
-          }
-
-          // Usar el contexto de autenticación para iniciar sesión con la opción de recordar sesión
-          console.log('Iniciando proceso de login con credenciales:', {
-            email: formData.email,
-            rememberMe: formData.rememberMe
-          });
-
-          try {
-            const user = await login({
-              email: formData.email,
-              password: formData.password
-            }, formData.rememberMe);
-
-            if (!user) {
-              throw new Error('No se recibieron datos de usuario después del login');
-            }
-
-            console.log('Usuario autenticado correctamente:', user);
-
-            // Verificar que los datos se guardaron correctamente
-            const storedToken = localStorage.getItem('akademia_auth_token') || sessionStorage.getItem('akademia_auth_token');
-            const storedUser = localStorage.getItem('akademia_user_data') || sessionStorage.getItem('akademia_user_data');
-
-            console.log('Token almacenado:', storedToken ? 'Sí' : 'No');
-            console.log('Datos de usuario almacenados:', storedUser ? 'Sí' : 'No');
-
-            if (!storedToken || !storedUser) {
-              console.warn('Advertencia: No se encontraron datos de sesión almacenados después del login');
-            }
-          } catch (loginError) {
-            console.error('Error durante el proceso de login:', loginError);
-            throw loginError;
-          }
-
-          // Mostrar notificación de éxito
-          setNotification({
-            show: true,
-            type: 'success',
-            message: isAdminUser ? '¡Bienvenido Administrador!' : '¡Inicio de sesión exitoso!'
-          });
-
-          // Cerrar el modal después de un breve retraso
-          setTimeout(() => {
-            // Primero navegar y luego cerrar el modal para evitar problemas de desmontaje
-            // Redirigir según el tipo de usuario
-            if (isAdminUser) {
-              console.log('Redirigiendo a panel de administración...');
-              navigate('/admin');
-            } else {
-              console.log('Redirigiendo a perfil de usuario...');
-              navigate('/profile');
-            }
-
-            // Pequeño retraso adicional para cerrar el modal después de la navegación
-            setTimeout(() => {
-              if (onClose) onClose();
-            }, 100);
-          }, 1000);
-        } catch (error) {
-          console.error('Error al iniciar sesión:', error);
-
-          // Mostrar mensaje de error específico si está disponible
-          let errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
-
-          if (error.message) {
-            if (error.message.includes('token')) {
-              errorMessage = 'Error en la autenticación. Por favor, inténtalo de nuevo.';
-            } else if (error.message.includes('404')) {
-              errorMessage = 'Servicio no disponible. Por favor, inténtalo más tarde.';
-            } else if (error.message.includes('500')) {
-              errorMessage = 'Error en el servidor. Por favor, inténtalo más tarde.';
-            }
-          }
-
-          setNotification({
-            show: true,
-            type: 'error',
-            message: errorMessage
-          });
-        }
-      } else {
-        try {
-          // Usar el contexto de autenticación para registrar
-          const user = await register(formData);
-
-          // Verificar explícitamente si es el usuario administrador
-          const isAdminUser = formData.email === 'admin@gmail.com';
-
-          console.log('Usuario registrado:', user);
-          console.log('¿Es administrador?', isAdminUser);
-
-          setNotification({
-            show: true,
-            type: 'success',
-            message: isAdminUser ? '¡Administrador registrado!' : 'Registro exitoso. ¡Bienvenido/a!'
-          });
-
-          // Redirigir según el tipo de usuario
-          setTimeout(() => {
-            // Primero navegar y luego cerrar el modal para evitar problemas de desmontaje
-            if (isAdminUser) {
-              console.log('Redirigiendo a panel de administración...');
-              navigate('/admin');
-            } else {
-              console.log('Redirigiendo a perfil de usuario...');
-              navigate('/profile');
-            }
-
-            // Pequeño retraso adicional para cerrar el modal después de la navegación
-            setTimeout(() => {
-              if (onClose) onClose();
-            }, 100);
-          }, 1000);
-        } catch (error) {
-          console.error('Error al registrar:', error);
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
           setNotification({
             show: true,
             type: 'error',
@@ -392,12 +160,7 @@ const AuthForm = ({ onClose }) => {
           });
         }
       }
-<<<<<<< HEAD
     } catch {
-=======
-    } catch (error) {
-      console.error('Error general:', error);
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
       setNotification({
         show: true,
         type: 'error',
@@ -553,10 +316,6 @@ const AuthForm = ({ onClose }) => {
           </div>
         )}
 
-<<<<<<< HEAD
-=======
-        {/* Opción de recordar sesión (solo para login) */}
->>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
         {isLogin && !isForgotPassword && (
           <div className="remember-me-container">
             <label className="remember-me-label">
