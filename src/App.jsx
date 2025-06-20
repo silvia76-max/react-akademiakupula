@@ -98,7 +98,7 @@ export function App() {
   return (
     <ErrorBoundary showDetails={process.env.NODE_ENV === 'development'} componentName="App">
       <AuthProvider>
-        <BrowserRouter>
+         <BrowserRouter basename="/react-akademiakupula">
           <div className="app-container">
             {/* Sistema de notificaciones */}
             {notification && (
