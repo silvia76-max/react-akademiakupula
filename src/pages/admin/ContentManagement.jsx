@@ -115,6 +115,11 @@ const ContentManagement = () => {
   };
 
   return (
+<<<<<<< HEAD
+=======
+    <div className="admin-layout">
+      <AdminSidebar />
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
       <div className="admin-content">
         <div className="page-header">
           <h1>Gestión de Contenido</h1>
@@ -271,6 +276,10 @@ const ContentManagement = () => {
           </div>
         )}
       </div>
+<<<<<<< HEAD
+=======
+    </div>
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   );
 };
 

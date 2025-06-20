@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useCallback } from 'react';
 import {
   FaCog,
   FaTimes,
@@ -42,21 +43,20 @@ const SettingsPanel = () => {
   useEffect(() => {
     applySettings();
     saveSettings();
-  }, [settings, applySettings, saveSettings]);
+  }, [applySettings, saveSettings]);
 
   const togglePanel = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSettingChange = useCallback((setting, value) => {
+  const handleSettingChange = (setting, value) => {
     setSettings(prev => ({
       ...prev,
       [setting]: value
     }));
-  }, []);
+  };
 
-
-  const applySettings = useCallback(() => {
+  const applySettings = () => {
     // Aplicar tamaño de fuente
     document.documentElement.setAttribute('data-font-size', settings.fontSize);
 
@@ -82,82 +82,120 @@ const SettingsPanel = () => {
     } else {
       removeKeyboardShortcuts();
     }
-  }, [settings, setupKeyboardShortcuts, removeKeyboardShortcuts]);
+  };
 
-  const saveSettings = useCallback(() => {
+  const saveSettings = () => {
     localStorage.setItem('fontSize', settings.fontSize);
     localStorage.setItem('contrast', settings.contrast);
     localStorage.setItem('colorAccent', settings.colorAccent);
     localStorage.setItem('animations', settings.animations ? 'enabled' : 'disabled');
     localStorage.setItem('theme', settings.theme);
     localStorage.setItem('accessibilityShortcuts', settings.shortcuts ? 'enabled' : 'disabled');
-  }, [settings]);
+  };
 
+  // Función para restablecer la configuración a los valores predeterminados
   const resetSettings = () => {
     const defaultSettings = {
       fontSize: 'medium',
       contrast: 'normal',
       colorAccent: 'gold',
       animations: true,
-      theme: 'dark', // Tema oscuro por defecto
+      theme: 'dark',
       shortcuts: false
     };
 
     // Guardar en localStorage y aplicar
     Object.keys(defaultSettings).forEach(key => {
-      localStorage.setItem(key, defaultSettings[key] === true ? 'enabled' :
-                              defaultSettings[key] === false ? 'disabled' :
-                              defaultSettings[key]);
+      localStorage.setItem(
+        key,
+        defaultSettings[key] === true
+          ? 'enabled'
+          : defaultSettings[key] === false
+          ? 'disabled'
+          : defaultSettings[key]
+      );
     });
 
     setSettings(defaultSettings);
   };
 
   // Funciones de accesibilidad
+  const increaseTextSize = () => {
+    const currentSize = settings.fontSize;
+
+    let newSize;
+    switch (currentSize) {
+      case 'small':
+        newSize = 'medium';
+        break;
+      case 'medium':
+        newSize = 'large';
+        break;
+      default:
+        newSize = 'large';
+    }
+
+    handleSettingChange('fontSize', newSize);
+  };
+
+  const decreaseTextSize = () => {
+    const currentSize = settings.fontSize;
+
+    let newSize;
+    switch (currentSize) {
+      case 'large':
+        newSize = 'medium';
+        break;
+      case 'medium':
+        newSize = 'small';
+        break;
+      default:
+        newSize = 'small';
+    }
+
+    handleSettingChange('fontSize', newSize);
+  };
 
   // Configurar atajos de teclado
-  const setupKeyboardShortcuts = useCallback(() => {
+  const setupKeyboardShortcuts = () => {
     document.addEventListener('keydown', handleKeyboardShortcuts);
-  }, [handleKeyboardShortcuts]);
+  };
 
   // Eliminar atajos de teclado
-  const removeKeyboardShortcuts = useCallback(() => {
+  const removeKeyboardShortcuts = () => {
     document.removeEventListener('keydown', handleKeyboardShortcuts);
-  }, [handleKeyboardShortcuts]);
+  };
 
   // Manejar atajos de teclado
-  const handleKeyboardShortcuts = useCallback(
-    (e) => {
-      // Solo procesar si Alt está presionada
-      if (!e.altKey) return;
+  const handleKeyboardShortcuts = (e) => {
+    // Solo procesar si Alt está presionada
+    if (!e.altKey) return;
 
-      switch (e.key) {
-        case 'h': // Inicio
-          e.preventDefault();
-          window.location.href = '#inicio';
-          break;
-        case 'c': // Cursos
-          e.preventDefault();
-          window.location.href = '#cursos';
-          break;
-        case 'a': // Sobre nosotros
-          e.preventDefault();
-          window.location.href = '#sobre';
-          break;
-        case 'o': // Contacto
-          e.preventDefault();
-          window.location.href = '#contacto';
-          break;
-        case 't': // Cambiar tema
-          e.preventDefault();
-          handleSettingChange('theme', settings.theme === 'dark' ? 'light' : 'dark');
-          break;
-        default:
-          break;
-      }
-    },
-    [handleSettingChange, settings.theme]
-  );
+    switch (e.key) {
+      case 'h': // Inicio
+        e.preventDefault();
+        window.location.href = '#inicio';
+        break;
+      case 'c': // Cursos
+        e.preventDefault();
+        window.location.href = '#cursos';
+        break;
+      case 'a': // Sobre nosotros
+        e.preventDefault();
+        window.location.href = '#sobre';
+        break;
+      case 'o': // Contacto
+        e.preventDefault();
+        window.location.href = '#contacto';
+        break;
+      case 't': // Cambiar tema
+        e.preventDefault();
+        handleSettingChange('theme', settings.theme === 'dark' ? 'light' : 'dark');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div className="settings-container">
@@ -383,6 +421,6 @@ const SettingsPanel = () => {
       )}
     </div>
   );
-};
+}
 
 export default SettingsPanel;

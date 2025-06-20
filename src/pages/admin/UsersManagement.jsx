@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaUserPlus, FaCheck, FaTimes } from 'react-icons/fa';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import DataTable from '../../components/admin/DataTable';
+<<<<<<< HEAD
 import { getUsers, deleteUser } from '../../services/adminService.js';
+=======
+import { getUsers, deleteUser } from '../../services/adminService';
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
 import './UsersManagement.css';
 
 const UsersManagement = () => {
@@ -22,19 +26,49 @@ const UsersManagement = () => {
     { key: 'email', label: 'Email', sortable: true },
     { key: 'postal_code', label: 'Código Postal', sortable: true },
     {
+<<<<<<< HEAD
       key: 'is_admin',
       label: 'Administrador',
       sortable: true,
       render: (value) => value ? <FaCheck className="admin-icon" /> : <FaTimes className="user-icon" />
     }
+=======
+      key: 'isAdmin',
+      label: 'Administrador',
+      sortable: true,
+      render: (value) => value ? <FaCheck className="admin-icon" /> : <FaTimes className="user-icon" />
+    },
+   {
+    key: 'is_admin',
+    label: 'Administrador',
+    sortable: true,
+    render: (value) => value ? <FaCheck className="admin-icon" /> : <FaTimes className="user-icon" />
+  },
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   ];
 
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
 
+<<<<<<< HEAD
       // Obtener los usuarios usando el servicio adminService
       const data = await getUsers();
+=======
+      // Verificar si el usuario es administrador
+      const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+      if (!userData || !userData.isAdmin) {
+        console.log('No es administrador, redirigiendo a la página principal...');
+        navigate('/');
+        return;
+      }
+
+      // Obtener los usuarios usando el servicio adminService
+      const data = await getUsers();
+      console.log('Usuarios obtenidos:', data);
+
+      // Usar los datos reales de la API
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
       setUsers(data || []);
       setError(null);
     } catch (err) {
@@ -44,7 +78,11 @@ const UsersManagement = () => {
     } finally {
       setLoading(false);
     }
+<<<<<<< HEAD
   }, []);
+=======
+  }, [navigate]);
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
 
   useEffect(() => {
     fetchUsers();
@@ -98,6 +136,11 @@ const UsersManagement = () => {
   };
 
   return (
+<<<<<<< HEAD
+=======
+    <div className="admin-layout">
+      <AdminSidebar />
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
       <div className="admin-content">
         <div className="page-header">
           <h1>Gestión de Usuarios</h1>
@@ -153,6 +196,10 @@ const UsersManagement = () => {
           </div>
         )}
       </div>
+<<<<<<< HEAD
+=======
+    </div>
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   );
 };
 

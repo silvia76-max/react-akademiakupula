@@ -124,11 +124,20 @@ const ContentForm = () => {
         }
       });
       
+<<<<<<< HEAD
       if (isNewContent) {
         await createContent(formDataToSend);
         setSuccessMessage('Contenido creado correctamente');
       } else {
         await updateContent(contentId, formDataToSend);
+=======
+      let response;
+      if (isNewContent) {
+        response = await createContent(formDataToSend);
+        setSuccessMessage('Contenido creado correctamente');
+      } else {
+        response = await updateContent(contentId, formDataToSend);
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
         setSuccessMessage('Contenido actualizado correctamente');
       }
       
@@ -163,6 +172,11 @@ const ContentForm = () => {
   }
   
   return (
+<<<<<<< HEAD
+=======
+    <div className="admin-layout">
+      <AdminSidebar />
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
       <div className="admin-content">
         <div className="page-header">
           <h1>{isNewContent ? 'Nuevo Contenido' : 'Editar Contenido'}</h1>
@@ -453,6 +467,10 @@ const ContentForm = () => {
           </form>
         </div>
       </div>
+<<<<<<< HEAD
+=======
+    </div>
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   );
 };
 

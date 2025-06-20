@@ -1,5 +1,3 @@
-# React-akademiaKupula
-
 ![Vista Home de Akademia Kupula](src/assets/images/Kupulahome.png)
 
 Este proyecto es una plataforma web integral para la gestión y promoción de una academia. Desarrollada en React, permite tanto informar sobre la academia, sus cursos y eventos presenciales, como ofrecer la posibilidad de comprar y realizar cursos online. 
@@ -33,7 +31,6 @@ En resumen, React-akademiaKupula es una solución moderna y flexible para academ
 
 ## Estructura del proyecto
 
-```
 src/
   components/
     admin/
@@ -54,29 +51,32 @@ src/
     AuthContext.jsx
   App.jsx
   main.jsx
-```
+
 
 ## Instalación y ejecución
 
 1. Clona el repositorio:
-   ```bash
+   
+bash
    git clone https://github.com/tuusuario/React-akademiaKupula.git
    cd React-akademiaKupula
-   ```
+
 
 2. Instala las dependencias:
-   ```bash
+   
+bash
    npm install
-   ```
+
 
 3. Configura las variables de entorno si es necesario (por ejemplo, la URL de la API).
 
 4. Ejecuta la aplicación en modo desarrollo:
-   ```bash
+   
+bash
    npm run dev
-   ```
 
-5. Accede a `http://localhost:5173` en tu navegador.
+
+5. Accede a http://localhost:5173 en tu navegador.
 
 ## Notas
 
@@ -94,4 +94,4 @@ src/
 
 ---
 
-¡Gracias por usar React-akademiaKupula!
+

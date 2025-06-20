@@ -18,7 +18,11 @@ const formatInstagramUrl = (url) => {
   let postId = '';
 
   // Patrón para URLs de Instagram como https://www.instagram.com/reel/CODIGO/
+<<<<<<< HEAD
   const reelPattern = /instagram\.com\/(?:reel|p)\/([^/?]+)/;
+=======
+  const reelPattern = /instagram\.com\/(?:reel|p)\/([^\/\?]+)/;
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   const match = url.match(reelPattern);
 
   if (match && match[1]) {
@@ -160,6 +164,11 @@ const AdminDashboard = () => {
   };
 
   return (
+<<<<<<< HEAD
+=======
+    <div className="admin-layout">
+      <AdminSidebar />
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
       <div className="admin-content">
         <div className="dashboard-header">
           <h1>Panel de Administración de Contenido</h1>
@@ -402,6 +411,10 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
+=======
+    </div>
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   );
 };
 

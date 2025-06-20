@@ -13,7 +13,8 @@ dist-ssr
 *.local
 .history
 .env
-.env.example
+STRIPE_INTEGRATION.md
+
 
 # Editor directories and files
 .vscode/*

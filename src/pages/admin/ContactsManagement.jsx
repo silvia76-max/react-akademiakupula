@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaEye, FaTrash, FaEnvelope, FaReply } from 'react-icons/fa';
 import DataTable from '../../components/admin/DataTable';
 import { getContacts, deleteContact, replyToContact } from '../../services/adminService.js';
+=======
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaSearch, FaEye, FaTrash, FaEnvelope, FaReply } from 'react-icons/fa';
+import AdminSidebar from '../../components/admin/AdminSidebar';
+import DataTable from '../../components/admin/DataTable';
+import { getContacts, deleteContact, replyToContact } from '../../services/adminService';
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
 import './ContactsManagement.css';
 
 const ContactsManagement = () => {
@@ -20,6 +29,7 @@ const ContactsManagement = () => {
     { key: 'id', label: 'ID', sortable: true },
     { key: 'nombre', label: 'Nombre', sortable: true },
     { key: 'email', label: 'Email', sortable: true },
+<<<<<<< HEAD
     { key: 'telefono', label: 'Teléfono', sortable: false },
     { key: 'curso', label: 'Curso', sortable: true },
     { key: 'mensaje', label: 'Mensaje', sortable: false },
@@ -35,17 +45,68 @@ const ContactsManagement = () => {
       setContacts(data || []);
       setError(null);
     } catch (err) {
+=======
+    { key: 'telefono', label: 'Teléfono', sortable: true },
+    {
+      key: 'fecha_creacion',
+      label: 'Fecha',
+      sortable: true,
+      render: (value) => new Date(value).toLocaleDateString()
+    },
+    {
+      key: 'leido',
+      label: 'Estado',
+      sortable: true,
+      render: (value) => (
+        <span className={`status-badge ${value ? 'read' : 'unread'}`}>
+          {value ? 'Leído' : 'No leído'}
+        </span>
+      )
+    }
+  ];
+
+
+
+  const fetchContacts = async () => {
+    try {
+      setLoading(true);
+
+      // Verificar si el usuario es administrador
+      const userData = JSON.parse(localStorage.getItem('akademia_user_data') || '{}');
+      if (!userData || !userData.isAdmin) {
+        console.log('No es administrador, redirigiendo a la página principal...');
+        navigate('/');
+        return;
+      }
+
+      // Obtener los mensajes usando el servicio adminService
+      const data = await getContacts();
+      console.log('Mensajes obtenidos:', data);
+      setContacts(data || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error al cargar los mensajes:', err);
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
       setError('Error al cargar los mensajes. Por favor, inténtalo de nuevo.');
       setContacts([]);
     } finally {
       setLoading(false);
     }
+<<<<<<< HEAD
   }, []);
 
   useEffect(() => {
     fetchContacts();
   }, [fetchContacts]);
     
+=======
+  };
+
+  useEffect(() => {
+    fetchContacts();
+  }, [navigate]);
+
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   // Filtrar contactos según el término de búsqueda
   const filteredContacts = contacts.filter(contact =>
     contact.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -122,6 +183,11 @@ const ContactsManagement = () => {
   };
 
   return (
+<<<<<<< HEAD
+=======
+    <div className="admin-layout">
+      <AdminSidebar />
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
       <div className="admin-content">
         <div className="page-header">
           <h1>Gestión de Mensajes</h1>
@@ -194,6 +260,10 @@ const ContactsManagement = () => {
           </div>
         )}
       </div>
+<<<<<<< HEAD
+=======
+    </div>
+>>>>>>> 92ec14313c90033ee7aed81cb6133cfda4661041
   );
 };
 
